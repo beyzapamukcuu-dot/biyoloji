@@ -1,0 +1,1887 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>EKOSİSTEM — Doğal Denge</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Lato:wght@300;400&display=swap');
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:#040d06;font-family:'Lato',sans-serif;color:#e0f0e8;touch-action:manipulation}
+
+/* ══ TUTORIAL ══ */
+#tut{
+  position:fixed;inset:0;z-index:9000;
+  background:linear-gradient(160deg,#021008 0%,#041a0a 60%,#020a04 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:16px;overflow-y:auto;
+}
+.tut-inner{
+  width:100%;max-width:480px;
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+}
+.tut-logo{
+  font-family:'Cinzel',serif;font-size:clamp(1.3rem,5.5vw,2rem);
+  color:#3ddc84;letter-spacing:.18em;text-align:center;
+  text-shadow:0 0 40px rgba(61,220,132,.4);
+}
+.tut-sub{font-size:.6rem;letter-spacing:.3em;color:#4a8a5a;text-transform:uppercase;text-align:center}
+.tut-divider{width:50px;height:1px;background:linear-gradient(90deg,transparent,#3ddc84,transparent)}
+.tut-cards{display:grid;grid-template-columns:1fr 1fr;gap:7px;width:100%}
+.tut-card{
+  background:rgba(61,220,132,.05);border:1px solid rgba(61,220,132,.15);
+  border-radius:10px;padding:9px 11px;
+}
+.tut-card .ci{font-size:1.3rem;margin-bottom:3px}
+.tut-card h4{font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:.1em;color:#3ddc84;margin-bottom:2px}
+.tut-card p{font-size:.72rem;color:#7ab890;line-height:1.4}
+.tut-note{
+  background:rgba(212,160,23,.07);border:1px solid rgba(212,160,23,.2);
+  border-radius:9px;padding:9px 12px;
+  font-size:.75rem;color:#e8c96a;line-height:1.5;text-align:center;width:100%;
+}
+.btn-go{
+  width:100%;max-width:240px;
+  background:linear-gradient(135deg,#1a5c3a,#3ddc84);
+  border:none;border-radius:50px;padding:13px 0;
+  font-family:'Cinzel',serif;font-size:.85rem;letter-spacing:.2em;
+  color:#fff;cursor:pointer;
+  box-shadow:0 6px 24px rgba(61,220,132,.3);
+  -webkit-appearance:none;transition:transform .15s;
+}
+.btn-go:active{transform:scale(.97)}
+
+/* ══ GAME ══ */
+#game{position:fixed;inset:0;display:none}
+#game.on{display:block}
+#cvs{position:absolute;inset:0;width:100%;height:100%}
+
+.flame-particle {
+  mix-blend-mode: screen;
+}
+
+/* ── TOP HUD ── */
+#hud{
+  position:absolute;top:0;left:0;right:0;
+  padding:7px 10px 5px;
+  background:linear-gradient(180deg,rgba(2,8,4,.9) 0%,rgba(2,8,4,.5) 70%,transparent 100%);
+  display:flex;align-items:flex-start;gap:7px;z-index:50;
+  flex-wrap: wrap; 
+}
+.gtitle{font-family:'Cinzel',serif;font-size:.7rem;color:#3ddc84;letter-spacing:.15em;white-space:nowrap; margin-top:3px;}
+
+.sw{display:flex;gap:5px;flex:1;flex-wrap:wrap;justify-content:center}
+.sp{display:flex;flex-direction:column;gap:2px;flex:1 1 24%; min-width:80px; 
+  background:rgba(2,10,4,.72);border:1px solid rgba(61,220,132,.14);
+  border-radius:7px;padding:3px 5px;}
+.sp .si{font-size:.46rem;white-space:nowrap;text-align:center;color:#6ab87a} 
+.sp .sb{height:3px;border-radius:2px;background:rgba(255,255,255,.08);overflow:hidden}
+.sp .sf{height:100%;border-radius:2px;transition:width .9s ease, background-color .9s ease;}
+.tbadge{font-family:'Cinzel',serif;font-size:.6rem; margin-top:3px;
+  background:rgba(212,160,23,.12);border:1px solid rgba(212,160,23,.25);
+  border-radius:20px;padding:3px 9px;color:#d4a017;white-space:nowrap;}
+
+/* ── BOTTOM PANEL ── */
+#bp{position:absolute;bottom:0;left:0;right:0;z-index:50;padding:0 9px 9px;}
+#ec{display:none;flex-direction:column;gap:7px;
+  background:rgba(3,12,6,.94);border:1px solid rgba(61,220,132,.2);
+  border-radius:15px;padding:12px 14px;
+  backdrop-filter:blur(18px);box-shadow:0 -6px 36px rgba(0,0,0,.55);}
+#ec.vis{display:flex}
+.eh{display:flex;align-items:center;gap:9px}
+.eico{font-size:1.9rem;flex-shrink:0;filter:drop-shadow(0 0 6px currentColor)}
+.etype{font-family:'Cinzel',serif;font-size:.5rem;letter-spacing:.2em;color:#4a8a5a;text-transform:uppercase}
+.etitle{font-size:.95rem;font-weight:300;line-height:1.2}
+.edesc{font-size:.74rem;color:#7ab890;line-height:1.48}
+.crow{display:flex;gap:6px; flex-wrap:wrap;}
+.cb{flex:1;min-width:48%; background:rgba(61,220,132,.06);border:1px solid rgba(61,220,132,.2);
+  border-radius:9px;padding:8px 9px;color:#c8e8d0;
+  font-family:'Lato',sans-serif;font-size:.74rem;cursor:pointer;
+  text-align:left;line-height:1.38;-webkit-appearance:none;transition:background .12s;}
+.cb:active{background:rgba(61,220,132,.18);border-color:rgba(61,220,132,.55)}
+.clbl{display:block;font-family:'Cinzel',serif;font-size:.48rem;letter-spacing:.12em;color:#4db87a;margin-bottom:1px}
+
+#rc{display:none;flex-direction:column;gap:7px;
+  background:rgba(3,12,6,.94);border:1px solid rgba(255,255,255,.09);
+  border-radius:15px;padding:12px 14px;
+  backdrop-filter:blur(18px);box-shadow:0 -6px 36px rgba(0,0,0,.55);}
+#rc.vis{display:flex}
+.rh{display:flex;align-items:center;gap:9px}
+.rico{font-size:1.6rem}
+.rtitle{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.1em;color:#d4a017}
+.rtext{font-size:.78rem;color:#a0c8b0;line-height:1.52}
+.efrow{display:flex;gap:5px;flex-wrap:wrap}
+.ec2{font-family:'Cinzel',serif;font-size:.5rem;letter-spacing:.06em;border-radius:5px;padding:3px 8px}
+.ec2.pos{background:rgba(61,220,132,.12);border:1px solid rgba(61,220,132,.25);color:#3ddc84}
+.ec2.neg{background:rgba(231,111,81,.1);border:1px solid rgba(231,111,81,.28);color:#e07050}
+.ec2.neu{background:rgba(212,160,23,.08);border:1px solid rgba(212,160,23,.22);color:#d4a017}
+.bcont{align-self:flex-end;
+  background:linear-gradient(135deg,#1a5c3a,#3ddc84);border:none;
+  border-radius:20px;padding:7px 22px;
+  font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.14em;
+  color:#fff;cursor:pointer;-webkit-appearance:none;}
+.bcont:active{opacity:.8}
+#idl{display:none;text-align:center;padding:12px;color:#2a5a3a;font-size:.75rem;font-style:italic}
+#idl.vis{display:block}
+
+/* ══ GAME OVER ══ */
+#go{position:fixed;inset:0;z-index:200;background:rgba(2,6,3,.96);
+  display:none;align-items:center;justify-content:center;
+  flex-direction:column;gap:12px;text-align:center;padding:20px;}
+#go.on{display:flex}
+#go h2{font-family:'Cinzel',serif;font-size:1.5rem}
+.goscore{font-family:'Cinzel',serif;font-size:2.6rem;color:#d4a017}
+#go p{font-size:.8rem;color:#7ab890;max-width:300px;line-height:1.65}
+.brest{background:linear-gradient(135deg,#1a5c3a,#3ddc84);border:none;
+  border-radius:50px;padding:11px 32px;
+  font-family:'Cinzel',serif;font-size:.8rem;letter-spacing:.14em;
+  color:#fff;cursor:pointer;margin-top:4px;-webkit-appearance:none;}
+</style>
+</head>
+<body>
+
+<div id="tut">
+  <div class="tut-inner">
+    <div class="tut-logo">🌿 EKOSİSTEM</div>
+    <div class="tut-sub">Doğal Denge Simülasyonu</div>
+    <div class="tut-divider"></div>
+    <div class="tut-cards">
+      <div class="tut-card"><div class="ci">🌳</div><h4>Üreticileri Yönet</h4><p>Bitkiler, hayvanlar, su ve mantarlar birbirine bağlıdır.</p></div>
+      <div class="tut-card"><div class="ci">⚡</div><h4>Krizlere Tepki</h4><p>15 farklı seviyede, giderek zorlaşan krizleri çöz.</p></div>
+      <div class="tut-card"><div class="ci">🔬</div><h4>Etkiyi İzle</h4><p>Seçim sonrası sahnede ekolojik değişimi gözlemle.</p></div>
+      <div class="tut-card"><div class="ci">⚖️</div><h4>Denge Kur</h4><p>Taşıma kapasitesini ve kilit taşlarını asla unutma.</p></div>
+    </div>
+    <div class="tut-note">💡 İPUCU YOK! Hangi kararın kötü olduğunu tahmin etmelisin. Kararlarının her birinin zincirleme etkisi var.</div>
+    <button class="btn-go" onclick="startGame()">🌿 &nbsp;OYUNU BAŞLAT</button>
+  </div>
+</div>
+
+<div id="game">
+  <svg id="cvs" viewBox="0 0 400 700" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <clipPath id="aboveWaterClip">
+        <rect x="0" y="0" width="400" height="585" />
+      </clipPath>
+
+      <g id="cloud" fill="#ffffff">
+        <circle cx="0" cy="-5" r="24" />
+        <circle cx="-22" cy="5" r="16" />
+        <circle cx="22" cy="2" r="18" />
+        <circle cx="38" cy="10" r="10" />
+        <circle cx="-35" cy="12" r="8" />
+        <rect x="-35" y="0" width="75" height="20" rx="10" />
+      </g>
+      
+      <g id="cartoonFlame">
+        <path d="M0,0 C-15,-15 -25,-40 -5,-70 C-10,-50 10,-55 5,-35 C20,-50 25,-25 0,0 Z" fill="#e65100"/>
+        <path d="M0,0 C-10,-10 -15,-30 -2,-50 C-5,-35 5,-40 2,-25 C12,-35 15,-15 0,0 Z" fill="#ff9800"/>
+        <path d="M0,0 C-5,-5 -8,-15 -1,-25 C-2,-15 2,-20 1,-10 C6,-15 8,-8 0,0 Z" fill="#ffee58"/>
+      </g>
+
+      <g id="single_tree_style">
+        <path d="M -5,0 C -5,-20 -3,-40 -2,-45 L 2,-45 C 3,-40 5,-20 5,0 Z" fill="#5D4037"/>
+        <path d="M 0,0 C 0,-20 1,-40 2,-45 L 5,-45 C 5,-20 5,-10 5,0 Z" fill="#3E2723"/>
+        <path d="M -5,0 C -10,3 -14,4 -18,4 C -12,4 -8,2 -3,-2 Z" fill="#4E342E"/>
+        <path d="M 5,0 C 10,3 14,4 18,4 C 12,4 8,2 3,-2 Z" fill="#3E2723"/>
+        
+        <path d="M -15,-38 C -35,-38 -35,-65 -20,-70 C -25,-90 -5,-95 5,-85 C 15,-100 35,-85 25,-70 C 40,-65 35,-38 15,-38 C 5,-32 -5,-32 -15,-38 Z" fill="#1B5E20"/>
+        <path d="M -12,-43 C -28,-43 -28,-65 -15,-70 C -20,-85 0,-90 5,-80 C 15,-90 28,-80 20,-68 C 30,-62 28,-45 12,-45 C 5,-38 -5,-38 -12,-43 Z" fill="#2E7D32"/>
+        <path d="M -8,-48 C -20,-48 -20,-65 -10,-70 C -15,-80 0,-85 5,-75 C 12,-82 20,-75 15,-65 C 22,-60 20,-48 8,-50 C 5,-45 -2,-45 -8,-48 Z" fill="#4CAF50"/>
+        
+        <path d="M -12,-60 Q -8,-65 -4,-60" stroke="#81C784" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <path d="M 6,-70 Q 10,-75 14,-70" stroke="#81C784" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <path d="M 0,-52 Q 4,-57 8,-52" stroke="#81C784" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      </g>
+
+      <g id="fishDef">
+        <g transform="scale(-1, 1) translate(-40, 0)">
+          <path d="M0,0 C10,-10 20,-10 30,0 C20,10 10,10 0,0 Z" fill="#ff9800"/>
+          <polygon points="30,0 40,-5 35,0 40,5" fill="#e65100"/>
+          <circle cx="8" cy="-2" r="1.5" fill="#fff"/>
+          <circle cx="8" cy="-2" r="0.8" fill="#000"/>
+          <path d="M15,-5 L10,-10 L20,-5 Z" fill="#ff9800"/>
+          <path d="M15,5 L10,10 L20,5 Z" fill="#ff9800"/>
+        </g>
+      </g>
+
+      <g id="flowerRed">
+        <line x1="0" y1="0" x2="0" y2="-10" stroke="#4caf50" stroke-width="1.5"/>
+        <circle cx="-3" cy="-12" r="3" fill="#e53935"/>
+        <circle cx="3" cy="-12" r="3" fill="#e53935"/>
+        <circle cx="0" cy="-15" r="3" fill="#e53935"/>
+        <circle cx="0" cy="-9" r="3" fill="#e53935"/>
+        <circle cx="0" cy="-12" r="1.5" fill="#ffee58"/>
+      </g>
+      
+      <g id="flowerBlue">
+        <line x1="0" y1="0" x2="0" y2="-8" stroke="#4caf50" stroke-width="1.5"/>
+        <circle cx="-2.5" cy="-10" r="2.5" fill="#42a5f5"/>
+        <circle cx="2.5" cy="-10" r="2.5" fill="#42a5f5"/>
+        <circle cx="0" cy="-12.5" r="2.5" fill="#42a5f5"/>
+        <circle cx="0" cy="-7.5" r="2.5" fill="#42a5f5"/>
+        <circle cx="0" cy="-10" r="1.5" fill="#ffffff"/>
+      </g>
+
+      <g id="flowerYellow">
+        <line x1="0" y1="0" x2="0" y2="-12" stroke="#4caf50" stroke-width="1.5"/>
+        <circle cx="-3.5" cy="-14" r="3.5" fill="#ffca28"/>
+        <circle cx="3.5" cy="-14" r="3.5" fill="#ffca28"/>
+        <circle cx="0" cy="-17.5" r="3.5" fill="#ffca28"/>
+        <circle cx="0" cy="-10.5" r="3.5" fill="#ffca28"/>
+        <circle cx="0" cy="-14" r="2" fill="#ef6c00"/>
+      </g>
+
+      <linearGradient id="skyG" x1="0" y1="0" x2="0" y2="1">
+        <stop id="sg0" offset="0%" stop-color="#0a1a2e"/>
+        <stop id="sg1" offset="45%" stop-color="#1a3a5c"/>
+        <stop id="sg2" offset="72%" stop-color="#1e4d2b"/>
+        <stop id="sg3" offset="100%" stop-color="#0d2e15"/>
+      </linearGradient>
+      <linearGradient id="groundG" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#2d6a35"/>
+        <stop offset="45%" stop-color="#1a4a20"/>
+        <stop offset="100%" stop-color="#0a2810"/>
+      </linearGradient>
+      
+      <linearGradient id="waterG2" x1="0" y1="0" x2="0" y2="1">
+        <stop id="wg0" offset="0%" stop-color="#48cae4" stop-opacity=".9"/>
+        <stop id="wg1" offset="100%" stop-color="#0096c7" stop-opacity=".8"/>
+      </linearGradient>
+
+      <radialGradient id="sunG2"><stop offset="0%" stop-color="#fff9c4"/><stop offset="55%" stop-color="#f9a825"/><stop offset="100%" stop-color="#e65100" stop-opacity="0"/></radialGradient>
+      <radialGradient id="sunHalo"><stop offset="0%" stop-color="#f9a825" stop-opacity=".28"/><stop offset="100%" stop-color="#f9a825" stop-opacity="0"/></radialGradient>
+      <radialGradient id="fireGR" cx="50%" cy="100%">
+        <stop offset="0%" stop-color="#ff6b00" stop-opacity=".75"/>
+        <stop offset="55%" stop-color="#e53935" stop-opacity=".35"/>
+        <stop offset="100%" stop-color="#e53935" stop-opacity="0"/>
+      </radialGradient>
+      <linearGradient id="mtG1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#4a5568"/><stop offset="100%" stop-color="#2d3748"/></linearGradient>
+      <linearGradient id="mtG2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#374151"/><stop offset="100%" stop-color="#1f2937"/></linearGradient>
+      
+      <filter id="glow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      <filter id="sglow"><feGaussianBlur stdDeviation="9" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      <filter id="tglow"><feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      <filter id="heatBlur"><feGaussianBlur stdDeviation="1.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      <filter id="crackFilter"><feDropShadow dx="1" dy="2" stdDeviation="0.5" flood-color="rgba(0,0,0,0.8)"/></filter>
+      
+      <clipPath id="sc"><rect width="400" height="700"/></clipPath>
+    </defs>
+
+    <g clip-path="url(#sc)">
+    <rect width="400" height="700" fill="url(#skyG)"/>
+
+    <g id="stars" opacity="0" style="transition:opacity 2s">
+      <circle cx="28" cy="38" r="1" fill="white" opacity=".8"/><circle cx="78" cy="18" r="1.3" fill="white" opacity=".6"/>
+      <circle cx="148" cy="48" r="1" fill="white" opacity=".9"/><circle cx="198" cy="14" r="1.5" fill="white" opacity=".5"/>
+      <circle cx="278" cy="32" r="1" fill="white" opacity=".7"/><circle cx="338" cy="52" r="1.2" fill="white" opacity=".8"/>
+      <circle cx="368" cy="22" r="1" fill="white" opacity=".6"/><circle cx="48" cy="68" r="1" fill="white" opacity=".4"/>
+      <circle cx="118" cy="78" r="1.3" fill="white" opacity=".7"/><circle cx="308" cy="16" r="1" fill="white" opacity=".5"/>
+    </g>
+
+    <g id="sunG3">
+      <circle cx="318" cy="78" r="52" fill="url(#sunHalo)" filter="url(#sglow)"/>
+      <circle cx="318" cy="78" r="26" fill="url(#sunG2)" filter="url(#glow)">
+        <animate attributeName="r" values="25;28;25" dur="5s" repeatCount="indefinite"/>
+      </circle>
+      <g stroke="#f9a825" stroke-width="1" stroke-opacity=".25">
+        <line x1="318" y1="40" x2="318" y2="30"/><line x1="318" y1="116" x2="318" y2="126"/>
+        <line x1="280" y1="78" x2="270" y2="78"/><line x1="356" y1="78" x2="366" y2="78"/>
+        <line x1="291" y1="51" x2="284" y2="44"/><line x1="345" y1="105" x2="352" y2="112"/>
+        <line x1="345" y1="51" x2="352" y2="44"/><line x1="291" y1="105" x2="284" y2="112"/>
+      </g>
+    </g>
+
+    <g opacity=".65">
+      <polygon points="0,430 90,305 180,430" fill="url(#mtG2)"/>
+      <polygon points="70,430 170,265 270,430" fill="url(#mtG1)"/>
+      <polygon points="210,430 315,285 400,430" fill="url(#mtG2)"/>
+      <polygon points="330,430 400,335 400,430" fill="url(#mtG1)"/>
+      <polygon points="90,305 102,328 78,328" fill="white" opacity=".38"/>
+      <polygon points="170,265 184,292 156,292" fill="white" opacity=".45"/>
+      <polygon points="315,285 328,308 302,308" fill="white" opacity=".38"/>
+    </g>
+
+    <g id="earthquakeCracksLayer"></g>
+
+    <ellipse cx="200" cy="700" rx="360" ry="195" fill="url(#groundG)"/>
+    <g opacity=".15" stroke="#4a9a4a" stroke-width=".8" fill="none">
+      <path d="M0,558 Q100,548 200,553 Q300,558 400,548"/>
+      <path d="M0,575 Q100,565 200,570 Q300,575 400,565"/>
+    </g>
+    <g fill="#3a7a3d" opacity=".65">
+      <path d="M15,548 Q17,538 19,548"/><path d="M30,551 Q33,540 36,551"/>
+      <path d="M65,545 Q68,533 71,545"/><path d="M105,549 Q108,537 111,549"/>
+      <path d="M145,546 Q148,534 151,546"/><path d="M185,550 Q188,538 191,550"/>
+      <path d="M225,547 Q228,535 231,547"/><path d="M265,549 Q268,537 271,549"/>
+      <path d="M305,546 Q308,534 311,546"/><path d="M345,550 Q348,538 351,550"/>
+      <path d="M378,547 Q381,535 384,547"/><path d="M393,551 Q396,540 399,551"/>
+    </g>
+
+    <g opacity="0.9">
+      <use href="#flowerRed" x="50" y="555"/>
+      <use href="#flowerBlue" x="75" y="540"/>
+      <use href="#flowerYellow" x="120" y="565"/>
+      <use href="#flowerRed" x="210" y="550"/>
+      <use href="#flowerBlue" x="320" y="560"/>
+      <use href="#flowerYellow" x="370" y="545"/>
+      <use href="#flowerRed" x="280" y="555"/>
+    </g>
+
+    <g opacity=".85">
+      <g>
+        <g transform="translate(0, 110) scale(1.2)">
+           <use href="#cloud" opacity="0.9"/>
+        </g>
+        <animateTransform attributeName="transform" type="translate" from="-120,0" to="520,0" dur="38s" repeatCount="indefinite"/>
+      </g>
+      <g>
+        <g transform="translate(0, 75) scale(1.5)">
+           <use href="#cloud" opacity="0.75"/>
+        </g>
+        <animateTransform attributeName="transform" type="translate" from="550,0" to="-180,0" dur="48s" repeatCount="indefinite"/>
+      </g>
+      <g>
+        <g transform="translate(0, 135) scale(0.9)">
+           <use href="#cloud" opacity="0.8"/>
+        </g>
+        <animateTransform attributeName="transform" type="translate" from="-90,0" to=",0" dur="30s" begin="-15s" repeatCount="indefinite"/>
+      </g>
+      <g>
+        <g transform="translate(0, 95) scale(1)">
+           <use href="#cloud" opacity="0.6"/>
+        </g>
+        <animateTransform attributeName="transform" type="translate" from="520,0" to="-120,0" dur="55s" begin="-25s" repeatCount="indefinite"/>
+      </g>
+    </g>
+
+    <g id="tG" filter="url(#tglow)">
+      <g opacity="0.6">
+        <g transform="translate(40, 513) scale(0.8)"><use href="#single_tree_style" /></g>
+        <g transform="translate(110, 516) scale(0.75)"><use href="#single_tree_style" /></g>
+        <g transform="translate(180, 510) scale(0.85)"><use href="#single_tree_style" /></g>
+        <g transform="translate(250, 514) scale(0.8)"><use href="#single_tree_style" /></g>
+        <g transform="translate(320, 518) scale(0.75)"><use href="#single_tree_style" /></g>
+        <g transform="translate(380, 512) scale(0.82)"><use href="#single_tree_style" /></g>
+      </g>
+
+      <g>
+        <g transform="translate(70, 538) scale(1.1)"><use href="#single_tree_style" /></g>
+        <g transform="translate(145, 542) scale(1.05)"><use href="#single_tree_style" /></g>
+        <g transform="translate(225, 535) scale(1.15)"><use href="#single_tree_style" /></g>
+        <g transform="translate(305, 540) scale(1.1)"><use href="#single_tree_style" /></g>
+        <g transform="translate(375, 538) scale(1.05)"><use href="#single_tree_style" /></g>
+      </g>
+    </g>
+
+    <g id="aG">
+      <g id="a-mushrooms">
+        <path d="M 220 545 Q 223 538 226 545" stroke="#e0e0e0" stroke-width="2" fill="none"/>
+        <ellipse cx="223" cy="538" rx="4" ry="2.5" fill="#d32f2f"/>
+        <circle cx="222" cy="537" r="0.8" fill="white"/>
+        <circle cx="224" cy="538" r="0.6" fill="white"/>
+        <path d="M 230 546 Q 232 541 234 546" stroke="#e0e0e0" stroke-width="1.5" fill="none"/>
+        <ellipse cx="232" cy="541" rx="3" ry="2" fill="#d32f2f"/>
+        <circle cx="232" cy="540.5" r="0.6" fill="white"/>
+      </g>
+
+      <g id="a-bees" opacity="0.9">
+        <animateTransform attributeName="transform" type="translate" values="0,0; -6,-12; 6,-6; 0,0" dur="3s" repeatCount="indefinite"/>
+        <circle cx="150" cy="480" r="1.5" fill="#ffb300"/>
+        <circle cx="154" cy="475" r="1.2" fill="#ffca28"/>
+        <circle cx="148" cy="471" r="1" fill="#ffb300"/>
+        <circle cx="162" cy="478" r="1.5" fill="#ffca28"/>
+        <circle cx="159" cy="483" r="1" fill="#ffb300"/>
+        <circle cx="145" cy="477" r="1.3" fill="#ffca28"/>
+      </g>
+
+      <g id="a-deer">
+        <animateTransform attributeName="transform" type="translate" values="0,0;0,-4;0,0" dur="2.6s" repeatCount="indefinite"/>
+        <ellipse cx="115" cy="544" rx="18" ry="4" fill="#000" opacity=".18"/>
+        <line x1="106" y1="535" x2="104" y2="544" stroke="#8B5E3C" stroke-width="2.2" stroke-linecap="round"/>
+        <line x1="110" y1="535" x2="109" y2="544" stroke="#8B5E3C" stroke-width="2.2" stroke-linecap="round"/>
+        <line x1="120" y1="535" x2="121" y2="544" stroke="#8B5E3C" stroke-width="2.2" stroke-linecap="round"/>
+        <line x1="124" y1="535" x2="126" y2="544" stroke="#8B5E3C" stroke-width="2.2" stroke-linecap="round"/>
+        <ellipse cx="115" cy="531" rx="13" ry="8" fill="#C8864A"/>
+        <ellipse cx="115" cy="530" rx="12" ry="7" fill="#D4935A"/>
+        <path d="M118,524 Q122,520 121,516" stroke="#C8864A" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <ellipse cx="122" cy="514" rx="7" ry="6" fill="#C8864A"/>
+        <ellipse cx="123" cy="514" rx="6" ry="5.5" fill="#D4935A"/>
+        <ellipse cx="127" cy="516" rx="3.5" ry="2.5" fill="#B87040"/>
+        <ellipse cx="128" cy="516" rx="1.5" ry="1" fill="#8B4513" opacity=".6"/>
+        <circle cx="124" cy="512" r="1.8" fill="#1a0a00"/>
+        <circle cx="124.6" cy="511.5" r=".6" fill="white"/>
+        <ellipse cx="118" cy="509" rx="2.5" ry="4" fill="#D4935A" transform="rotate(-20,118,509)"/>
+        <ellipse cx="118" cy="509" rx="1.5" ry="2.8" fill="#f0b07a" transform="rotate(-20,118,509)"/>
+        <path d="M119,508 Q116,502 113,498 M116,503 Q114,500 111,499 M119,508 Q121,501 123,497 M121,502 Q123,499 126,498" stroke="#6B3A1F" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+        <ellipse cx="103" cy="529" rx="3" ry="4" fill="white" opacity=".85"/>
+      </g>
+
+      <g id="a-wolf">
+        <animateTransform attributeName="transform" type="translate" values="0,0;-3,-3;0,0" dur="3.4s" repeatCount="indefinite"/>
+        <ellipse cx="288" cy="544" rx="17" ry="4" fill="#000" opacity=".17"/>
+        <line x1="279" y1="536" x2="277" y2="544" stroke="#4a4a5a" stroke-width="2.4" stroke-linecap="round"/>
+        <line x1="283" y1="536" x2="282" y2="544" stroke="#4a4a5a" stroke-width="2.4" stroke-linecap="round"/>
+        <line x1="293" y1="536" x2="294" y2="544" stroke="#4a4a5a" stroke-width="2.4" stroke-linecap="round"/>
+        <line x1="297" y1="536" x2="299" y2="544" stroke="#4a4a5a" stroke-width="2.4" stroke-linecap="round"/>
+        <ellipse cx="288" cy="532" rx="14" ry="8" fill="#5a5a6e"/>
+        <ellipse cx="288" cy="531" rx="13" ry="7" fill="#6e6e84"/>
+        <ellipse cx="288" cy="534" rx="9" ry="4" fill="#9090a8" opacity=".7"/>
+        <path d="M291,525 Q296,521 295,517" stroke="#6e6e84" stroke-width="5.5" fill="none" stroke-linecap="round"/>
+        <ellipse cx="296" cy="515" rx="8" ry="7" fill="#6e6e84"/>
+        <path d="M300,516 Q305,518 304,521 Q300,523 297,521 Z" fill="#5a5a6e"/>
+        <ellipse cx="303" cy="520" rx="1.8" ry="1.2" fill="#1a1a2a"/>
+        <circle cx="298" cy="513" r="2" fill="#f0d060"/>
+        <circle cx="298" cy="513" r="1.1" fill="#1a1000"/>
+        <circle cx="298.5" cy="512.5" r=".5" fill="white"/>
+        <polygon points="291,509 289,500 294,507" fill="#6e6e84"/>
+        <polygon points="291,509 290,502 293,507" fill="#d08090"/>
+        <polygon points="300,508 302,499 297,507" fill="#6e6e84"/>
+        <polygon points="300,508 301,501 298,507" fill="#d08090"/>
+        <path d="M275,532 Q268,526 270,519 Q272,515 268,512" stroke="#6e6e84" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+        <path d="M268,512 Q265,510 264,508" stroke="#b0b0c8" stroke-width="3" fill="none" stroke-linecap="round"/>
+      </g>
+
+      <g id="a-fox">
+        <animateTransform attributeName="transform" type="translate" values="0,0;2,-2;0,0" dur="3.0s" repeatCount="indefinite"/>
+        <ellipse cx="345" cy="544" rx="14" ry="3.5" fill="#000" opacity=".16"/>
+        <line x1="337" y1="536" x2="336" y2="544" stroke="#b84a20" stroke-width="2" stroke-linecap="round"/>
+        <line x1="341" y1="536" x2="340" y2="544" stroke="#b84a20" stroke-width="2" stroke-linecap="round"/>
+        <line x1="349" y1="536" x2="350" y2="544" stroke="#b84a20" stroke-width="2" stroke-linecap="round"/>
+        <line x1="353" y1="536" x2="354" y2="544" stroke="#b84a20" stroke-width="2" stroke-linecap="round"/>
+        <ellipse cx="345" cy="532" rx="12" ry="7" fill="#d4581a"/>
+        <ellipse cx="345" cy="531" rx="11" ry="6" fill="#e06828"/>
+        <ellipse cx="345" cy="534" rx="7" ry="3.5" fill="#f0c090" opacity=".8"/>
+        <path d="M348,526 Q352,522 351,518" stroke="#e06828" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <ellipse cx="352" cy="516" rx="7.5" ry="6.5" fill="#e06828"/>
+        <ellipse cx="354" cy="518" rx="4" ry="3" fill="#f5e0c0" opacity=".7"/>
+        <path d="M356,517 Q362,519 361,522 Q357,524 354,522 Z" fill="#d0541a"/>
+        <ellipse cx="360" cy="521" rx="1.6" ry="1" fill="#1a0a00"/>
+        <ellipse cx="354" cy="514" rx="1.8" ry="1.8" fill="#d4a030"/>
+        <circle cx="354" cy="514" r="1" fill="#1a0800"/>
+        <circle cx="354.5" cy="513.5" r=".4" fill="white"/>
+        <polygon points="347,511 345,501 351,510" fill="#e06828"/>
+        <polygon points="347,511 346,503 350,510" fill="#b84060"/>
+        <polygon points="356,510 358,500 353,509" fill="#e06828"/>
+        <polygon points="356,510 357,502 354,509" fill="#b84060"/>
+        <path d="M334,532 Q326,524 328,516 Q330,510 326,506" stroke="#e06828" stroke-width="6" fill="none" stroke-linecap="round"/>
+        <path d="M326,506 Q323,503 321,500" stroke="#f5f0e8" stroke-width="4" fill="none" stroke-linecap="round"/>
+      </g>
+
+      <g id="a-rabbit">
+        <animateTransform attributeName="transform" type="translate" values="0,0;0,-5;0,0" dur="1.8s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/>
+        <ellipse cx="68" cy="544" rx="11" ry="3" fill="#000" opacity=".15"/>
+        <ellipse cx="63" cy="541" rx="4" ry="2.5" fill="#e0d0c0"/>
+        <ellipse cx="73" cy="541" rx="4" ry="2.5" fill="#e0d0c0"/>
+        <ellipse cx="68" cy="535" rx="9" ry="8" fill="#e8ddd0"/>
+        <ellipse cx="68" cy="534" rx="8" ry="7" fill="#f0e8e0"/>
+        <ellipse cx="68" cy="537" rx="5" ry="4" fill="white" opacity=".6"/>
+        <ellipse cx="68" cy="524" rx="7" ry="6.5" fill="#f0e8e0"/>
+        <ellipse cx="68" cy="528" rx="2" ry="1.5" fill="#f0a0b0"/>
+        <line x1="68" y1="529" x2="65" y2="531" stroke="#c08090" stroke-width=".8"/>
+        <line x1="68" y1="529" x2="71" y2="531" stroke="#c08090" stroke-width=".8"/>
+        <circle cx="64" cy="523" r="2.2" fill="#d0c0b0"/>
+        <circle cx="64" cy="523" r="1.4" fill="#1a0a10"/>
+        <circle cx="64.5" cy="522.5" r=".5" fill="white"/>
+        <circle cx="72" cy="523" r="2.2" fill="#d0c0b0"/>
+        <circle cx="72" cy="523" r="1.4" fill="#1a0a10"/>
+        <circle cx="72.5" cy="522.5" r=".5" fill="white"/>
+        <ellipse cx="63" cy="512" rx="3" ry="8" fill="#f0e8e0" transform="rotate(-8,63,512)"/>
+        <ellipse cx="63" cy="512" rx="1.5" ry="6" fill="#f0b0c0" transform="rotate(-8,63,512)"/>
+        <ellipse cx="73" cy="511" rx="3" ry="8" fill="#f0e8e0" transform="rotate(8,73,511)"/>
+        <ellipse cx="73" cy="511" rx="1.5" ry="6" fill="#f0b0c0" transform="rotate(8,73,511)"/>
+        <circle cx="77" cy="534" r="3" fill="white"/>
+      </g>
+
+      <g id="a-eagle">
+        <animateTransform attributeName="transform" type="translate" values="0,0;30,-15;60,0;30,15;0,0" dur="7s" repeatCount="indefinite"/>
+        <path d="M185,370 Q165,358 148,365 Q155,372 185,374 Z" fill="#3a2a18"/>
+        <path d="M185,370 Q165,360 150,366 Q157,370 185,372 Z" fill="#5a4030"/>
+        <path d="M185,370 Q205,358 222,365 Q215,372 185,374 Z" fill="#3a2a18"/>
+        <path d="M185,370 Q205,360 220,366 Q213,370 185,372 Z" fill="#5a4030"/>
+        <ellipse cx="185" cy="372" rx="9" ry="6" fill="#4a3520"/>
+        <circle cx="185" cy="365" r="6" fill="#f5f5e0"/>
+        <path d="M185,368 Q191,370 190,373 Q186,372 185,370 Z" fill="#e8b030"/>
+        <circle cx="187" cy="364" r="2" fill="#d4a000"/>
+        <circle cx="187" cy="364" r="1.2" fill="#1a0800"/>
+        <circle cx="187.5" cy="363.5" r=".4" fill="white"/>
+        <path d="M180,377 Q178,384 175,386 M183,378 Q182,385 180,388 M187,378 Q187,385 186,388 M190,377 Q191,384 193,386" stroke="#4a3520" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <animateTransform attributeName="transform" type="rotate" values="0,185,372;3,185,372;0,185,372;-3,185,372;0,185,372" dur="2.2s" repeatCount="indefinite" additive="sum"/>
+      </g>
+
+      <g id="a-bird">
+        <animateTransform attributeName="transform" type="translate" values="0,0;-18,-6;-36,0;-18,6;0,0" dur="5.5s" repeatCount="indefinite"/>
+        <path d="M255,405 Q243,399 238,403 Q243,408 255,407 Z" fill="#4a6080"/>
+        <path d="M255,405 Q267,399 272,403 Q267,408 255,407 Z" fill="#4a6080"/>
+        <ellipse cx="255" cy="407" rx="6" ry="4.5" fill="#5a7090"/>
+        <ellipse cx="255" cy="409" rx="3.5" ry="3" fill="#e08050"/>
+        <circle cx="255" cy="401" r="4.5" fill="#3a5070"/>
+        <path d="M255,403 Q260,404 259,406 Q256,405 255,404 Z" fill="#e8c040"/>
+        <circle cx="257" cy="400" r="1.5" fill="#1a0800"/>
+        <circle cx="257.4" cy="399.6" r=".5" fill="white"/>
+        <path d="M249,408 Q246,413 244,415 M251,409 Q249,414 248,417" stroke="#4a6080" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+        <animateTransform attributeName="transform" type="rotate" values="0,255,406;-6,255,406;0,255,406;6,255,406;0,255,406" dur="1.8s" repeatCount="indefinite" additive="sum"/>
+      </g>
+
+      <g id="a-squirrel">
+        <animateTransform attributeName="transform" type="translate" values="0,0;1,-3;0,0" dur="2.4s" repeatCount="indefinite"/>
+        <ellipse cx="195" cy="544" rx="10" ry="2.5" fill="#000" opacity=".14"/>
+        <path d="M188,534 Q180,520 183,510 Q187,504 183,498 Q180,496 182,492" stroke="#c07030" stroke-width="7" fill="none" stroke-linecap="round"/>
+        <path d="M188,534 Q182,522 185,512 Q189,506 185,500 Q182,498 184,494" stroke="#f0b060" stroke-width="4" fill="none" stroke-linecap="round" opacity=".7"/>
+        <ellipse cx="196" cy="534" rx="8" ry="7" fill="#c07030"/>
+        <ellipse cx="196" cy="533" rx="7" ry="6" fill="#d08040"/>
+        <ellipse cx="196" cy="536" rx="4.5" ry="3.5" fill="#f0d0a0" opacity=".8"/>
+        <ellipse cx="200" cy="524" rx="6.5" ry="6" fill="#d08040"/>
+        <ellipse cx="203" cy="526" rx="3" ry="2.5" fill="#e09050" opacity=".8"/>
+        <ellipse cx="205" cy="526" rx="1.5" ry="1" fill="#8B4513"/>
+        <circle cx="202" cy="522" r="2" fill="#1a0800"/>
+        <circle cx="202.5" cy="521.5" r=".6" fill="white"/>
+        <ellipse cx="196" cy="518" rx="2.5" ry="4" fill="#c07030" transform="rotate(-15,196,518)"/>
+        <ellipse cx="204" cy="517" rx="2.5" ry="4" fill="#c07030" transform="rotate(15,204,517)"/>
+        <line x1="191" y1="538" x2="190" y2="544" stroke="#b06020" stroke-width="2.2" stroke-linecap="round"/>
+        <line x1="195" y1="539" x2="195" y2="544" stroke="#b06020" stroke-width="2.2" stroke-linecap="round"/>
+        <line x1="200" y1="539" x2="201" y2="544" stroke="#b06020" stroke-width="2.2" stroke-linecap="round"/>
+      </g>
+
+      <g id="a-frog">
+        <animateTransform attributeName="transform" type="translate" values="0,0;0,-6;0,0" dur="2.0s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1;0.4 0 0.6 1"/>
+        <ellipse cx="44" cy="544" rx="10" ry="2.5" fill="#000" opacity=".15"/>
+        <path d="M38,540 Q34,544 31,543 Q30,546 33,546 Q36,546 38,543" fill="#4a8a30"/>
+        <path d="M50,540 Q54,544 57,543 Q58,546 55,546 Q52,546 50,543" fill="#4a8a30"/>
+        <ellipse cx="44" cy="536" rx="10" ry="7" fill="#4a8a30"/>
+        <ellipse cx="44" cy="535" rx="9" ry="6" fill="#5aaa38"/>
+        <ellipse cx="44" cy="538" rx="6.5" ry="4" fill="#a0d060" opacity=".7"/>
+        <ellipse cx="44" cy="529" rx="9" ry="7" fill="#5aaa38"/>
+        <circle cx="38" cy="525" r="4" fill="#6aca48"/>
+        <circle cx="38" cy="525" r="3" fill="#1a2a10"/>
+        <circle cx="38.8" cy="524.2" r="1" fill="white"/>
+        <circle cx="50" cy="525" r="4" fill="#6aca48"/>
+        <circle cx="50" cy="525" r="3" fill="#1a2a10"/>
+        <circle cx="50.8" cy="524.2" r="1" fill="white"/>
+        <path d="M38,531 Q44,534 50,531" stroke="#3a7020" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+        <circle cx="41" cy="528" r=".8" fill="#3a7020"/>
+        <circle cx="47" cy="528" r=".8" fill="#3a7020"/>
+        <path d="M36,537 Q33,540 31,538" stroke="#4a8a30" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <path d="M52,537 Q55,540 57,538" stroke="#4a8a30" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      </g>
+
+      <g id="a-badger">
+        <animateTransform attributeName="transform" type="translate" values="0,0;-2,-2;0,0" dur="3.8s" repeatCount="indefinite"/>
+        <ellipse cx="358" cy="544" rx="14" ry="3" fill="#000" opacity=".15"/>
+        <rect x="348" y="538" width="4" height="6" rx="2" fill="#2a2a2a"/>
+        <rect x="354" y="538" width="4" height="6" rx="2" fill="#2a2a2a"/>
+        <rect x="360" y="538" width="4" height="6" rx="2" fill="#2a2a2a"/>
+        <rect x="366" y="538" width="4" height="6" rx="2" fill="#2a2a2a"/>
+        <ellipse cx="358" cy="534" rx="14" ry="8" fill="#888888"/>
+        <ellipse cx="358" cy="533" rx="13" ry="7" fill="#9a9a9a"/>
+        <path d="M345,530 Q358,527 371,530 Q369,536 358,537 Q347,536 345,530 Z" fill="#e8e8e8" opacity=".5"/>
+        <ellipse cx="370" cy="532" rx="9" ry="7" fill="#888888"/>
+        <ellipse cx="370" cy="532" rx="8" ry="6.5" fill="#cccccc"/>
+        <path d="M366,527 Q364,524 365,520 Q368,520 369,524 Z" fill="#1a1a1a"/>
+        <path d="M374,527 Q376,524 375,520 Q372,520 371,524 Z" fill="#1a1a1a"/>
+        <ellipse cx="378" cy="534" rx="4" ry="3" fill="#888888"/>
+        <ellipse cx="381" cy="535" rx="1.8" ry="1.2" fill="#1a1a1a"/>
+        <circle cx="373" cy="530" r="1.8" fill="#1a1a1a"/>
+        <circle cx="373.5" cy="529.5" r=".55" fill="white"/>
+        <ellipse cx="367" cy="526" rx="2.5" ry="2" fill="#888888"/>
+        <path d="M345,532 Q340,529 337,530" stroke="#9a9a9a" stroke-width="4" fill="none" stroke-linecap="round"/>
+      </g>
+
+      <g id="a-butterfly">
+        <g transform="translate(158,468)">
+          <ellipse cx="-10" cy="-6" rx="13" ry="9" fill="#e040a0" opacity=".85">
+            <animate attributeName="ry" values="9;3;9" dur="0.5s" repeatCount="indefinite"/>
+          </ellipse>
+          <ellipse cx="10" cy="-6" rx="13" ry="9" fill="#e040a0" opacity=".85">
+            <animate attributeName="ry" values="9;3;9" dur="0.5s" repeatCount="indefinite"/>
+          </ellipse>
+          <ellipse cx="-8" cy="4" rx="9" ry="6" fill="#ff80d0" opacity=".75">
+            <animate attributeName="ry" values="6;2;6" dur="0.5s" repeatCount="indefinite"/>
+          </ellipse>
+          <ellipse cx="8" cy="4" rx="9" ry="6" fill="#ff80d0" opacity=".75">
+            <animate attributeName="ry" values="6;2;6" dur="0.5s" repeatCount="indefinite"/>
+          </ellipse>
+          <circle cx="-8" cy="-8" r="2.5" fill="#fff" opacity=".5"/>
+          <circle cx="8" cy="-8" r="2.5" fill="#fff" opacity=".5"/>
+          <circle cx="-5" cy="-3" r="1.5" fill="#601040" opacity=".6"/>
+          <circle cx="5" cy="-3" r="1.5" fill="#601040" opacity=".6"/>
+          <ellipse cx="0" cy="0" rx="1.5" ry="7" fill="#3a1a30"/>
+          <line x1="0" y1="-6" x2="-6" y2="-14" stroke="#3a1a30" stroke-width=".8"/>
+          <circle cx="-6" cy="-14" r="1.2" fill="#3a1a30"/>
+          <line x1="0" y1="-6" x2="6" y2="-14" stroke="#3a1a30" stroke-width=".8"/>
+          <circle cx="6" cy="-14" r="1.2" fill="#3a1a30"/>
+          <animateTransform attributeName="transform" type="translate" values="0,0;10,-14;20,0;10,14;0,0" dur="4.5s" repeatCount="indefinite"/>
+        </g>
+      </g>
+
+    </g>
+
+    <g id="jumpingFishesLayer" clip-path="url(#aboveWaterClip)">
+      <g>
+        <use href="#fishDef" x="-15" y="-5"/>
+        <animateMotion path="M -100,650 Q 150,450 400,650 L 1500,650 L 1500,800 L -100,800 Z" dur="12s" repeatCount="indefinite" begin="0s" rotate="auto"/>
+      </g>
+    </g>
+
+    <g id="wG">
+      <path d="M -50 580 Q 200 560 450 580 L 450 720 L -50 720 Z" fill="url(#waterG2)"/>
+      <path fill="#0096c7" opacity="0.5" d="M -50 585 Q 150 565 250 590 T 450 585 L 450 720 L -50 720 Z">
+        <animateTransform attributeName="transform" type="translate" values="-30,0; 20,0; -30,0" dur="7s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1"/>
+      </path>
+      <path fill="#48cae4" opacity="0.35" d="M -50 595 Q 100 615 200 590 T 450 595 L 450 720 L -50 720 Z">
+        <animateTransform attributeName="transform" type="translate" values="25,0; -25,0; 25,0" dur="5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1"/>
+      </path>
+      <path fill="#ffffff" opacity="0.15" d="M -50 578 Q 200 558 450 578 Q 200 565 -50 578 Z">
+        <animateTransform attributeName="transform" type="translate" values="0,0; 0,-2; 0,0" dur="3s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.1;0.3;0.1" dur="3s" repeatCount="indefinite"/>
+      </path>
+      <ellipse cx="120" cy="620" rx="35" ry="3" fill="#ffffff" opacity="0.3">
+        <animate attributeName="opacity" values="0;0.6;0" dur="4s" repeatCount="indefinite"/>
+        <animateTransform attributeName="transform" type="translate" values="-20,0; 20,0; -20,0" dur="5s" repeatCount="indefinite" additive="sum"/>
+      </ellipse>
+      <ellipse cx="280" cy="650" rx="50" ry="4" fill="#ffffff" opacity="0.2">
+        <animate attributeName="opacity" values="0.1;0.4;0.1" dur="5s" repeatCount="indefinite"/>
+        <animateTransform attributeName="transform" type="translate" values="25,0; -15,0; 25,0" dur="6s" repeatCount="indefinite" additive="sum"/>
+      </ellipse>
+      <ellipse cx="200" cy="680" rx="40" ry="5" fill="#ffffff" opacity="0.15">
+        <animate attributeName="opacity" values="0;0.5;0" dur="3.5s" repeatCount="indefinite"/>
+        <animateTransform attributeName="transform" type="translate" values="-15,0; 30,0; -15,0" dur="7s" repeatCount="indefinite" additive="sum"/>
+      </ellipse>
+    </g>
+
+    <rect width="400" height="700" fill="none" pointer-events="none"/>
+
+    <g id="fxL" pointer-events="none">
+      <rect id="fO" width="400" height="700" fill="url(#fireGR)" opacity="0"/>
+      <rect id="dO" width="400" height="700" fill="#7a4e00" opacity="0" style="transition:opacity 2s"/>
+      <rect id="stO" width="400" height="700" fill="#08101a" opacity="0" style="transition:opacity 2s"/>
+      <rect id="snO" width="400" height="700" fill="#c8e0ff" opacity="0" style="transition:opacity 2s"/>
+      <g id="pts"/>
+    </g>
+    </g>
+  </svg>
+
+  <div id="hud">
+    <div class="gtitle">🌿 EKO</div>
+    <div class="sw" id="sw"></div>
+    <div class="tbadge" id="tb">T1</div>
+  </div>
+
+  <div id="bp">
+    <div id="ec">
+      <div class="eh"><div class="eico" id="eico"></div><div><div class="etype" id="etype"></div><div class="etitle" id="etitle"></div></div></div>
+      <div class="edesc" id="edesc"></div>
+      <div class="crow" id="crow"></div>
+    </div>
+    <div id="rc">
+      <div class="rh"><div class="rico" id="rico"></div><div class="rtitle" id="rtitle"></div></div>
+      <div class="rtext" id="rtext"></div>
+      <div class="efrow" id="efrow"></div>
+      <button class="bcont" onclick="nextTurn()">Devam Et →</button>
+    </div>
+    <div id="idl">Ekosistem sakin... bir sonraki kriz bekleniyor ✨</div>
+    <div id="watching" style="display:none;text-align:center;padding:12px;color:#d4a017;font-size:.78rem;font-style:italic;letter-spacing:.05em">⏳ &nbsp;Ekosistem tepki veriyor... izle</div>
+  </div>
+</div>
+
+<div id="go">
+  <div style="font-size:2.8rem">🌿</div>
+  <h2 id="goT"></h2>
+  <div class="goscore" id="goS"></div>
+  <p id="goM"></p>
+  <button class="brest" onclick="restartGame()">Yeniden Başla</button>
+</div>
+
+<audio id="bgm" src="arkaplan.mp3" loop></audio>
+<audio id="sfx-fire" src="ates.mp3" loop></audio>
+<audio id="sfx-rain" src="yagmur.mp3" loop></audio>
+
+<script>
+const S={turn:1,max:15,phase:'idle',ev:null,
+  dead:new Set(), warned:new Set(),
+  h:{trees:85,herbivores:75,carnivores:60,water:80,biodiversity:70, bees:80, decomposers:80}}; 
+
+const STATS=[
+  {k:'trees',lbl:'🌳 Üretici',c:'#3ddc84'},
+  {k:'herbivores',lbl:'🦌 1. Tüketici',c:'#80cbc4'},
+  {k:'carnivores',lbl:'🐺 2. Tüketici',c:'#ef9a9a'},
+  {k:'bees',lbl:'🐝 Kilit Taşı',c:'#ffca28'},
+  {k:'decomposers',lbl:'🍄 Ayrıştırıcı',c:'#bcaaa4'}, 
+  {k:'water',lbl:'💧 Abiyotik',c:'#4fc3f7'},
+  {k:'biodiversity',lbl:'🌍 Biyoçeşitlilik',c:'#ffd54f'},
+];
+
+const EVENTS=[
+  {id:'fire',type:'DOĞAL AFET',icon:'🔥',title:'Orman Yangını',
+   desc:'Kuzey bölgede yıldırım düşmesi sonucu yangın başladı. Alevler habitatı tehdit ediyor.',fx:'fire',
+   ch:[
+    {t:'Yangın koridoru aç.',dng:0,res:'Yangın durduruldu. Kontrollü alan oluşturuldu.',
+     eff:[{lbl:'-10 🌳',tp:'neg',d:{trees:-10}},{lbl:'+5 💧',tp:'pos',d:{water:5}},{lbl:'-5 🐝',tp:'neg',d:{bees:-5}}]},
+    {t:'Helikopterle su dök.',dng:0,res:'Hızlı müdahale yangını durdurdu ama kaynaklar tükendi.',
+     eff:[{lbl:'-15 🌳',tp:'neg',d:{trees:-15}},{lbl:'-10 💧',tp:'neg',d:{water:-10}},{lbl:'-5 🦌',tp:'neg',d:{herbivores:-5}}]},
+    {t:'Doğal sürecine bırak.',dng:1,res:'Geniş alan yandı. Uzun vadede toprak külleri kullanacak.',
+     eff:[{lbl:'-30 🌳',tp:'neg',d:{trees:-30}},{lbl:'-20 🦌',tp:'neg',d:{herbivores:-20}},{lbl:'+15 🍄',tp:'pos',d:{decomposers:15}}]},
+    {t:'Karşı ateş yak (Kontrollü).',dng:1,res:'Riskli yöntem işe yaradı, ana yangın oksijensiz kaldı.',
+     eff:[{lbl:'-20 🌳',tp:'neg',d:{trees:-20}},{lbl:'+10 🌍',tp:'pos',d:{biodiversity:10}},{lbl:'+5 🐺',tp:'pos',d:{carnivores:5}}]},
+  ]},
+  {id:'drought',type:'İKLİM KRİZİ',icon:'☀️',title:'Şiddetli Kuraklık',
+   desc:'Üç aydır yağmur yağmıyor. Su seviyeleri kritik düşüyor, bitkiler strese giriyor.',fx:'drought',
+   ch:[
+    {t:'Sulama sistemi kur.',dng:0,res:'Bitkiler korundu ama uzun vadeli su bağımlılığı oluştu.',
+     eff:[{lbl:'+20 🌳',tp:'pos',d:{trees:20}},{lbl:'-15 💧',tp:'neg',d:{water:-15}},{lbl:'+10 🦌',tp:'pos',d:{herbivores:10}}]},
+    {t:'Kritik alanları koru.',dng:0,res:'Kritik alanlar korundu, çevre hasar gördü.',
+     eff:[{lbl:'-10 🌳',tp:'neg',d:{trees:-10}},{lbl:'+5 💧',tp:'pos',d:{water:5}},{lbl:'-5 🦌',tp:'neg',d:{herbivores:-5}}]},
+    {t:'Nehirden kanal aç.',dng:1,res:'Yerel sorun çözüldü ama nehir ekosistemi zarar gördü.',
+     eff:[{lbl:'+25 💧',tp:'pos',d:{water:25}},{lbl:'+10 🌳',tp:'pos',d:{trees:10}},{lbl:'-20 🌍',tp:'neg',d:{biodiversity:-20}}]},
+    {t:'Derin sondajla su çek.',dng:1,res:'Kısa vadeli su bulundu ama mantar ağı (miselyum) zarar gördü.',
+     eff:[{lbl:'+15 💧',tp:'pos',d:{water:15}},{lbl:'-15 🍄',tp:'neg',d:{decomposers:-15}},{lbl:'-10 🌍',tp:'neg',d:{biodiversity:-10}}]}, 
+  ]},
+  {id:'pesticide',type:'İNSAN MÜDAHALESİ',icon:'🧪',title:'Zirai İlaçlama',
+   desc:'Yakın tarım arazilerinde pestisit kullanıldı. Zehir ormana taşıyor, arılar tehlikede!',fx:'pesticide',
+   ch:[
+    {t:'İlaçlamayı durdur, yasal işlem.',dng:0,res:'Pestisit kullanımı engellendi, polenleşme korundu.',
+     eff:[{lbl:'+20 🐝',tp:'pos',d:{bees:20}},{lbl:'+15 🌍',tp:'pos',d:{biodiversity:15}},{lbl:'+5 🌳',tp:'pos',d:{trees:5}}]},
+    {t:'Sadece doğal bariyerler oluştur.',dng:0,res:'Kısmi koruma sağlandı ama arıların bir kısmı etkilendi.',
+     eff:[{lbl:'-15 🐝',tp:'neg',d:{bees:-15}},{lbl:'+5 💧',tp:'neu',d:{water:5}},{lbl:'-5 🌍',tp:'neg',d:{biodiversity:-5}}]},
+    {t:'Müdahale etme, uyum bekle.',dng:1,res:'Kimyasallar toprağa sızdı! Mantarlar ve Arılar yok oluyor.',
+     eff:[{lbl:'-35 🐝',tp:'neg',d:{bees:-35}},{lbl:'-30 🍄',tp:'neg',d:{decomposers:-30}},{lbl:'-15 🌍',tp:'neg',d:{biodiversity:-15}}]}, 
+    {t:'Arıları suni kovanlara al.',dng:0,res:'Arılar kurtuldu ama orman bir süre polenleşmeden mahrum kaldı.',
+     eff:[{lbl:'+15 🐝',tp:'pos',d:{bees:15}},{lbl:'-10 🌳',tp:'neg',d:{trees:-10}},{lbl:'-5 🦌',tp:'neg',d:{herbivores:-5}}]},
+  ]},
+  {id:'invasive',type:'BİYOLOJİK KRİZ',icon:'🐛',title:'İstilacı Tür',
+   desc:'Yabancı bir böcek türü yerleşti. Hızla çoğalarak yerli bitki örtüsünü tehdit ediyor.',fx:'invasive',
+   ch:[
+    {t:'Kimyasal ilaçlama yap.',dng:0,res:'İstilacı kontrol altına alındı ama yerli böcekler de etkilendi.',
+     eff:[{lbl:'+15 🌳',tp:'pos',d:{trees:15}},{lbl:'-15 🐝',tp:'neg',d:{bees:-15}},{lbl:'-10 🦌',tp:'neg',d:{herbivores:-10}}]},
+    {t:'Doğal yırtıcı getir.',dng:0,res:'Denge yavaşça kuruldu; süreç uzun ama sağlıklı.',
+     eff:[{lbl:'+10 🌳',tp:'pos',d:{trees:10}},{lbl:'+15 🌍',tp:'pos',d:{biodiversity:15}},{lbl:'+5 🐺',tp:'pos',d:{carnivores:5}}]},
+    {t:'İzle, veri topla, bekle.',dng:1,res:'Tür yayıldı ama ekosistem kısmen adapte oldu.',
+     eff:[{lbl:'-20 🌳',tp:'neg',d:{trees:-20}},{lbl:'-10 🦌',tp:'neg',d:{herbivores:-10}},{lbl:'+5 🌍',tp:'neu',d:{biodiversity:5}}]},
+    {t:'Hedef bitkileri önden sök.',dng:1,res:'İstilacı aç kaldı ancak üretici popülasyonu ağır hasar aldı.',
+     eff:[{lbl:'-25 🌳',tp:'neg',d:{trees:-25}},{lbl:'+10 🌍',tp:'pos',d:{biodiversity:10}},{lbl:'+10 🍄',tp:'pos',d:{decomposers:10}}]}, 
+  ]},
+  {id:'epidemic',type:'SAĞLIK KRİZİ',icon:'🦠',title:'Salgın Hastalık',
+   desc:'Otçullar arasında bulaşıcı hastalık yayılıyor. Etçil popülasyonu da tehlike altına girebilir.',fx:'epidemic',
+   ch:[
+    {t:'Karantinaya al.',dng:0,res:'Salgın yavaşladı, bireyler izole edildi.',
+     eff:[{lbl:'-15 🦌',tp:'neg',d:{herbivores:-15}},{lbl:'+20 🌍',tp:'pos',d:{biodiversity:20}},{lbl:'-5 🐺',tp:'neg',d:{carnivores:-5}}]},
+    {t:'Aşılama başlat.',dng:0,res:'Hastalık durduruldu; kaynak harcandı.',
+     eff:[{lbl:'+15 🦌',tp:'pos',d:{herbivores:15}},{lbl:'-10 💧',tp:'neg',d:{water:-10}},{lbl:'+10 🌍',tp:'pos',d:{biodiversity:10}}]},
+    {t:'Doğal bağışıklık bekle.',dng:1,res:'%40 kayıp yaşandı. Ölü bedenler ayrıştırıcıları coşturdu!',
+     eff:[{lbl:'-35 🦌',tp:'neg',d:{herbivores:-35}},{lbl:'-15 🐺',tp:'neg',d:{carnivores:-15}},{lbl:'+25 🍄',tp:'pos',d:{decomposers:25}}]},
+    {t:'Etçilleri sürülere yönlendir.',dng:1,res:'Zayıflar elendi, etçiller doydu ama riskli bir hamleydi.',
+     eff:[{lbl:'-25 🦌',tp:'neg',d:{herbivores:-25}},{lbl:'+15 🐺',tp:'pos',d:{carnivores:15}},{lbl:'+10 🌍',tp:'pos',d:{biodiversity:10}}]},
+  ]},
+  {id:'flood',type:'DOĞAL AFET',icon:'🌊',title:'Seller ve Taşkın',
+   desc:'Aşırı yağış nedeniyle nehir taştı. Bazı bölgeler sular altında kalıyor.',fx:'flood',
+   ch:[
+    {t:'Sel setleri inşa et.',dng:0,res:'Hasar sınırlandı ama doğal akış bozuldu.',
+     eff:[{lbl:'+20 💧',tp:'pos',d:{water:20}},{lbl:'-10 🌍',tp:'neg',d:{biodiversity:-10}},{lbl:'-5 🌳',tp:'neg',d:{trees:-5}}]},
+    {t:'Sulak alan oluştur.',dng:0,res:'Biyoçeşitlilik arttı ve su emildi. En iyi sonuç!',
+     eff:[{lbl:'+25 🌍',tp:'pos',d:{biodiversity:25}},{lbl:'+15 💧',tp:'pos',d:{water:15}},{lbl:'+10 🐝',tp:'pos',d:{bees:10}}]},
+    {t:'Yüksek bölgeye taşı.',dng:0,res:'Hayvanlar kurtarıldı ama stres yaşadı.',
+     eff:[{lbl:'-5 🦌',tp:'neg',d:{herbivores:-5}},{lbl:'-5 🐺',tp:'neg',d:{carnivores:-5}},{lbl:'+5 💧',tp:'pos',d:{water:5}}]},
+    {t:'Suları kurak alanlara pompala.',dng:0,res:'Su dağıtıldı, ancak ekosistemin doğal yapısı zorlandı.',
+     eff:[{lbl:'+10 💧',tp:'pos',d:{water:10}},{lbl:'+10 🌳',tp:'pos',d:{trees:10}},{lbl:'-15 🌍',tp:'neg',d:{biodiversity:-15}}]},
+  ]},
+  {id:'logging',type:'İNSAN MÜDAHALESİ',icon:'🪚',title:'Kaçak Kesim',
+   desc:'Doğuda motorlu testere sesleri! Büyük bir alan tıraşlanarak kesiliyor. Ekosistem parçalanıyor.',fx:'logging',
+   ch:[
+    {t:'Kesimi durdur, bölgeyi korumaya al.',dng:0,res:'Ağaçlar kurtarıldı, habitat bütünlüğü sağlandı.',
+     eff:[{lbl:'+20 🌳',tp:'pos',d:{trees:20}},{lbl:'+15 🌍',tp:'pos',d:{biodiversity:15}},{lbl:'+10 🦌',tp:'pos',d:{herbivores:10}}]},
+    {t:'Sadece kurumuş/yaşlı ağaçları kes.',dng:0,res:'Kontrollü kesim ormanı rahatlattı, genç fidanlara yer açıldı.',
+     eff:[{lbl:'-10 🌳',tp:'neg',d:{trees:-10}},{lbl:'+15 🍄',tp:'pos',d:{decomposers:15}},{lbl:'+5 💧',tp:'pos',d:{water:5}}]},
+    {t:'Rüşveti kabul et ve izle.',dng:1,res:'Ormanın yarısı yok oldu! Çölleşme başlıyor.',
+     eff:[{lbl:'-40 🌳',tp:'neg',d:{trees:-40}},{lbl:'-25 🌍',tp:'neg',d:{biodiversity:-25}},{lbl:'-20 💧',tp:'neg',d:{water:-20}}]},
+    {t:'Kesilen yere hemen monokültür fidan dik.',dng:1,res:'Ağaç sayısı arttı ama tek tip ağaç ekosistemi zayıflattı.',
+     eff:[{lbl:'+15 🌳',tp:'pos',d:{trees:15}},{lbl:'-15 🌍',tp:'neg',d:{biodiversity:-15}},{lbl:'-10 🐝',tp:'neg',d:{bees:-10}}]},
+  ]},
+  {id:'poaching',type:'İNSAN MÜDAHALESİ',icon:'🏹',title:'Kaçak Avcılar',
+   desc:'Ormanda silah sesleri yankılanıyor. Kaçak avcılar özellikle kurt ve tilkileri hedef alıyor.',fx:'poaching',
+   ch:[
+    {t:'Orman muhafızları görevlendir.',dng:0,res:'Avcılar püskürtüldü, etçiller kurtuldu.',
+     eff:[{lbl:'+20 🐺',tp:'pos',d:{carnivores:20}},{lbl:'+10 🌍',tp:'pos',d:{biodiversity:10}},{lbl:'-5 🦌',tp:'neg',d:{herbivores:-5}}]},
+    {t:'Avcıları ekoturizm rehberi yap.',dng:0,res:'Harika vizyon! Eski avcılar artık doğayı koruyor.',
+     eff:[{lbl:'+15 🐺',tp:'pos',d:{carnivores:15}},{lbl:'+20 🌍',tp:'pos',d:{biodiversity:20}},{lbl:'+5 🌳',tp:'pos',d:{trees:5}}]},
+    {t:'Görmezden gel.',dng:1,res:'Etçiller katledildi. Otçullar yakında taşıma kapasitesini aşacak!',
+     eff:[{lbl:'-35 🐺',tp:'neg',d:{carnivores:-35}},{lbl:'+25 🦌',tp:'pos',d:{herbivores:25}},{lbl:'-10 🌍',tp:'neg',d:{biodiversity:-10}}]},
+    {t:'Otçulları saklanmaya zorla.',dng:1,res:'Etçilleri bulamayan avcılar otçullara yöneldi.',
+     eff:[{lbl:'-20 🦌',tp:'neg',d:{herbivores:-20}},{lbl:'+10 🐺',tp:'pos',d:{carnivores:10}},{lbl:'-10 🌍',tp:'neg',d:{biodiversity:-10}}]},
+  ]},
+  {id:'earthquake',type:'DOĞAL AFET',icon:'⛰️',title:'Şiddetli Deprem',
+   desc:'Fay hattı kırıldı! Sarsıntı yer altı su kaynaklarını ve hayvan yuvalarını tahrip ediyor.',fx:'earthquake',
+   ch:[
+    {t:'Yıkılan alanlara tohum serp.',dng:0,res:'Ağaçlar yenilenmeye başladı ancak su seviyesi düştü.',
+     eff:[{lbl:'+15 🌳',tp:'pos',d:{trees:15}},{lbl:'+5 🌍',tp:'pos',d:{biodiversity:5}},{lbl:'-10 💧',tp:'neg',d:{water:-10}}]},
+    {t:'Hayvanları yeni mağaralara yönlendir.',dng:0,res:'Fauna korundu ancak bölgedeki çeşitlilik zarar gördü.',
+     eff:[{lbl:'+15 🦌',tp:'pos',d:{herbivores:15}},{lbl:'+10 🐺',tp:'pos',d:{carnivores:10}},{lbl:'-10 🌍',tp:'neg',d:{biodiversity:-10}}]},
+    {t:'Doğal haline bırak.',dng:1,res:'Büyük yıkım! Ölen canlılar toprağı beslemeye başladı.',
+     eff:[{lbl:'-20 🌳',tp:'neg',d:{trees:-20}},{lbl:'-15 🦌',tp:'neg',d:{herbivores:-15}},{lbl:'+15 🍄',tp:'pos',d:{decomposers:15}}]},
+    {t:'Yeraltı sularını yüzeye pompala.',dng:1,res:'Su kurtarıldı ama sarsıntının etkisiyle orman tabanı bozuldu.',
+     eff:[{lbl:'+20 💧',tp:'pos',d:{water:20}},{lbl:'-10 🌳',tp:'neg',d:{trees:-10}},{lbl:'-15 🌍',tp:'neg',d:{biodiversity:-15}}]},
+  ]},
+  {id:'algae',type:'BİYOLOJİZ KRİZ',icon:'🧫',title:'Alg Patlaması (Ötrofikasyon)',
+   desc:'Sulardaki aşırı besin birikimi yüzeyi yeşil alglerle kapladı. Sualtı oksijeni tükeniyor!',fx:'algae',
+   ch:[
+    {t:'Suyu havalandır (Oksijen bas).',dng:0,res:'Su nefes aldı, biyoçeşitlilik korundu.',
+     eff:[{lbl:'+20 💧',tp:'pos',d:{water:20}},{lbl:'+10 🌍',tp:'pos',d:{biodiversity:10}},{lbl:'-5 🐝',tp:'neg',d:{bees:-5}}]},
+    {t:'Alg yiyen balıklar ekle.',dng:0,res:'Biyolojik mücadele başarılı. Doğal denge sağlandı.',
+     eff:[{lbl:'+15 🌍',tp:'pos',d:{biodiversity:15}},{lbl:'+10 🐺',tp:'pos',d:{carnivores:10}},{lbl:'-5 🌳',tp:'neg',d:{trees:-5}}]},
+    {t:'Alglerin kendi kendine ölmesini bekle.',dng:1,res:'Göl boğuldu! Alg çürükleri mantarları besliyor.',
+     eff:[{lbl:'-30 💧',tp:'neg',d:{water:-30}},{lbl:'-20 🦌',tp:'neg',d:{herbivores:-20}},{lbl:'+15 🍄',tp:'pos',d:{decomposers:15}}]},
+    {t:'Kimyasal alg öldürücü dök.',dng:1,res:'Algler öldü ama suda yaşayan faydalı organizmalar da yok oldu.',
+     eff:[{lbl:'+15 💧',tp:'pos',d:{water:15}},{lbl:'-25 🍄',tp:'neg',d:{decomposers:-25}},{lbl:'-15 🌍',tp:'neg',d:{biodiversity:-15}}]},
+  ]},
+  {id:'tornado',type:'İKLİM KRİZİ',icon:'🌪️',title:'Yıkıcı Hortum',
+   desc:'Dev bir hortum ormanı yarıp geçiyor! Ağaçlar kökünden sökülüyor, hayvanlar savruluyor.',fx:'tornado',
+   ch:[
+    {t:'Toprak bariyerler kur.',dng:0,res:'Kökler sağlamlaştırıldı, ormanın yıkımı azaltıldı.',
+     eff:[{lbl:'+15 🌳',tp:'pos',d:{trees:15}},{lbl:'-10 💧',tp:'neg',d:{water:-10}},{lbl:'+5 🐝',tp:'pos',d:{bees:5}}]},
+    {t:'Rüzgar kıran ağaç hatları oluştur.',dng:0,res:'Hortumun hızı kesildi, ancak otçulların yolu kapandı.',
+     eff:[{lbl:'+20 🌳',tp:'pos',d:{trees:20}},{lbl:'+10 🌍',tp:'pos',d:{biodiversity:10}},{lbl:'-10 🦌',tp:'neg',d:{herbivores:-10}}]},
+    {t:'Sadece izle, zayıf ağaçlar elensin.',dng:1,res:'Büyük orman kaybı! Yıkılan ağaçlar çürümeye başladı.',
+     eff:[{lbl:'-30 🌳',tp:'neg',d:{trees:-30}},{lbl:'-15 🌍',tp:'neg',d:{biodiversity:-15}},{lbl:'+20 🍄',tp:'pos',d:{decomposers:20}}]},
+    {t:'Yıkılan ağaçları hemen odun olarak topla.',dng:1,res:'Mantarların ve böceklerin yuvaları (çürük odunlar) yok edildi.',
+     eff:[{lbl:'-20 🌳',tp:'neg',d:{trees:-20}},{lbl:'-20 🍄',tp:'neg',d:{decomposers:-20}},{lbl:'+10 🦌',tp:'pos',d:{herbivores:10}}]},
+  ]},
+  {id:'acidrain',type:'ÇEVRE KİRLİLİĞİ',icon:'🌧️',title:'Asit Yağmuru',
+   desc:'Yakınlardaki sanayi bölgesinden rüzgarla taşınan zehirli gazlar, asit yağmuruna dönüştü!',fx:'acidRain',
+   ch:[
+    {t:'Göle kireç dök (Nötralize et).',dng:0,res:'Suyun pH dengesi korundu, ancak mantarlar kireçten etkilendi.',
+     eff:[{lbl:'+15 💧',tp:'pos',d:{water:15}},{lbl:'-10 🍄',tp:'neg',d:{decomposers:-10}},{lbl:'-5 🌍',tp:'neg',d:{biodiversity:-5}}]},
+    {t:'Fabrika emisyonlarını durdur.',dng:0,res:'Kesin çözüm! Doğa yavaş yavaş kendini yenilemeye başladı.',
+     eff:[{lbl:'+15 🌍',tp:'pos',d:{biodiversity:15}},{lbl:'+10 🌳',tp:'pos',d:{trees:10}},{lbl:'+10 💧',tp:'pos',d:{water:10}}]},
+    {t:'Sadece izle.',dng:1,res:'Asit toprağı ve suyu yaktı. Ağaçlar kuruyor.',
+     eff:[{lbl:'-25 💧',tp:'neg',d:{water:-25}},{lbl:'-20 🌳',tp:'neg',d:{trees:-20}},{lbl:'-15 🦌',tp:'neg',d:{herbivores:-15}}]},
+    {t:'Aside dayanıklı bitki ek.',dng:1,res:'Bitkiler hayatta kaldı ama yerli biyoçeşitlilik azaldı.',
+     eff:[{lbl:'+20 🌳',tp:'pos',d:{trees:20}},{lbl:'-15 🌍',tp:'neg',d:{biodiversity:-15}},{lbl:'-10 🐝',tp:'neg',d:{bees:-10}}]},
+  ]},
+  {id:'pollution',type:'ÇEVRE KİRLİLİĞİ',icon:'🛢️',title:'Kimyasal Sızıntı',
+   desc:'Nehre dökülen kimyasal atıklar suyu zehirliyor. Sucu ekosistem çöküşün eşiğinde!',fx:'pollution',
+   ch:[
+    {t:'Acil filtreleme tesisi kur.',dng:0,res:'Kimyasallar temizlendi, su tekrar canlandı.',
+     eff:[{lbl:'+25 💧',tp:'pos',d:{water:25}},{lbl:'+15 🌍',tp:'pos',d:{biodiversity:15}},{lbl:'+5 🐝',tp:'pos',d:{bees:5}}]},
+    {t:'Kirliliği nehrin aşağısına yönlendir.',dng:1,res:'Bölgemiz kurtuldu ama alt havzadaki yaşam yok oldu.',
+     eff:[{lbl:'+15 💧',tp:'pos',d:{water:15}},{lbl:'-25 🌍',tp:'neg',d:{biodiversity:-25}},{lbl:'-15 🍄',tp:'neg',d:{decomposers:-15}}]},
+    {t:'Doğal akışına bırak.',dng:1,res:'Zehir tüm ormana yayıldı. Ağır kayıplar var!',
+     eff:[{lbl:'-35 💧',tp:'neg',d:{water:-35}},{lbl:'-25 🍄',tp:'neg',d:{decomposers:-25}},{lbl:'-20 🌳',tp:'neg',d:{trees:-20}}]},
+    {t:'Suyu mekanik olarak oksijenlendir.',dng:0,res:'Geçici çözüm; ayrıştırıcı bakteriler zehri parçalamaya başladı.',
+     eff:[{lbl:'+15 💧',tp:'pos',d:{water:15}},{lbl:'+20 🍄',tp:'pos',d:{decomposers:20}},{lbl:'-10 🌍',tp:'neg',d:{biodiversity:-10}}]},
+  ]},
+  {id:'winter',type:'MEVSİMSEL KRİZ',icon:'❄️',title:'Dondurucu Kış',
+   desc:'Mevsim normallerinin çok üzerinde soğuk ve kar aniden bastırdı. Hayvanlar hazırlıksız!',fx:'snow',
+   ch:[
+    {t:'Yem ve sığınak istasyonları kur.',dng:0,res:'Hayvanlar korundu, ancak suya erişim zorlaştı.',
+     eff:[{lbl:'+20 🦌',tp:'pos',d:{herbivores:20}},{lbl:'+15 🐺',tp:'pos',d:{carnivores:15}},{lbl:'-10 💧',tp:'neg',d:{water:-10}}]},
+    {t:'Göç yollarını güvene al.',dng:0,res:'Hayvanlar sıcak bölgelere göç etti. Doğal bir çözüm.',
+     eff:[{lbl:'-10 🦌',tp:'neg',d:{herbivores:-10}},{lbl:'-10 🐺',tp:'neg',d:{carnivores:-10}},{lbl:'+15 🌍',tp:'pos',d:{biodiversity:15}}]},
+    {t:'Doğal seleksiyona bırak.',dng:1,res:'Zayıflar öldü. Soğuğa dayanıklı güçlü bir nesil kaldı.',
+     eff:[{lbl:'-30 🦌',tp:'neg',d:{herbivores:-30}},{lbl:'-20 🐺',tp:'neg',d:{carnivores:-20}},{lbl:'+20 🌍',tp:'pos',d:{biodiversity:20}}]},
+    {t:'Donan gölleri kırıp aç.',dng:0,res:'Suya erişim sağlandı ama bitkiler soğuktan dondu.',
+     eff:[{lbl:'+15 💧',tp:'pos',d:{water:15}},{lbl:'-15 🌳',tp:'neg',d:{trees:-15}},{lbl:'-5 🐝',tp:'neg',d:{bees:-5}}]},
+  ]},
+  {id:'heatwave',type:'İKLİM KRİZİ',icon:'🌡️',title:'Aşırı Sıcak Dalga',
+   desc:'Sıcaklık 45 dereceyi aştı! Sular buharlaşıyor, canlılar ısı stresinden tükeniyor.',fx:'heat',
+   ch:[
+    {t:'Gölge alanlar ve su çukurları oluştur.',dng:0,res:'Hayvanlar serinledi, bitkiler kurtarıldı.',
+     eff:[{lbl:'+15 🦌',tp:'pos',d:{herbivores:15}},{lbl:'+15 🐺',tp:'pos',d:{carnivores:15}},{lbl:'-10 💧',tp:'neg',d:{water:-10}}]},
+    {t:'Gece aktif olanları (Nokturnal) destekle.',dng:0,res:'Ekolojik adaptasyon! Gündüz yatanlar gece avlandı.',
+     eff:[{lbl:'+20 🌍',tp:'pos',d:{biodiversity:20}},{lbl:'-10 🌳',tp:'neg',d:{trees:-10}},{lbl:'+5 🐺',tp:'pos',d:{carnivores:5}}]},
+    {t:'Kaderlerine terk et.',dng:1,res:'Dehidrasyon (susuzluk) toplu ölümlere yol açtı.',
+     eff:[{lbl:'-25 💧',tp:'neg',d:{water:-25}},{lbl:'-20 🦌',tp:'neg',d:{herbivores:-20}},{lbl:'-15 🐝',tp:'neg',d:{bees:-15}}]},
+    {t:'Orman zeminini ıslak tut.',dng:1,res:'Su rezervleri tükendi ama bitkiler geçici ferahladı.',
+     eff:[{lbl:'+15 🌳',tp:'pos',d:{trees:15}},{lbl:'-30 💧',tp:'neg',d:{water:-30}},{lbl:'+10 🍄',tp:'pos',d:{decomposers:10}}]},
+  ]}
+];
+
+// ════════════════════════════════════════════
+//  CORE HELPERS
+// ════════════════════════════════════════════
+const $=id=>document.getElementById(id);
+const NS='http://www.w3.org/2000/svg';
+let evQ=[];
+
+function shuf(){
+  evQ = [...EVENTS].reverse();
+}
+
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+// ── ANIMAL CONFIG: stat category + population slots ──
+const AM={
+  deer    :{stat:'herbivores', slots:['deer']},
+  wolf    :{stat:'carnivores', slots:['wolf']},
+  fox     :{stat:'carnivores', slots:['fox']},
+  rabbit  :{stat:'herbivores', slots:['rabbit']},
+  eagle   :{stat:'carnivores', slots:['eagle']},
+  butterfly:{stat:'biodiversity',slots:['butterfly']},
+  bird    :{stat:'biodiversity',slots:['bird']},
+  squirrel:{stat:'herbivores', slots:['squirrel']},
+  frog    :{stat:'biodiversity',slots:['frog']},
+  badger  :{stat:'herbivores', slots:['badger']},
+  bees    :{stat:'bees',       slots:['bees']}, 
+  mushrooms:{stat:'decomposers',slots:['mushrooms']},
+};
+
+// Persistent death registry
+const S_dead=new Set();
+
+// ════════════════════════════════════════════
+//  HUD 
+// ════════════════════════════════════════════
+function renderHUD(){
+  const w=$('sw');
+  
+  if (w.children.length === 0) {
+    STATS.forEach(sc=>{
+      const v=Math.max(0,Math.min(100,S.h[sc.k]));
+      const c=v>55?sc.c:v>28?'#ffd54f':'#ef9a9a';
+      const d=document.createElement('div'); 
+      d.className='sp';
+      d.id='stat-'+sc.k; 
+      d.innerHTML=`<div class="si">${sc.lbl} <span class="sv">${Math.round(v)}</span></div><div class="sb"><div class="sf" style="width:0%;background-color:${c}"></div></div>`;
+      w.appendChild(d);
+    });
+    
+    setTimeout(() => {
+      STATS.forEach(sc=>{
+        const v=Math.max(0,Math.min(100,S.h[sc.k]));
+        const c=v>55?sc.c:v>28?'#ffd54f':'#ef9a9a';
+        const sf = $('stat-'+sc.k).querySelector('.sf');
+        sf.style.width = v + '%';
+        sf.style.backgroundColor = c;
+      });
+    }, 100);
+
+  } else {
+    STATS.forEach(sc=>{
+      const v=Math.max(0,Math.min(100,S.h[sc.k]));
+      const c=v>55?sc.c:v>28?'#ffd54f':'#ef9a9a';
+      const d=$('stat-'+sc.k);
+      if(d){
+        d.querySelector('.sv').textContent = Math.round(v);
+        const sf = d.querySelector('.sf');
+        sf.style.width = v + '%';
+        sf.style.backgroundColor = c; 
+      }
+    });
+  }
+
+  $('tb').textContent=`T${S.turn}/${S.max}`;
+}
+
+// ════════════════════════════════════════════
+//  BEYAZ EKRAN PARLAMASI (FLAŞ EFEKTİ)
+// ════════════════════════════════════════════
+function lightningFlash(){
+  const fl = document.createElementNS(NS, 'rect');
+  fl.setAttribute('width', '400');
+  fl.setAttribute('height', '700');
+  fl.setAttribute('fill', '#ffffff');
+  fl.setAttribute('pointer-events', 'none');
+  fl.style.opacity = '0.9';
+  fl.style.transition = 'opacity 0.25s ease-out';
+  $('cvs').appendChild(fl);
+  
+  fl.getBoundingClientRect(); 
+  
+  fl.style.opacity = '0';
+  setTimeout(() => { if (fl.parentNode) fl.parentNode.removeChild(fl); }, 300);
+}
+
+// ════════════════════════════════════════════
+//  SCENE ATMOSPHERE FX VE YENİ ANİMASYONLAR
+// ════════════════════════════════════════════
+const fxEls={fO:null,dO:null,stO:null,snO:null,pts:null,stars:null};
+let fireAnimInterval=null;
+let loggingAnimInterval=null;
+
+function initFXEls(){
+  fxEls.fO=$('fO'); fxEls.dO=$('dO'); fxEls.stO=$('stO');
+  fxEls.snO=$('snO'); fxEls.pts=$('pts'); fxEls.stars=$('stars');
+}
+
+function clearFX(){
+  if(!fxEls.fO) return;
+  
+  clearInterval(fireAnimInterval);
+  clearInterval(loggingAnimInterval);
+  
+  fxEls.fO.style.opacity='0'; 
+  fxEls.dO.style.opacity='0'; 
+  fxEls.stO.style.opacity='0'; 
+  fxEls.snO.style.opacity='0';
+  fxEls.pts.innerHTML='';
+  fxEls.stars.style.opacity='0';
+  
+  // Deprem katmanını temizle
+  $('earthquakeCracksLayer').innerHTML = '';
+  
+  $('sg0').setAttribute('stop-color','#0a1a2e');
+  $('sg1').setAttribute('stop-color','#1a3a5c');
+  $('sg2').setAttribute('stop-color','#1e4d2b');
+  
+  $('wg0').setAttribute('stop-color','#0077b6');
+  $('wg1').setAttribute('stop-color','#03045e');
+  
+  $('tG').style.filter=''; 
+  $('groundG').parentElement.style.filter=''; 
+  $('wG').style.opacity='1';
+  $('tG').style.transform=''; 
+  $('wG').style.transform=''; 
+  $('wG').style.transition='';
+
+  const sfxF = $('sfx-fire'); if(sfxF){ sfxF.pause(); sfxF.currentTime = 0; }
+  const sfxR = $('sfx-rain'); if(sfxR){ sfxR.pause(); sfxR.currentTime = 0; }
+}
+
+function applyFX(fx){
+  clearFX();
+  
+  if(fx==='fire'){
+    const bolt = document.createElementNS(NS, 'path');
+    const x = 160 + Math.random() * 80;
+    bolt.setAttribute('d', `M ${x},-10 L ${x-30},150 L ${x+20},300 L ${x-20},450 L ${x+10},550`);
+    bolt.setAttribute('stroke', '#ffffff');
+    bolt.setAttribute('stroke-width', '4');
+    bolt.setAttribute('fill', 'none');
+    bolt.setAttribute('filter', 'url(#glow)');
+    fxEls.pts.appendChild(bolt);
+    
+    lightningFlash(); 
+    
+    setTimeout(() => {
+      if(bolt.parentNode) bolt.parentNode.removeChild(bolt);
+      
+      let op=0.7,dir=1;
+      fxEls.fO.style.opacity='0.7';
+      fireAnimInterval=setInterval(()=>{op+=dir*0.08;if(op>0.92||op<0.6)dir*=-1;fxEls.fO.style.opacity=op},80);
+      $('sg0').setAttribute('stop-color','#3d0c00');
+      $('sg1').setAttribute('stop-color','#6b1a0a');
+      $('tG').style.filter='sepia(0.7) brightness(0.6)';
+      
+      for(let i=0;i<24;i++){
+        const flame = document.createElementNS(NS, 'use');
+        flame.setAttribute('href', '#cartoonFlame');
+        const fx = 20 + Math.random() * 360;
+        const fy = 540 + Math.random() * 30;
+        const s = 0.3 + Math.random() * 0.7; 
+        const dur = 0.6 + Math.random() * 0.8;
+        const del = Math.random() * 1.5;
+        
+        flame.setAttribute('class', 'flame-particle');
+        flame.innerHTML=`
+          <animateTransform attributeName="transform" type="translate" from="${fx},${fy}" to="${fx + (Math.random()*30 - 15)},${fy - 40 - Math.random()*60}" dur="${dur}s" begin="${del}s" repeatCount="indefinite" additive="sum"/>
+          <animateTransform attributeName="transform" type="scale" values="${s},${s}; ${s*1.2},${s*1.5}; 0,0" dur="${dur}s" begin="${del}s" repeatCount="indefinite" additive="sum"/>
+          <animateTransform attributeName="transform" type="rotate" values="-15; 15; -15" dur="${dur/2}s" begin="${del}s" repeatCount="indefinite" additive="sum"/>
+          <animate attributeName="opacity" values="0; 0.9; 0" dur="${dur}s" begin="${del}s" repeatCount="indefinite"/>
+        `;
+        fxEls.pts.appendChild(flame);
+
+        const spark = document.createElementNS(NS, 'circle');
+        const sx = fx + (Math.random()*40 - 20);
+        const sy = fy - 20;
+        const sd = dur * 1.5;
+        spark.setAttribute('r', Math.random() * 2 + 1);
+        spark.setAttribute('fill', '#ffe082');
+        spark.innerHTML=`
+          <animate attributeName="cy" from="${sy}" to="${sy - 100 - Math.random()*80}" dur="${sd}s" begin="${del}s" repeatCount="indefinite"/>
+          <animate attributeName="cx" values="${sx}; ${sx - 30}; ${sx + 20}; ${sx}" dur="${sd}s" begin="${del}s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="1; 1; 0" dur="${sd}s" begin="${del}s" repeatCount="indefinite"/>
+        `;
+        fxEls.pts.appendChild(spark);
+      }
+      
+      const sfxF = $('sfx-fire');
+      if(sfxF){ sfxF.volume = 0.3; sfxF.play().catch(e=>console.log("Audio play blocked",e)); }
+    }, 200);
+
+  } else if(fx==='pesticide'){
+    fxEls.stO.style.opacity='0.35';
+    $('sg0').setAttribute('stop-color','#1b2e1a'); 
+    $('sg1').setAttribute('stop-color','#2d4a22');
+    $('tG').style.filter='sepia(0.6) hue-rotate(50deg) saturate(1.8)'; 
+
+    for(let i=0;i<45;i++){
+      const drop = document.createElementNS(NS,'circle');
+      const px = Math.random()*400;
+      const dur = 2.5 + Math.random()*3;
+      const del = Math.random()*2;
+      
+      drop.setAttribute('cx', px);
+      drop.setAttribute('cy', '-20');
+      drop.setAttribute('r', 1 + Math.random()*2.5);
+      drop.setAttribute('fill', '#aeea00'); 
+      drop.setAttribute('opacity', '0.7');
+      drop.innerHTML=`
+        <animateTransform attributeName="transform" type="translate" from="0,0" to="${(Math.random()*40)-20}, 600" dur="${dur}s" begin="${del}s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0; 0.8; 0" dur="${dur}s" begin="${del}s" repeatCount="indefinite"/>
+      `;
+      fxEls.pts.appendChild(drop);
+    }
+
+  } else if(fx==='invasive'){
+    $('sg0').setAttribute('stop-color','#2a1a1a'); 
+    $('tG').style.filter='saturate(0.6) contrast(1.2)'; 
+    
+    for(let i=0;i<35;i++){
+      const bug = document.createElementNS(NS,'ellipse');
+      const startX = Math.random() > 0.5 ? -30 : 430; 
+      const endX = startX === -30 ? 450 : -50;
+      const py = 500 + Math.random()*70; 
+      const dur = 2 + Math.random()*4; 
+      const del = Math.random()*3;
+
+      bug.setAttribute('cx', '0');
+      bug.setAttribute('cy', '0');
+      bug.setAttribute('rx', '3');
+      bug.setAttribute('ry', '1.5');
+      bug.setAttribute('fill', '#d32f2f'); 
+      bug.innerHTML=`
+        <animateTransform attributeName="transform" type="translate" from="${startX},${py}" to="${endX},${py + (Math.random()*60 - 30)}" dur="${dur}s" begin="${del}s" repeatCount="indefinite"/>
+        <animate attributeName="rx" values="3; 1.5; 3" dur="0.15s" repeatCount="indefinite"/>
+      `;
+      fxEls.pts.appendChild(bug);
+    }
+
+  } else if(fx==='epidemic'){
+    fxEls.dO.style.opacity='0.25';
+    $('sg0').setAttribute('stop-color','#231b2e'); 
+    $('sg1').setAttribute('stop-color','#2e2b38');
+    $('tG').style.filter='sepia(0.4) hue-rotate(260deg)'; 
+
+    for(let i=0;i<30;i++){
+      const spore = document.createElementNS(NS,'circle');
+      const px = 30 + Math.random()*340; 
+      const py = 520 + Math.random()*40;
+      const dur = 3 + Math.random()*4;
+      const del = Math.random()*2.5;
+
+      spore.setAttribute('cx', px);
+      spore.setAttribute('cy', py);
+      spore.setAttribute('r', 1.5 + Math.random()*3);
+      spore.setAttribute('fill', '#ab47bc'); 
+      spore.setAttribute('filter', 'url(#glow)'); 
+      spore.innerHTML=`
+        <animateTransform attributeName="transform" type="translate" from="0,0" to="${(Math.random()*60)-30}, -200" dur="${dur}s" begin="${del}s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0; 0.85; 0" dur="${dur}s" begin="${del}s" repeatCount="indefinite"/>
+        <animate attributeName="r" values="${1.5}; 4; ${1.5}" dur="${dur/2}s" repeatCount="indefinite"/>
+      `;
+      fxEls.pts.appendChild(spore);
+    }
+
+  } else if(fx==='drought'){
+    fxEls.dO.style.opacity='0.26';
+    $('sg0').setAttribute('stop-color','#5a2e00');
+    $('sg1').setAttribute('stop-color','#8b4a00');
+    $('sg2').setAttribute('stop-color','#4a7030');
+    $('tG').style.filter='sepia(0.4) brightness(0.78)';
+    $('wG').style.opacity='0.22';
+
+  } else if(fx==='storm' || fx==='acidRain'){
+    fxEls.stO.style.opacity='0.48'; fxEls.stars.style.opacity='0.5';
+    $('sg0').setAttribute('stop-color', fx==='acidRain' ? '#1a2e1a' : '#04080d');
+    $('sg1').setAttribute('stop-color', fx==='acidRain' ? '#2b4028' : '#08101e');
+    const rainColor = fx==='acidRain' ? 'rgba(174,234,0,0.52)' : 'rgba(155,210,255,0.52)';
+    
+    for(let i=0;i<30;i++){
+      const l=document.createElementNS(NS,'line');
+      const x=Math.random()*420,dur=0.40+Math.random()*0.50,del=Math.random()*1.5,len=14+Math.random()*22;
+      l.setAttribute('x1',x);l.setAttribute('y1','0');l.setAttribute('x2',x+len*.18);l.setAttribute('y2',len);
+      l.setAttribute('stroke', rainColor);l.setAttribute('stroke-width','1.5');
+      l.innerHTML=`<animateTransform attributeName="transform" type="translate" from="0,-${len}" to="${len*.12},${720}" dur="${dur}s" begin="${del}s" repeatCount="indefinite"/>`;
+      fxEls.pts.appendChild(l);
+    }
+    const sfxR = $('sfx-rain');
+    if(sfxR){ sfxR.volume = 0.3; sfxR.play().catch(e=>console.log("Audio play blocked",e)); }
+
+  } else if(fx==='flood'){
+    fxEls.stO.style.opacity='0.48';
+    $('sg0').setAttribute('stop-color','#04080d');
+    $('sg1').setAttribute('stop-color','#08101e');
+    
+    for(let i=0;i<30;i++){
+      const l=document.createElementNS(NS,'line');
+      const x=Math.random()*420,dur=0.40+Math.random()*0.50,del=Math.random()*1.5,len=14+Math.random()*22;
+      l.setAttribute('x1',x);l.setAttribute('y1','0');l.setAttribute('x2',x+len*.18);l.setAttribute('y2',len);
+      l.setAttribute('stroke', 'rgba(155,210,255,0.52)');l.setAttribute('stroke-width','1.5');
+      l.innerHTML=`<animateTransform attributeName="transform" type="translate" from="0,-${len}" to="${len*.12},${720}" dur="${dur}s" begin="${del}s" repeatCount="indefinite"/>`;
+      fxEls.pts.appendChild(l);
+    }
+    
+    $('wG').style.transition = 'transform 3s ease';
+    $('wG').style.transform = 'translateY(-35px)';
+    
+    const sfxR = $('sfx-rain');
+    if(sfxR){ sfxR.volume = 0.4; sfxR.play().catch(e=>console.log("Audio play blocked",e)); }
+
+  } else if(fx==='snow'){
+    fxEls.snO.style.opacity='0.25';
+    $('sg0').setAttribute('stop-color','#152238');
+    $('sg1').setAttribute('stop-color','#2c3e50');
+    $('tG').style.filter='saturate(0.5) brightness(1.2)';
+    for(let i=0;i<40;i++){
+      const c=document.createElementNS(NS,'circle');
+      const px=Math.random()*400,dur=2.5+Math.random()*3,del=Math.random()*3,sz=1+Math.random()*2.5;
+      c.setAttribute('cx',px);c.setAttribute('cy','-10');c.setAttribute('r',sz);
+      c.setAttribute('fill','#ffffff');c.setAttribute('opacity','0.8');
+      c.innerHTML=`<animateTransform attributeName="transform" type="translate" from="0,0" to="${(Math.random()*40)-20},${720}" dur="${dur}s" begin="${del}s" repeatCount="indefinite"/>`;
+      fxEls.pts.appendChild(c);
+    }
+
+  } else if(fx==='heat'){
+    $('sg0').setAttribute('stop-color','#8a1c00');
+    $('sg1').setAttribute('stop-color','#b73a00');
+    $('sg2').setAttribute('stop-color','#5a3a10');
+    $('tG').style.filter='sepia(0.6) saturate(1.5) url(#heatBlur)';
+    $('groundG').parentElement.style.filter='url(#heatBlur)';
+    $('wG').style.opacity='0.4';
+
+  } else if(fx==='poaching'){
+    fxEls.dO.style.opacity='0.4'; 
+    const laser = document.createElementNS(NS,'circle');
+    laser.setAttribute('r','3'); laser.setAttribute('fill','#ff0000');
+    laser.setAttribute('filter','url(#glow)');
+    laser.innerHTML=`<animate attributeName="cx" values="300; 250; 280; 150; 180" dur="4s" repeatCount="indefinite" />
+                     <animate attributeName="cy" values="520; 530; 510; 540; 520" dur="3.5s" repeatCount="indefinite" />`;
+    fxEls.pts.appendChild(laser);
+    
+    setInterval(()=>{
+      if(Math.random() > 0.6) lightningFlash();
+    }, 2500);
+
+  } else if(fx==='pollution'){
+    $('sg0').setAttribute('stop-color','#1f0e2e'); 
+    $('sg1').setAttribute('stop-color','#2d1b3b');
+    $('wg0').setAttribute('stop-color','#4a148c'); 
+    $('wg1').setAttribute('stop-color','#880e4f');
+    
+    for(let i=0;i<15;i++){
+      const c=document.createElementNS(NS,'circle');
+      const px=40+Math.random()*60,dur=1.5+Math.random()*2,del=Math.random()*2,sz=1+Math.random()*3;
+      c.setAttribute('cx',px);c.setAttribute('cy','540');c.setAttribute('r',sz);
+      c.setAttribute('fill','#aeea00');c.setAttribute('opacity','0.7');
+      c.innerHTML=`<animateTransform attributeName="transform" type="translate" from="0,0" to="${(Math.random()*10)-5},-30" dur="${dur}s" begin="${del}s" repeatCount="indefinite"/>
+                   <animate attributeName="opacity" values="0.7;0" dur="${dur}s" begin="${del}s" repeatCount="indefinite"/>`;
+      fxEls.pts.appendChild(c);
+    }
+
+  } else if(fx==='logging'){
+    let t = 0;
+    loggingAnimInterval = setInterval(() => {
+      t += 0.2;
+      $('tG').style.transform = `rotate(${Math.sin(t)*1.5}deg) translate(${Math.cos(t)*2}px, 0)`;
+      if(Math.random() > 0.9) screenShake(); 
+    }, 40);
+    
+  } else if(fx==='earthquake'){
+    fxEls.stO.style.opacity='0.2';
+    const cLayer = $('earthquakeCracksLayer');
+    cLayer.innerHTML = '';
+    
+    const crackData = [
+      { d: 'M 50,600 L 70,580 L 100,610 L 140,580 L 180,620 L 230,590 L 280,630 L 350,580', len: 600, delay: 0 },
+      { d: 'M 100,640 L 120,610 L 150,640 L 190,600 L 230,650 L 290,610 L 340,650', len: 500, delay: 1.5 },
+      { d: 'M 180,590 L 190,570 L 220,585', len: 100, delay: 3 },
+      { d: 'M 250,620 L 260,590 L 290,610', len: 100, delay: 4 },
+      { d: 'M 80,580 L 70,550 L 100,560', len: 100, delay: 5 }
+    ];
+
+    crackData.forEach(cd => {
+      const crack = document.createElementNS(NS, 'path');
+      crack.setAttribute('d', cd.d);
+      crack.setAttribute('stroke', '#0a0a0a');
+      crack.setAttribute('stroke-width', '4');
+      crack.setAttribute('fill', 'none');
+      crack.setAttribute('filter', 'url(#crackFilter)');
+      crack.setAttribute('stroke-dasharray', cd.len);
+      crack.setAttribute('stroke-dashoffset', cd.len);
+      crack.innerHTML = `<animate attributeName="stroke-dashoffset" from="${cd.len}" to="0" dur="3s" begin="${cd.delay}s" fill="freeze" />`;
+      cLayer.appendChild(crack);
+    });
+    
+    for(let i=0;i<10;i++){
+      const c=document.createElementNS(NS,'circle');
+      const px=Math.random()*400,dur=3+Math.random()*2,del=Math.random()*1;
+      c.setAttribute('cx',px);c.setAttribute('cy','650');c.setAttribute('r',15+Math.random()*20);
+      c.setAttribute('fill','#5a4e40');c.setAttribute('opacity','0.4');
+      c.innerHTML=`<animateTransform attributeName="transform" type="translate" from="0,0" to="0,-80" dur="${dur}s" begin="${del}s" repeatCount="indefinite"/>
+                   <animate attributeName="opacity" values="0;0.5;0" dur="${dur}s" begin="${del}s" repeatCount="indefinite"/>`;
+      cLayer.appendChild(c);
+    }
+    
+    screenShake(); 
+    loggingAnimInterval = setInterval(() => { if(Math.random() > 0.3) screenShake(); }, 500);
+
+  } else if(fx==='algae'){
+    fxEls.dO.style.opacity = '0.1'; 
+    $('wg0').setAttribute('stop-color','#33691e'); 
+    $('wg1').setAttribute('stop-color','#1b5e20'); 
+    
+    for(let i=0; i<12; i++){
+      const scum = document.createElementNS(NS, 'path');
+      const px = 20 + Math.random() * 360;
+      const py = 580 + Math.random() * 120; 
+      const scale = 0.5 + Math.random() * 1.5;
+      const dur = 4 + Math.random() * 4;
+      
+      scum.setAttribute('d', 'M0,0 C15,-10 35,-5 45,0 C55,10 35,15 20,10 C5,5 -15,10 0,0 Z');
+      scum.setAttribute('fill', i%2===0 ? '#558b2f' : '#689f38');
+      scum.setAttribute('opacity', '0.7');
+      
+      scum.innerHTML=`
+        <animateTransform attributeName="transform" type="translate" from="${px},${py}" to="${px + (Math.random()*30 - 15)},${py}" dur="${dur}s" repeatCount="indefinite" additive="sum"/>
+        <animateTransform attributeName="transform" type="scale" values="${scale},${scale*0.8}; ${scale*1.1},${scale}; ${scale},${scale*0.8}" dur="${dur*1.2}s" repeatCount="indefinite" additive="sum"/>
+      `;
+      fxEls.pts.appendChild(scum);
+    }
+
+    for(let i=0; i<25; i++){
+      const bubble = document.createElementNS(NS, 'circle');
+      const px = Math.random() * 400;
+      const py = 720; 
+      const dur = 2 + Math.random() * 3;
+      const del = Math.random() * 3;
+      
+      bubble.setAttribute('cx', '0');
+      bubble.setAttribute('cy', '0');
+      bubble.setAttribute('r', 1.5 + Math.random() * 2.5);
+      bubble.setAttribute('fill', 'none');
+      bubble.setAttribute('stroke', '#aed581');
+      bubble.setAttribute('stroke-width', '1');
+      
+      bubble.innerHTML=`
+        <animateTransform attributeName="transform" type="translate" from="${px},${py}" to="${px + (Math.random()*20 - 10)}, 590" dur="${dur}s" begin="${del}s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0; 0.8; 0" dur="${dur}s" begin="${del}s" repeatCount="indefinite"/>
+        <animate attributeName="r" values="${bubble.getAttribute('r')}; ${(parseFloat(bubble.getAttribute('r')) * 1.5)}" dur="${dur}s" begin="${del}s" repeatCount="indefinite"/>
+      `;
+      fxEls.pts.appendChild(bubble);
+    }
+    
+  } else if(fx==='tornado'){
+    $('sg0').setAttribute('stop-color','#1a1a2e');
+    $('sg1').setAttribute('stop-color','#16222a');
+    
+    const g = document.createElementNS(NS, 'g');
+    const image = document.createElementNS(NS, 'image');
+    image.setAttribute('href', 'hortum.png');
+    image.setAttribute('x', '-200'); 
+    image.setAttribute('y', '-550'); 
+    image.setAttribute('width', '750'); 
+    image.setAttribute('height', '550'); 
+    image.setAttribute('preserveAspectRatio', 'xMidYMax meet');
+    
+    g.appendChild(image);
+    g.innerHTML += `<animateTransform attributeName="transform" type="translate" values="650,600; -250,600; 650,600" dur="6s" repeatCount="indefinite" />`;
+    
+    fxEls.pts.appendChild(g);
+    
+    for(let i=0;i<20;i++){
+      const c=document.createElementNS(NS,'rect');
+      const dur=1+Math.random()*2, del=Math.random()*4;
+      c.setAttribute('width', 4+Math.random()*4); c.setAttribute('height', 4+Math.random()*4);
+      c.setAttribute('fill', i%2===0 ? '#3e2723' : '#2e7d32');
+      c.innerHTML=`<animateTransform attributeName="transform" type="translate" from="450,${Math.random()*500}" to="-50,${Math.random()*500}" dur="${dur}s" begin="${del}s" repeatCount="indefinite"/>
+                   <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="0.5s" repeatCount="indefinite" additive="sum"/>`;
+      fxEls.pts.appendChild(c);
+    }
+  }
+}
+
+// ════════════════════════════════════════════
+//  PANELS
+// ════════════════════════════════════════════
+function showP(w){
+  $('ec').classList.toggle('vis',w==='ev');
+  $('rc').classList.toggle('vis',w==='res');
+  $('idl').classList.toggle('vis',w==='idle');
+  $('watching').style.display=(w==='watching')?'block':'none';
+}
+
+// ════════════════════════════════════════════
+//  SHOW EVENT 
+// ════════════════════════════════════════════
+function showEvent(ev){
+  S.ev=ev; S.phase='ev';
+  $('eico').textContent=ev.icon;
+  $('etype').textContent=ev.type;
+  $('etitle').textContent=ev.title;
+  $('edesc').textContent=ev.desc;
+  applyFX(ev.fx||'none');
+  const cr=$('crow'); cr.innerHTML='';
+  
+  const harfler = ['A', 'B', 'C', 'D'];
+  const karisikSecenekler = shuffleArray([...ev.ch]);
+  
+  karisikSecenekler.forEach((ch, index)=>{
+    const b=document.createElement('button');
+    b.className='cb'; 
+    b.innerHTML=`<span class="clbl">${harfler[index]}</span>${ch.t}`; 
+    b.onclick=()=>choose(ch);
+    cr.appendChild(b);
+  });
+  
+  showP('ev');
+}
+
+// ════════════════════════════════════════════
+//  CHOICE → CINEMATIC → RESULT
+// ════════════════════════════════════════════
+let prevH={};
+
+function choose(ch){
+  S.phase='cinematic';
+  prevH={...S.h};
+
+  ch.eff.forEach(e=>{
+    if(e.d) Object.entries(e.d).forEach(([k,v])=>{
+      S.h[k]=Math.max(0,Math.min(100,S.h[k]+v));
+    });
+  });
+
+  const chainMsgs=[];
+
+  if(S.h.herbivores > 90){
+    S.h.herbivores = Math.max(0, S.h.herbivores - 35);
+    chainMsgs.push({txt:'⛓ Taşıma Kapasitesi Aşıldı → Açlık Başladı!',color:'#ef9a9a'});
+  }
+
+  if(S.h.bees < 20 && prevH.bees >= 20){
+    S.h.trees = Math.max(0, S.h.trees - 20);
+    S.h.biodiversity = Math.max(0, S.h.biodiversity - 15);
+    chainMsgs.push({txt:'⛓ Arılar Azaldı → Polenleşme Durdu!',color:'#ef9a9a'});
+  }
+
+  if(S.h.decomposers < 20 && prevH.decomposers >= 20){
+    S.h.trees = Math.max(0, S.h.trees - 15);
+    S.h.biodiversity = Math.max(0, S.h.biodiversity - 10);
+    chainMsgs.push({txt:'⛓ Ayrıştırıcılar Azaldı → Toprak Mineral Fakiri Kaldı!',color:'#ef9a9a'});
+  }
+  
+  if((prevH.herbivores - S.h.herbivores > 15) || (prevH.carnivores - S.h.carnivores > 15)){
+    S.h.decomposers = Math.min(100, S.h.decomposers + 20);
+    chainMsgs.push({txt:'🍄 Organik Atıklar Arttı → Ayrıştırıcılar Çoğaldı!',color:'#ce93d8'});
+  }
+
+  if(S.h.carnivores<15 && prevH.carnivores>=15){
+    S.h.herbivores=Math.min(100,S.h.herbivores+20);
+    chainMsgs.push({txt:'⛓ 2. Tüketici yok → 1. Tüketiciler taştı!',color:'#ffd54f'});
+  }
+  if(S.h.water<10 && prevH.water>=10){
+    S.h.trees=Math.max(0,S.h.trees-10);
+    S.h.herbivores=Math.max(0,S.h.herbivores-10);
+    chainMsgs.push({txt:'⛓ Abiyotik Faktör (Su) bitti → Üretim durdu!',color:'#ef9a9a'});
+  }
+
+  const newlyDead=[];
+  const nowRevived=[];
+
+  const GROUPS=[
+    {stat:'herbivores', animals:['deer','rabbit','squirrel','badger'], threshold:18},
+    {stat:'carnivores', animals:['wolf','fox','eagle'],                threshold:15},
+    {stat:'biodiversity',animals:['butterfly','bird','frog'],          threshold:18},
+    {stat:'bees',        animals:['bees'],                             threshold:20}, 
+    {stat:'decomposers', animals:['mushrooms'],                        threshold:20}, 
+  ];
+
+  GROUPS.forEach(g=>{
+    const vBefore=prevH[g.stat], vAfter=S.h[g.stat];
+    const countDead = vAfter<5?g.animals.length : vAfter<g.threshold? Math.ceil(g.animals.length*0.6) : vAfter<35?1:0;
+    g.animals.forEach((id,i)=>{
+      const shouldBeDead = i < countDead;
+      const isDead = S.dead.has(id);
+      if(shouldBeDead && !isDead){
+        S.dead.add(id);
+        newlyDead.push(id);
+      }
+      if(!shouldBeDead && isDead && vAfter > g.threshold+20){
+        S.dead.delete(id);
+        nowRevived.push(id);
+      }
+    });
+  });
+
+  showP('watching');
+
+  runCinematic({ch, before:prevH, after:S.h, newlyDead, nowRevived, chainMsgs},()=>{
+    renderHUD(); applyPermanentDeaths();
+    $('rico').textContent='⚖️'; 
+    $('rtitle').textContent='ETKİ — '+S.ev.title.toUpperCase();
+    let resultText=ch.res;
+    if(chainMsgs.length) resultText+=' '+chainMsgs.map(m=>m.txt.replace(/⛓ /,'')).join(' ');
+    $('rtext').textContent=resultText;
+    const er=$('efrow'); er.innerHTML='';
+    ch.eff.forEach(e=>{const d=document.createElement('div');d.className='ec2 '+e.tp;d.textContent=e.lbl;er.appendChild(d);});
+    if(chainMsgs.length){
+      const cc=document.createElement('div');cc.className='ec2 neu'; 
+      cc.textContent='⚖️ Zincirleme Ekolojik Etki!';er.appendChild(cc);
+    }
+    showP('res'); S.phase='res';
+  });
+}
+
+// ════════════════════════════════════════════
+//  PERMANENT DEATH RENDERING
+// ════════════════════════════════════════════
+function applyPermanentDeaths(){
+  Object.keys(AM).forEach(id=>{
+    const el=$('a-'+id); if(!el) return;
+    if(S.dead.has(id)){
+      el.setAttribute('opacity','0');
+      el.style.display='none';
+    } else {
+      el.removeAttribute('opacity');
+      el.style.display='';
+      el.setAttribute('transform','');
+    }
+  });
+}
+
+// ════════════════════════════════════════════
+//  FLOATING LABEL (SVG)
+// ════════════════════════════════════════════
+function floatLabel(txt,x,y,color){
+  const g=document.createElementNS(NS,'g');
+  const pad=txt.length*5+10;
+  const rect=document.createElementNS(NS,'rect');
+  rect.setAttribute('x',x-pad/2); rect.setAttribute('y',y-15);
+  rect.setAttribute('width',pad); rect.setAttribute('height','19');
+  rect.setAttribute('rx','9'); rect.setAttribute('fill','rgba(0,0,0,0.7)');
+  const t=document.createElementNS(NS,'text');
+  t.setAttribute('x',x); t.setAttribute('y',y);
+  t.setAttribute('text-anchor','middle'); t.setAttribute('fill',color);
+  t.setAttribute('font-size','11'); t.setAttribute('font-weight','bold');
+  t.setAttribute('font-family','Cinzel,serif');
+  t.textContent=txt;
+  g.appendChild(rect); g.appendChild(t);
+  g.style.transition='transform 2.2s ease, opacity 2s ease';
+  g.style.opacity='1';
+  fxEls.pts.appendChild(g);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    g.style.transform='translateY(-50px)';
+    g.style.opacity='0';
+  }));
+  setTimeout(()=>g.remove(),2400);
+}
+
+// ════════════════════════════════════════════
+//  ANIMAL ANIMATIONS
+// ════════════════════════════════════════════
+function getCx(id){return{deer:115,wolf:288,fox:345,rabbit:68,eagle:185,butterfly:158,squirrel:195,frog:44,badger:358,bird:255,bees:154,mushrooms:225}[id]||200;}
+function getCy(id){return{deer:530,wolf:530,fox:532,rabbit:530,eagle:370,butterfly:468,squirrel:530,frog:535,badger:533,bird:405,bees:478,mushrooms:540}[id]||530;}
+
+function animateAnimalDeath(id, onDone){
+  const el=$('a-'+id); if(!el){onDone&&onDone();return;}
+  let angle=0, vy=0, opacity=1;
+  const iv=setInterval(()=>{
+    angle+=7; vy+=0.6; opacity-=0.025;
+    if(opacity<=0){
+      clearInterval(iv);
+      el.setAttribute('opacity','0');
+      el.style.display='none';
+      onDone&&onDone();
+      return;
+    }
+    el.setAttribute('transform',`rotate(${angle},${getCx(id)},${getCy(id)}) translate(0,${vy})`);
+    el.setAttribute('opacity',String(opacity));
+  },28);
+}
+
+function animateAnimalRevive(id){
+  const el=$('a-'+id); if(!el) return;
+  el.style.display='';
+  el.setAttribute('opacity','0');
+  el.setAttribute('transform','translate(0,-30)');
+  let step=0;
+  const iv=setInterval(()=>{
+    step+=0.06;
+    const dy=-30*(1-step);
+    el.setAttribute('transform',`translate(0,${dy})`);
+    el.setAttribute('opacity',String(Math.min(1,step)));
+    if(step>=1){ clearInterval(iv); el.setAttribute('transform',''); }
+  },30);
+}
+
+function animateAnimalJoy(id){
+  const el=$('a-'+id); if(!el||el.style.display==='none') return;
+  let t=0;
+  const iv=setInterval(()=>{
+    t+=0.18;
+    el.setAttribute('transform',`translate(0,${Math.abs(Math.sin(t))*-20})`);
+    if(t>Math.PI*3){ clearInterval(iv); el.setAttribute('transform',''); }
+  },30);
+}
+
+function screenShake(){
+  const cvs=$('cvs');
+  let t=0,mag=18;
+  const iv=setInterval(()=>{
+    t+=1; mag*=0.92;
+    cvs.style.transform=`translate(${(Math.random()-.5)*mag}px,${(Math.random()-.5)*mag*0.5}px) rotate(${(Math.random()-.5)*mag*0.3}deg)`;
+    if(mag<0.5){ clearInterval(iv); cvs.style.transform=''; }
+  },30);
+}
+
+// ════════════════════════════════════════════
+//  TREE / WATER ANIMATIONS
+// ════════════════════════════════════════════
+function witherTrees(amt){
+  const tg=$('tG'); if(!tg) return;
+  const intensity=Math.min(amt/40,1); let step=0;
+  const iv=setInterval(()=>{
+    step+=0.04;
+    tg.style.filter=`sepia(${Math.min(step*intensity*1.6,1).toFixed(2)}) brightness(${Math.max(1-step*intensity*0.5,0.45).toFixed(2)})`;
+    if(step>=1) clearInterval(iv);
+  },45);
+}
+function regrowTrees(){
+  const tg=$('tG'); if(!tg) return; let step=0;
+  const iv=setInterval(()=>{
+    step+=0.04;
+    tg.style.filter=`sepia(${Math.max(0,0.3-step*0.3).toFixed(2)}) brightness(${Math.min(1,0.7+step*0.3).toFixed(2)}) saturate(${Math.min(1.3,1+step*0.3).toFixed(2)})`;
+    if(step>=1){ tg.style.filter=''; clearInterval(iv); }
+  },45);
+}
+function animateWater(dir){
+  const wg=$('wG'); if(!wg) return;
+  if(dir==='shrink'){
+    let step=0; const iv=setInterval(()=>{ step+=0.05; wg.style.opacity=Math.max(0.1,1-step*0.8); if(step>=1)clearInterval(iv); },55);
+  } else {
+    wg.style.opacity='0.15'; let step=0;
+    const iv=setInterval(()=>{ step+=0.04; wg.style.opacity=Math.min(1,0.15+step*0.85); if(step>=1)clearInterval(iv); },55);
+  }
+}
+
+// ════════════════════════════════════════════
+//  CHAIN REACTION BANNER
+// ════════════════════════════════════════════
+function showChainBanner(msgs){
+  if(!msgs.length) return;
+  msgs.forEach((m,i)=>{
+    setTimeout(()=>{
+      const div=document.createElement('div');
+      div.style.cssText=`position:fixed;top:${65+i*32}px;left:50%;transform:translateX(-50%);
+        background:rgba(0,0,0,.8);border:1px solid ${m.color};color:${m.color};
+        font-family:Cinzel,serif;font-size:.65rem;letter-spacing:.08em;padding:5px 14px;
+        border-radius:20px;z-index:200;pointer-events:none;
+        animation:fadeInOut 2.5s ease forwards;`;
+      document.body.appendChild(div);
+      div.textContent=m.txt;
+      setTimeout(()=>div.remove(),2500);
+    },i*400);
+  });
+}
+
+(()=>{
+  const s=document.createElement('style');
+  s.textContent=`@keyframes fadeInOut{0%{opacity:0;transform:translateX(-50%) translateY(-8px)}15%{opacity:1;transform:translateX(-50%) translateY(0)}80%{opacity:1}100%{opacity:0}}`;
+  document.head.appendChild(s);
+})();
+
+// ════════════════════════════════════════════
+//  MAIN CINEMATIC RUNNER
+// ════════════════════════════════════════════
+function runCinematic({ch, before, after, newlyDead, nowRevived, chainMsgs}, done){
+  const steps=[];
+  const at=(t,fn)=>steps.push({t,fn});
+  let cursor=150;
+
+  const dTrees = after.trees       - before.trees;
+  const dWater = after.water       - before.water;
+  const dHerb  = after.herbivores  - before.herbivores;
+  const dCarn  = after.carnivores  - before.carnivores;
+  const dBio   = after.biodiversity- before.biodiversity;
+
+  if(dTrees < -10){
+    at(cursor,()=>witherTrees(-dTrees));
+    at(cursor+250,()=>floatLabel(`${dTrees} 🌳`,200,490,'#ef9a9a'));
+    if(dTrees<-25 && S.ev?.fx!=='earthquake') at(cursor+100,()=>screenShake()); 
+    cursor+=750;
+  } else if(dTrees > 8){
+    at(cursor,()=>regrowTrees());
+    at(cursor+250,()=>floatLabel(`+${dTrees} 🌳`,200,490,'#3ddc84'));
+    cursor+=650;
+  }
+
+  if(dWater < -8){
+    at(cursor,()=>animateWater('shrink'));
+    at(cursor+200,()=>floatLabel(`${dWater} 💧`,74,515,'#ef9a9a'));
+    cursor+=600;
+  } else if(dWater > 8){
+    at(cursor,()=>animateWater('rise'));
+    at(cursor+200,()=>floatLabel(`+${dWater} 💧`,74,515,'#4fc3f7'));
+    cursor+=600;
+  }
+
+  if(newlyDead.length){
+    newlyDead.forEach((id,i)=>{
+      at(cursor+i*450,()=>{
+        animateAnimalDeath(id);
+        floatLabel('💀 Yok Oldu',getCx(id),getCy(id)-22,'#ef9a9a');
+      });
+    });
+    if(S.ev?.fx!=='earthquake') at(cursor,()=>screenShake());
+    cursor+=newlyDead.length*450+350;
+  }
+
+  if(nowRevived.length){
+    nowRevived.forEach((id,i)=>{
+      at(cursor+i*350,()=>{
+        animateAnimalRevive(id);
+        floatLabel('🌱 Geri Döndü!',getCx(id),getCy(id)-30,'#3ddc84');
+      });
+    });
+    cursor+=nowRevived.length*350+300;
+  }
+
+  if(dHerb > 10 && !newlyDead.includes('deer')){
+    ['deer','rabbit','squirrel'].filter(id=>!S.dead.has(id)).slice(0,2).forEach((id,i)=>{
+      at(cursor+i*250,()=>{ animateAnimalJoy(id); floatLabel('+🦌',getCx(id),getCy(id)-22,'#3ddc84'); });
+    });
+    cursor+=500;
+  }
+
+  if(chainMsgs.length){
+    at(cursor,()=>showChainBanner(chainMsgs));
+    cursor+=chainMsgs.length*400+400;
+  }
+
+  if(S.ev?.fx==='storm' || S.ev?.fx==='acidRain'){
+    at(200,()=>{
+      const bolt = document.createElementNS(NS, 'path');
+      const x = 160 + Math.random() * 80;
+      bolt.setAttribute('d', `M ${x},-10 L ${x-30},150 L ${x+20},300 L ${x-20},450 L ${x+10},550`);
+      bolt.setAttribute('stroke', '#ffffff');
+      bolt.setAttribute('stroke-width', '4');
+      bolt.setAttribute('fill', 'none');
+      bolt.setAttribute('filter', 'url(#glow)');
+      fxEls.pts.appendChild(bolt);
+      lightningFlash(); 
+      setTimeout(() => { if(bolt.parentNode) bolt.parentNode.removeChild(bolt); }, 200);
+    });
+    
+    at(750,()=>{
+      const bolt = document.createElementNS(NS, 'path');
+      const x = 160 + Math.random() * 80;
+      bolt.setAttribute('d', `M ${x},-10 L ${x-30},150 L ${x+20},300 L ${x-20},450 L ${x+10},550`);
+      bolt.setAttribute('stroke', '#ffffff');
+      bolt.setAttribute('stroke-width', '4');
+      bolt.setAttribute('fill', 'none');
+      bolt.setAttribute('filter', 'url(#glow)');
+      fxEls.pts.appendChild(bolt);
+      lightningFlash(); 
+      setTimeout(() => { if(bolt.parentNode) bolt.parentNode.removeChild(bolt); }, 200);
+    });
+  }
+  
+  if(S.ev?.fx==='earthquake'){
+    at(300,()=>screenShake());
+    at(600,()=>screenShake());
+  }
+
+  if(steps.length===0) cursor=500;
+  steps.forEach(s=>setTimeout(s.fn,s.t));
+  setTimeout(done, cursor+700);
+}
+
+// ════════════════════════════════════════════
+//  UPDATE ANIMALS
+// ════════════════════════════════════════════
+function updateAnimals(){
+  Object.keys(AM).forEach(id=>{
+    const el=$('a-'+id); if(!el) return;
+    if(S.dead.has(id)){
+      el.setAttribute('opacity','0');
+      el.style.display='none';
+    } else {
+      el.style.display='';
+      el.removeAttribute('opacity');
+      el.setAttribute('transform','');
+    }
+  });
+}
+
+// ════════════════════════════════════════════
+//  NEXT TURN
+// ════════════════════════════════════════════
+function nextTurn(){
+  S.turn++; clearFX(); updateAnimals();
+  if(Object.values(S.h).some(v=>v<=3)){endGame(false);return;}
+  if(S.turn>S.max){endGame(true);return;}
+  showP('idle');
+  
+  if(evQ.length === 0){
+    shuf();
+  }
+  
+  setTimeout(()=>{showEvent(evQ.pop());},1400);
+}
+
+// ════════════════════════════════════════════
+//  GAME OVER
+// ════════════════════════════════════════════
+function endGame(win){
+  S.phase='gameover';
+  const avg=Math.round(Object.values(S.h).reduce((a,b)=>a+b,0)/7); 
+  const deadCount=S.dead.size;
+  $('goS').textContent=avg+' / 100';
+  $('goT').textContent=win?'Ekosistem Hayatta Kaldı! 🌿':'Ekosistem Çöktü 💀';
+  $('goT').style.color=win?'#3ddc84':'#ef9a9a';
+  const extinctNote = deadCount>0 ? ` ${deadCount} tür kalıcı olarak yok oldu.` : ' Hiçbir tür yok olmadı — mükemmel!';
+  $('goM').textContent=(win
+    ?`${S.max} tur boyunca doğal dengeyi korudun.`
+    :'Kritik bir sistem başarısız oldu.')+extinctNote;
+  $('go').classList.add('on');
+}
+
+// ════════════════════════════════════════════
+//  START / RESTART
+// ════════════════════════════════════════════
+function startGame(){
+  initFXEls();
+  
+  const bgm = $('bgm');
+  if(bgm){
+    bgm.volume = 0.8; 
+    bgm.play().catch(e => console.log("Audio play blocked by browser", e));
+  }
+
+  const t=$('tut'); t.style.transition='opacity .32s'; t.style.opacity='0';
+  setTimeout(()=>{
+    t.style.display='none'; $('game').classList.add('on');
+    S.dead=new Set(); S.warned=new Set();
+    
+    $('sw').innerHTML = ''; 
+    renderHUD(); 
+    
+    shuf(); showP('idle');
+    setTimeout(()=>showEvent(evQ.pop()),1300);
+  },340);
+}
+
+function restartGame(){
+  Object.assign(S,{turn:1,phase:'idle',ev:null,dead:new Set(),warned:new Set()});
+  S.h={trees:85,herbivores:75,carnivores:60,water:80,biodiversity:70, bees:80, decomposers:80};
+  $('go').classList.remove('on');
+  updateAnimals(); 
+  
+  $('sw').innerHTML = ''; 
+  renderHUD(); 
+  
+  shuf(); clearFX(); showP('idle');
+  
+  const bgm = $('bgm');
+  if(bgm && bgm.paused) {
+    bgm.play().catch(e => console.log("Audio play blocked", e));
+  }
+
+  setTimeout(()=>showEvent(evQ.pop()),1300);
+}
+</script>
+</body>
+</html>
