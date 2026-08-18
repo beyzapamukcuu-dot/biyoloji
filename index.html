@@ -1,0 +1,2293 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Anılarımız</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<style>
+  html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0c1308;
+      touch-action: none;
+  }
+  #mount {
+      position: absolute;
+      inset: 0;
+      cursor: pointer;
+      touch-action: none;
+  }
+  #mount canvas {
+      display: block;
+      touch-action: none;
+  }
+  .mb-brand {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #e8d9ad;
+      opacity: .55;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      font-size: 11px;
+      font-family: 'Cormorant Garamond', serif;
+      pointer-events: none;
+      z-index: 5;
+  }
+  .mb-hint {
+      position: absolute;
+      left: 50%;
+      bottom: 14%;
+      transform: translateX(-50%);
+      color: #e8d9ad;
+      opacity: .7;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      font-size: 11px;
+      font-family: 'Cormorant Garamond', serif;
+      pointer-events: none;
+      animation: mbpulse 2.6s ease-in-out infinite;
+      z-index: 5;
+      transition: opacity .4s;
+  }
+  .mb-hint.hidden {
+      opacity: 0 !important;
+  }
+  @keyframes mbpulse {
+      0%, 100% { opacity: .35; }
+      50% { opacity: .8; }
+  }
+  .mb-controls {
+      position: absolute;
+      left: 50%;
+      bottom: 70px;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .5s ease;
+      z-index: 5;
+  }
+  .mb-controls.show {
+      opacity: 1;
+      pointer-events: auto;
+  }
+  .mb-progress {
+      font-family: 'Caveat', cursive;
+      font-size: 19px;
+      color: #e8d9ad;
+      min-width: 90px;
+      text-align: center;
+      background: rgba(19, 28, 14, .65);
+      border: 1px solid #6b8a31;
+      border-radius: 20px;
+      padding: 9px 18px;
+      backdrop-filter: blur(3px);
+  }
+  .mb-close {
+      position: absolute;
+      left: 50%;
+      bottom: 26px;
+      transform: translateX(-50%);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      background: transparent;
+      color: #8a9c51;
+      border: none;
+      cursor: pointer;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .4s;
+      z-index: 5;
+  }
+  .mb-close.show {
+      opacity: .75;
+      pointer-events: auto;
+  }
+
+  /* SPİDER-MAN GİFİ - ANİMASYON BİTİNCE OTOMATİK ÇIKACAK */
+  #spideyGif {
+      position: absolute;
+      top: 42%;
+      left: 42%;
+      transform: translate(-50%, -50%);
+      width: 360px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      z-index: 50;
+  }
+
+  /* Bilgisayar ve yatay ekranlarda konumunu otomatik düzeltmesi için */
+  @media (min-aspect-ratio: 1/1) {
+      #spideyGif {
+          top: 22%;
+      }
+  }
+
+  /* ŞIK PLAY BUTONU STİLLERİ */
+  .intro-play-btn {
+      position: absolute;
+      width: 84px;
+      height: 84px;
+      background: rgba(10, 15, 10, 0.6);
+      border-radius: 50%;
+      display: none; /* JavaScript ile flex yapılacak */
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 2px solid rgba(232, 217, 173, 0.35);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), inset 0 0 15px rgba(255,255,255,0.1);
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      z-index: 10000;
+  }
+  .intro-play-btn:hover {
+      transform: scale(1.12);
+      background: rgba(10, 15, 10, 0.8);
+      border-color: rgba(232, 217, 173, 0.8);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.9), inset 0 0 20px rgba(232, 217, 173, 0.2);
+  }
+  .intro-play-icon {
+      width: 0;
+      height: 0;
+      border-top: 16px solid transparent;
+      border-bottom: 16px solid transparent;
+      border-left: 26px solid #e8d9ad;
+      margin-left: 8px; /* Üçgenin optik olarak ortalanması için */
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+      transition: border-left-color 0.3s ease;
+  }
+  .intro-play-btn:hover .intro-play-icon {
+      border-left-color: #fff;
+  }
+
+</style>
+</head>
+<body>
+
+<!-- EN BAŞTA ÇIKACAK TAM EKRAN INTRO VİDEOSU -->
+<div id="introContainer" style="position: fixed; inset: 0; z-index: 9999; background: #000; display: flex; justify-content: center; align-items: center; touch-action: none;">
+    <video id="introVid" src="intro.mp4" playsinline style="width: 100%; height: 100%; object-fit: cover;"></video>
+    <!-- MODERN PLAY BUTONU -->
+    <div id="introOverlayText" class="intro-play-btn">
+        <div class="intro-play-icon"></div>
+    </div>
+</div>
+
+<!-- GİZLİ PLAKÇALAR VİDEOSU -->
+<video id="recordPlayerVid" src="plakcalar.mp4" loop muted playsinline style="display:none; width: 300px; height: 350px;" preload="auto"></video>
+
+<!-- ANA TELEVİZYON OYNATICISI (İlk kilidi açabilmesi için src'si eklendi) -->
+<video id="tvVid" playsinline webkit-playsinline preload="auto" style="display:none;" src="televizyon.mp4"></video>
+
+<!-- SADECE TARAYICIYI ZORLA ÖNYÜKLEME YAPTIRMAK İÇİN GİZLİ EKLENTİLER -->
+<div style="display:none;">
+    <video src="televizyon.mp4" preload="auto"></video>
+    <video src="poster_video1.mp4" preload="auto"></video>
+    <video src="poster_video2.mp4" preload="auto"></video>
+    <video src="poster_video3.mp4" preload="auto"></video>
+</div>
+
+<!-- KÜÇÜKLÜK ANILARI İÇİN GİZLİ AI VİDEOLARI -->
+<div style="display:none;">
+  <video id="aiVid0" src="video0.mp4" loop muted playsinline preload="auto"></video>
+  <video id="aiVid1" src="video1.mp4" loop muted playsinline preload="auto"></video>
+  <video id="aiVid2" src="video2.mp4" loop muted playsinline preload="auto"></video>
+  <video id="aiVid3" src="video3.mp4" loop muted playsinline preload="auto"></video>
+</div>
+
+<!-- KİTABIN TAM ÜST ORTASINA SABİTLENEN GİF -->
+<img id="spideyGif" src="" alt="Spider-Man">
+
+<div class="mb-brand">Anılarımız</div>
+<div id="mount"></div>
+<div class="mb-hint" id="hint">✦ açmak için dokun ✦</div>
+
+<div class="mb-controls" id="controls">
+  <div class="mb-progress" id="progress">1 / 6</div>
+</div>
+<button class="mb-close" id="closeBtn">Kitabı kapat</button>
+
+<script>
+(function(){
+
+  // =========================================================================
+  // INTRO VİDEOSU KONTROLLERİ VE SİNEMATİK GEÇİŞ
+  // =========================================================================
+  const introContainer = document.getElementById('introContainer');
+  const introVid = document.getElementById('introVid');
+  const introOverlayText = document.getElementById('introOverlayText');
+
+  let playPromise = introVid.play();
+  if (playPromise !== undefined) {
+      playPromise.catch(error => {
+          // Tarayıcı sesli otomatik oynatmayı engellerse Play butonunu göster
+          introOverlayText.style.display = 'flex';
+      });
+  }
+
+  // Tıklama ile başlatma
+  introContainer.addEventListener('click', () => {
+      if (introVid.paused) {
+          introVid.play();
+          introOverlayText.style.display = 'none';
+      }
+  });
+
+  // Intro bittiğinde Sinematik Geçiş (Fade to Black -> Fade to Scene)
+  introVid.addEventListener('ended', () => {
+      // 1. Adım: Videoyu yavaşça şeffaflaştır, altındaki siyah arka plan ortaya çıksın (Fade to Black)
+      introVid.style.transition = "opacity 0.6s ease";
+      introVid.style.opacity = "0";
+
+      // 2. Adım: Siyah ekranda çok kısa bekle, ardından tüm siyahlık kalkarak 3D sahne gelsin (Fade from Black)
+      setTimeout(() => {
+          introContainer.style.transition = "opacity 0.5s ease";
+          introContainer.style.opacity = "0";
+          
+          setTimeout(() => {
+              introContainer.style.display = 'none';
+              introContainer.remove(); 
+          }, 0.5); // Container'ın kaybolması için geçen süre
+      }, 300); // Videonun kararması + minik bir es verme süresi
+  });
+
+
+  // =========================================================================
+  // AVATAR VE SES DEĞİŞKENLERİ (INDEX 3 İÇİN)
+  // =========================================================================
+  let isAvatarSpeaking = false;
+  let avatarMouthOpen = false;
+  let lastMouthToggle = 0;
+  let currentAudio = null;
+
+  function playAvatarSound(src) {
+      if(currentAudio) {
+          currentAudio.pause();
+          currentAudio.currentTime = 0;
+      }
+      try {
+          currentAudio = new Audio(src);
+          currentAudio.play().catch(e => simulateSpeaking());
+          currentAudio.onplay = () => { isAvatarSpeaking = true; };
+          currentAudio.onended = () => {
+              isAvatarSpeaking = false;
+              avatarMouthOpen = false;
+              renderPage(3); 
+          };
+      } catch (err) {
+          simulateSpeaking();
+      }
+  }
+
+  function simulateSpeaking() {
+      isAvatarSpeaking = true;
+      setTimeout(() => {
+          isAvatarSpeaking = false;
+          avatarMouthOpen = false;
+          renderPage(3);
+      }, 3000);
+  }
+
+  // =========================================================================
+  // PLAKÇALAR VE ALBÜM DEĞİŞKENLERİ (INDEX 1 İÇİN)
+  // =========================================================================
+  const recordVideo = document.getElementById('recordPlayerVid');
+  let isRecordPlaying = false;
+  let currentAlbumAudio = null;
+
+  recordVideo.addEventListener('canplay', () => { renderPage(1); });
+
+  function playAlbumSound(src) {
+      if(currentAlbumAudio) {
+          currentAlbumAudio.pause();
+          currentAlbumAudio.currentTime = 0;
+      }
+      try {
+          currentAlbumAudio = new Audio(src);
+          currentAlbumAudio.play().then(() => {
+              isRecordPlaying = true;
+              recordVideo.load(); // ZORUNLU YÜKLEME
+              recordVideo.currentTime = 0;
+              let p = recordVideo.play();
+              if (p !== undefined) {
+                  p.catch(e => console.warn("Plakçalar video başlatılamadı:", e));
+              }
+              renderPage(1); 
+          }).catch(e => simulateRecord()); 
+          
+          currentAlbumAudio.onended = () => {
+              isRecordPlaying = false;
+              recordVideo.pause();
+              renderPage(1); 
+          };
+      } catch (err) {
+          simulateRecord(); 
+      }
+  }
+
+  function simulateRecord() {
+      isRecordPlaying = true;
+      recordVideo.load(); // ZORUNLU YÜKLEME
+      recordVideo.currentTime = 0;
+      let p = recordVideo.play();
+      if (p !== undefined) {
+          p.catch(e => console.warn("Plakçalar yedek video başlatılamadı:", e));
+      }
+      renderPage(1); 
+      
+      setTimeout(() => {
+          isRecordPlaying = false;
+          recordVideo.pause();
+          renderPage(1);
+      }, 5000); 
+  }
+
+  // =========================================================================
+  // TELEVİZYON VE POSTER DEĞİŞKENLERİ (INDEX 2 İÇİN)
+  // =========================================================================
+  let isTvPlaying = false;
+  const tvVidEl = document.getElementById('tvVid');
+  let pendingPosterUrl = null; 
+  let isPlayingPoster = false;
+
+  tvVidEl.addEventListener('canplay', () => { 
+      if(current === 1 && isTvPlaying) renderPage(2); 
+  });
+
+  tvVidEl.addEventListener('ended', () => {
+      if (pendingPosterUrl) {
+          isPlayingPoster = true; 
+          tvVidEl.src = pendingPosterUrl;
+          tvVidEl.load(); // ZORUNLU YÜKLEME
+          tvVidEl.currentTime = 0;
+          let p = tvVidEl.play();
+          if (p !== undefined) {
+              p.catch(e => {
+                  console.warn("Poster videosu sesli başlatılamadı, sessiz deneniyor:", e);
+                  tvVidEl.muted = true;
+                  tvVidEl.play().catch(err => console.warn(err));
+              });
+          }
+          pendingPosterUrl = null; 
+      } else {
+          isTvPlaying = false;
+          isPlayingPoster = false;
+          renderPage(2);
+      }
+  });
+
+  function playTvSequence(posterVidUrl) {
+      isTvPlaying = true;
+      isPlayingPoster = false; 
+      pendingPosterUrl = posterVidUrl; 
+      tvVidEl.src = 'televizyon.mp4';  
+      tvVidEl.load(); // ZORUNLU YÜKLEME
+      tvVidEl.currentTime = 0;
+      tvVidEl.muted = false; 
+      let p = tvVidEl.play();
+      if (p !== undefined) {
+          p.catch(e => {
+              console.warn("TV geçişi sesli başlatılamadı, sessiz deneniyor:", e);
+              tvVidEl.muted = true;
+              tvVidEl.play().catch(err => console.warn(err));
+          });
+      }
+      renderPage(2);
+  }
+
+  function playTvDefault() {
+      isTvPlaying = true;
+      isPlayingPoster = false; 
+      pendingPosterUrl = null;
+      tvVidEl.src = 'televizyon.mp4';
+      tvVidEl.load(); // ZORUNLU YÜKLEME
+      tvVidEl.currentTime = 0;
+      tvVidEl.muted = false;
+      let p = tvVidEl.play();
+      if (p !== undefined) {
+          p.catch(e => {
+              console.warn("TV varsayılan video sesli başlatılamadı, sessiz deneniyor:", e);
+              tvVidEl.muted = true;
+              tvVidEl.play().catch(err => console.warn(err));
+          });
+      }
+      renderPage(2);
+  }
+
+  const draggablePosters = [
+      { id: 0, url: 'poster1.png', origX: 140, origY: 460, x: 140, y: 460, vidUrl: 'poster_video1.mp4', dragging: false },
+      { id: 1, url: 'poster2.png', origX: 256, origY: 460, x: 256, y: 460, vidUrl: 'poster_video2.mp4', dragging: false },
+      { id: 2, url: 'poster3.png', origX: 372, origY: 460, x: 372, y: 460, vidUrl: 'poster_video3.mp4', dragging: false }
+  ];
+  let activePosterIdx = null;
+
+  // =========================================================================
+  // KÜÇÜKLÜK ANILARI VE AI VİDEO DEĞİŞKENLERİ (INDEX 0 İÇİN)
+  // =========================================================================
+  const aiVideos = [
+      document.getElementById('aiVid0'),
+      document.getElementById('aiVid1'),
+      document.getElementById('aiVid2'),
+      document.getElementById('aiVid3')
+  ];
+  let activeAiVideoIdx = null;
+  let pressTimer = null;
+  let houseCompleteTime = 0;
+  let isHouseMapFullyVisible = false; 
+
+  aiVideos.forEach((v, idx) => {
+      v.addEventListener('canplay', () => { if(activeAiVideoIdx === idx) renderPage(0); });
+  });
+
+  // =========================================================================
+  // SAYFA İÇİNE GÖMÜLÜ SÜRÜKLENEBİLİR 3D ELEMENTLER
+  // =========================================================================
+  const draggableQuotes = [
+      { id: 0, text: "Jessica", origX: 90, origY: 100, x: 90, y: 100, audio: "ses1.mp3", rot: -5, dragging: false },
+      { id: 1, text: "Seleme", origX: 420, origY: 110, x: 420, y: 110, audio: "ses2.mp3", rot: 4, dragging: false },
+      { id: 2, text: "Şukuriki", origX: 80, origY: 330, x: 80, y: 330, audio: "ses3.mp3", rot: -2, dragging: false },
+      { id: 3, text: "Evimin sınırı", origX: 430, origY: 330, x: 430, y: 330, audio: "ses4.mp3", rot: 6, dragging: false },
+      { id: 4, text: "Hakedene", origX: 110, origY: 550, x: 110, y: 550, audio: "ses5.mp3", rot: 3, dragging: false },
+      { id: 5, text: "Şu anda", origX: 400, origY: 540, x: 400, y: 540, audio: "ses6.mp3", rot: -4, dragging: false },
+      { id: 6, text: "Islak Islak", origX: 256, origY: 600, x: 256, y: 600, audio: "ses7.mp3", rot: 2, dragging: false }
+  ];
+
+  const draggableAlbums = [
+      { id: 0, url: 'album1.png', origX: 90, origY: 100, x: 90, y: 100, audio: "sarki1.mp3", rot: -5, dragging: false },
+      { id: 1, url: 'album2.png', origX: 256, origY: 80, x: 256, y: 80, audio: "sarki2.mp3", rot: 3, dragging: false },
+      { id: 2, url: 'album3.png', origX: 420, origY: 100, x: 420, y: 100, audio: "sarki3.mp3", rot: -2, dragging: false },
+      { id: 3, url: 'album4.png', origX: 70, origY: 250, x: 70, y: 250, audio: "sarki4.mp3", rot: 6, dragging: false },
+      { id: 4, url: 'album5.png', origX: 440, origY: 250, x: 440, y: 250, audio: "sarki5.mp3", rot: -4, dragging: false },
+      { id: 5, url: 'album6.png', origX: 70, origY: 410, x: 70, y: 410, audio: "sarki6.mp3", rot: 4, dragging: false },
+      { id: 6, url: 'album7.png', origX: 440, origY: 410, x: 440, y: 410, audio: "sarki7.mp3", rot: -3, dragging: false },
+      { id: 7, url: 'album8.png', origX: 130, origY: 560, x: 130, y: 560, audio: "sarki8.mp3", rot: 5, dragging: false },
+      { id: 8, url: 'album9.png', origX: 380, origY: 560, x: 380, y: 560, audio: "sarki9.mp3", rot: -6, dragging: false }
+  ];
+
+  // =========================================================================
+  // KARTON EV PARÇALARI
+  // =========================================================================
+  const draggableCardboards = [
+      { id: 'base', type: 'rect', color: '#cfa87a', w: 240, h: 180, origX: 256, origY: 380, x: 256, y: 380, rot: -5, dragging: false, snapped: false, snapX: 256, snapY: 490, snapRot: 2 },
+      { id: 'roof', type: 'triangle', color: '#b88b5a', w: 280, h: 140, origX: 256, origY: 170, x: 256, y: 170, rot: 8, dragging: false, snapped: false, snapX: 256, snapY: 330, snapRot: -3 },
+      { id: 'door', type: 'rect_door', color: '#9e7146', w: 60, h: 100, origX: 90, origY: 480, x: 90, y: 480, rot: -15, dragging: false, snapped: false, snapX: 256, snapY: 540, snapRot: 1 },
+      { id: 'window', type: 'rect_window', color: '#f0e6db', w: 55, h: 55, origX: 430, origY: 340, x: 430, y: 340, rot: 10, dragging: false, snapped: false, snapX: 180, snapY: 450, snapRot: -4 },
+      { id: 'chimney', type: 'rect_chimney', color: '#a65446', w: 40, h: 80, origX: 90, origY: 250, x: 90, y: 250, rot: -20, dragging: false, snapped: false, snapX: 330, snapY: 280, snapRot: 5 },
+      { id: 'tape1', type: 'tape', color: 'rgba(235, 220, 160, 0.95)', w: 100, h: 30, origX: 420, origY: 180, x: 420, y: 180, rot: -30, dragging: false, snapped: false, snapX: 256, snapY: 400, snapRot: -5 },
+      { id: 'tape2', type: 'tape', color: 'rgba(235, 220, 160, 0.95)', w: 70, h: 25, origX: 390, origY: 520, x: 390, y: 520, rot: 45, dragging: false, snapped: false, snapX: 310, snapY: 320, snapRot: 15 }
+  ];
+
+  // =========================================================================
+  // PİŞTİ DESTESİ DEĞİŞKENLERİ
+  // =========================================================================
+  let isDeckDealt = false;
+  let isDeckAnimating = false;
+  const deckCards = [];
+  
+  for(let i=0; i<9; i++) {
+      deckCards.push({
+          id: i,
+          origX: 256 + (i * 0.5), 
+          origY: 330 - (i * 1.5), 
+          origRot: (Math.random() - 0.5) * 6, 
+          x: 256 + (i * 0.5), 
+          y: 330 - (i * 1.5), 
+          rot: (Math.random() - 0.5) * 6,
+          angle: (i / 9) * Math.PI * 2, 
+          dist: 145,
+          isFlipped: false,
+          flipProgress: 0
+      });
+  }
+
+  // =========================================================================
+  // ANILARIMIZ VE SAYFA İÇERİKLERİ
+  // =========================================================================
+  const anilarimiz = [
+    // 0: KARTON EV İNŞAATI & GİZLİ ÇOCUKLUK ANILARI
+    [
+      { type: 'text', content: 'Karton Ev İnşaatı', x: 256, y: 45, size: 30, font: 'Cormorant Garamond', rot: 0, color: '#3a2512' },
+      { type: 'text', content: '↓ Tüm parçaları yerlerine yapıştır! ↓', x: 256, y: 80, size: 22, font: 'Caveat', rot: -2, color: '#6b8a31' },
+      { type: 'text', isSecret: true, content: '✦ Canlandırmak için fotoğraflara basılı tut ✦', x: 256, y: 115, size: 18, font: 'Caveat', rot: 0, color: '#6b8a31' },
+      { type: 'kucukluk_foto', isSecret: true, id: 0, url: 'kucukluk0.png', x: 140, y: 210, w: 160, h: 200, rot: -6 },
+      { type: 'tape', isSecret: true, x: 140, y: 103, w: 55, rot: -8 },
+      { type: 'kucukluk_foto', isSecret: true, id: 1, url: 'kucukluk1.png', x: 370, y: 225, w: 160, h: 200, rot: 7 },
+      { type: 'tape', isSecret: true, x: 370, y: 118, w: 55, rot: 5 },
+      { type: 'kucukluk_foto', isSecret: true, id: 2, url: 'kucukluk2.png', x: 155, y: 470, w: 160, h: 200, rot: 5 },
+      { type: 'tape', isSecret: true, x: 155, y: 363, w: 55, rot: 3 },
+      { type: 'kucukluk_foto', isSecret: true, id: 3, url: 'kucukluk3.png', x: 365, y: 480, w: 160, h: 200, rot: -5 },
+      { type: 'tape', isSecret: true, x: 365, y: 373, w: 55, rot: -4 }
+    ],
+    // 1: PLAKÇALAR KÖŞESİ
+    [
+      { type: 'text', content: '↓ Albümü Seç ve Plakçalara Bırak ↓', x: 256, y: 185, size: 22, font: 'Caveat', rot: 0, color: '#3a2512' }
+    ],
+    // 2: TELEVİZYON KÖŞESİ
+    [
+      { type: 'text', content: 'Nostaljik Sinema', x: 256, y: 55, size: 36, font: 'Cormorant Garamond', rot: 0, color: '#3a2512' },
+      { type: 'text', content: '✦ Orijinal video için TV\'ye dokun ✦', x: 256, y: 95, size: 18, font: 'Caveat', rot: -2, color: '#6b8a31' },
+      { type: 'text', content: '↓ Ya da posterleri TV\'ye sürükle! ↓', x: 256, y: 360, size: 20, font: 'Caveat', rot: 1, color: '#6b8a31' }
+    ],
+    // 3: KONUŞAN BEN (Avatar)
+    [
+      { type: 'interactive_avatar', x: 256, y: 330, w: 260, h: 320, rot: 0, closedUrl: 'foto1.png', openUrl: 'foto2.png' },
+      { type: 'text', content: '↓ Sözü Seç ve Üzerime Bırak ↓', x: 256, y: 165, size: 22, font: 'Caveat', rot: 0, color: '#3a2512' }
+    ],
+    // 4: PİŞTİ KAĞIDI
+    [
+      { type: 'text', content: 'Yakından bakmak için dokun', x: 256, y: 100, size: 26, font: 'Caveat', rot: -2, color: '#3a2512' },
+      { type: 'text', content: '♦ ♣ ♥ ♠', x: 256, y: 565, size: 24, font: 'Cormorant Garamond', rot: 0, color: '#5b3a22' }
+    ],
+    // DİĞER SAYFALAR (Index 5 ve sonrası)
+    [
+      { type: 'image', url: 'https://picsum.photos/seed/night/500/350', x: 256, y: 280, w: 360, h: 260, rot: 2 },
+      { type: 'tape', x: 256, y: 140, w: 100, rot: 0 },
+      { type: 'text', content: 'Gecenin 3\'ünde yapılan//o derin sohbetler...', x: 256, y: 490, size: 32, font: 'Caveat', rot: -2, color: '#2a1c10' }
+    ],
+    [
+      { type: 'text', content: 'Daha gidecek çok yolumuz...', x: 256, y: 250, size: 34, font: 'Caveat', rot: -5, color: '#3a2512' },
+      { type: 'text', content: '...yapacak çok dedikodumuz var!', x: 256, y: 330, size: 34, font: 'Caveat', rot: 2, color: '#5b3a22' }
+    ],
+    [
+      { type: 'image', url: 'https://picsum.photos/seed/sky/400/500', x: 256, y: 330, w: 280, h: 360, rot: -4 },
+      { type: 'text', content: 'Birlikteyken zamanın nasıl//geçtiğini hiç anlamıyoruz', x: 256, y: 100, size: 28, font: 'Caveat', rot: 0, color: '#2a1c10' }
+    ],
+    [
+      { type: 'image', url: 'https://picsum.photos/seed/selfie/350/350', x: 256, y: 260, w: 280, h: 280, rot: 5 },
+      { type: 'tape', x: 256, y: 110, w: 80, rot: 3 },
+      { type: 'text', content: 'En favori fotoğrafımız!', x: 256, y: 460, size: 30, font: 'Caveat', rot: -3, color: '#3a2512' }
+    ],
+    [
+      { type: 'text', content: 'Bir sonraki sayfayı//birlikte doldurmak dileğiyle...', x: 256, y: 250, size: 32, font: 'Caveat', rot: -2, color: '#2a1c10' },
+      { type: 'text', content: '🤍', x: 256, y: 350, size: 40, font: 'Caveat', rot: 0, color: '#5b3a22' }
+    ],
+    [
+      { type: 'text', content: 'SON DEĞİL, BAŞLANGIÇ', x: 256, y: 330, size: 24, font: 'Cormorant Garamond', rot: 0, color: '#5b3a22' }
+    ]
+  ];
+
+  const N_LEAVES = 6;
+  const W = 3.0;
+  const D = 4.0;
+  const LEAF_T = 0.05;
+  const COVER_T = 0.2;
+  const GAP = 0.004;
+
+  const basePaperCanvas = document.createElement('canvas');
+  basePaperCanvas.width = 512;
+  basePaperCanvas.height = 660;
+  const paperCanvases = [];
+  const paperCtxs = [];
+  const paperTextures = [];
+  const imgCache = {};
+
+  const tCanvas = document.createElement('canvas');
+  const tCtx = tCanvas.getContext('2d', { willReadFrequently: true });
+
+  function mkCanvas(w, h){ 
+      const c = document.createElement('canvas'); 
+      c.width = w; 
+      c.height = h; 
+      return c; 
+  }
+
+  function addNoise(ctx, w, h, amt){
+    const id = ctx.getImageData(0, 0, w, h);
+    for(let i = 0; i < id.data.length; i += 4){
+      const n = (Math.random() - 0.5) * amt;
+      id.data[i] += n; 
+      id.data[i+1] += n * 0.88; 
+      id.data[i+2] += n * 0.72;
+    }
+    ctx.putImageData(id, 0, 0);
+  }
+
+  function generateBasePaper(){
+    const ctx = basePaperCanvas.getContext('2d');
+    ctx.fillStyle = '#f2e9d0'; 
+    ctx.fillRect(0, 0, 512, 660);
+    addNoise(ctx, 512, 660, 9);
+    const vg = ctx.createRadialGradient(256, 330, 150, 256, 330, 420);
+    vg.addColorStop(0, 'rgba(0,0,0,0)'); 
+    vg.addColorStop(1, 'rgba(120,95,55,0.14)');
+    ctx.fillStyle = vg; 
+    ctx.fillRect(0, 0, 512, 660);
+  }
+
+  function drawImageProp(ctx, img, x, y, w, h) {
+      const iW = img.videoWidth || img.naturalWidth || img.width;
+      const iH = img.videoHeight || img.naturalHeight || img.height;
+      if (!iW || !iH) return;
+      const imgRatio = iW / iH;
+      const boxRatio = w / h;
+      let sW = iW;
+      let sH = iH;
+      let sX = 0;
+      let sY = 0;
+
+      if (imgRatio > boxRatio) {
+          sW = iH * boxRatio;
+          sX = (iW - sW) / 2;
+      } else {
+          sH = iW / boxRatio;
+          sY = (iH - sH) / 2;
+      }
+      ctx.drawImage(img, sX, sY, sW, sH, x, y, w, h);
+  }
+
+  function drawImageContain(ctx, img, x, y, maxW, maxH) {
+      const iW = img.videoWidth || img.width;
+      const iH = img.videoHeight || img.height;
+      if(!iW || !iH) return;
+      const imgRatio = iW / iH;
+      const boxRatio = maxW / maxH;
+      let drawW = maxW;
+      let drawH = maxH;
+      if (imgRatio > boxRatio) {
+          drawH = maxW / imgRatio;
+      } else {
+          drawW = maxH * imgRatio;
+      }
+      const drawX = x + (maxW - drawW) / 2;
+      const drawY = y + (maxH - drawH) / 2;
+      ctx.drawImage(img, drawX, drawY, drawW, drawH);
+  }
+
+  function drawTransparentMedia(ctx, media, x, y, w, h) {
+      if(tCanvas.width !== w || tCanvas.height !== h) {
+          tCanvas.width = w; 
+          tCanvas.height = h;
+      }
+      tCtx.clearRect(0, 0, w, h);
+      drawImageProp(tCtx, media, 0, 0, w, h);
+      
+      const imgData = tCtx.getImageData(0, 0, w, h);
+      const data = imgData.data;
+      for (let i = 0; i < data.length; i += 4) {
+          if (data[i] < 15 && data[i+1] < 15 && data[i+2] < 15) {
+              data[i+3] = (Math.max(data[i], data[i+1], data[i+2]) / 15) * 255;
+          }
+      }
+      tCtx.putImageData(imgData, 0, 0);
+      ctx.drawImage(tCanvas, x, y);
+  }
+
+  function renderPage(pageIndex) {
+    const ctx = paperCtxs[pageIndex];
+    
+    ctx.save(); 
+    if (pageIndex % 2 !== 0) {
+      ctx.translate(256, 330);
+      ctx.rotate(Math.PI);
+      ctx.translate(-256, -330);
+    }
+    
+    ctx.drawImage(basePaperCanvas, 0, 0);
+    
+    const items = anilarimiz[pageIndex] || [];
+    items.forEach(item => {
+      ctx.save();
+      
+      if (pageIndex === 0 && item.isSecret) {
+          let pAlpha = 0;
+          if (houseCompleteTime > 0) {
+              let el = performance.now() - houseCompleteTime;
+              pAlpha = Math.min(1, Math.max(0, (el - 1000) / 1000));
+          }
+          if (pAlpha === 0) {
+              ctx.restore();
+              return; 
+          }
+          ctx.globalAlpha = pAlpha;
+      }
+
+      ctx.translate(item.x, item.y);
+      ctx.rotate((item.rot || 0) * Math.PI / 180);
+
+      if (item.type === 'text') {
+        const fw = item.font === 'Cormorant Garamond' ? '700' : '600';
+        ctx.font = `${fw} ${item.size}px '${item.font}'`;
+        ctx.fillStyle = item.color || '#3a2512';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        const lines = item.content.split('//');
+        lines.forEach((line, idx) => {
+            const yOffset = (idx - (lines.length-1)/2) * (item.size * 1.2);
+            ctx.fillText(line.trim(), 0, yOffset);
+        });
+
+      } else if (item.type === 'tape') {
+        ctx.fillStyle = 'rgba(230, 225, 210, 0.65)';
+        ctx.shadowColor = 'rgba(0,0,0,0.15)';
+        ctx.shadowBlur = 3; 
+        ctx.shadowOffsetY = 1;
+        ctx.fillRect(-item.w/2, -12, item.w, 24);
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.beginPath();
+        for(let i=-item.w/2; i<=item.w/2; i+=4) { ctx.lineTo(i, -12 + Math.random()*4); }
+        for(let i=item.w/2; i>=-item.w/2; i-=4) { ctx.lineTo(i, 12 - Math.random()*4); }
+        ctx.fill();
+        ctx.globalCompositeOperation = 'source-over';
+        
+      } else if (item.type === 'image' && item.url) {
+        ctx.shadowColor = 'rgba(0,0,0,0.25)';
+        ctx.shadowBlur = 12; 
+        ctx.shadowOffsetX = 4; 
+        ctx.shadowOffsetY = 6;
+        ctx.fillStyle = '#fdfdfd';
+        ctx.fillRect(-item.w/2 - 12, -item.h/2 - 12, item.w + 24, item.h + 40);
+        ctx.shadowColor = 'transparent';
+        
+        if(!imgCache[item.url]) {
+            const img = new Image();
+            img.onload = () => { renderPage(pageIndex); };
+            img.src = item.url; 
+            imgCache[item.url] = img;
+        } else if (imgCache[item.url].complete && imgCache[item.url].naturalWidth > 0) {
+            drawImageProp(ctx, imgCache[item.url], -item.w/2, -item.h/2, item.w, item.h);
+        }
+
+      } else if (item.type === 'kucukluk_foto') {
+        ctx.shadowColor = 'rgba(0,0,0,0.28)';
+        ctx.shadowBlur = 12; 
+        ctx.shadowOffsetX = 4; 
+        ctx.shadowOffsetY = 6;
+        ctx.fillStyle = '#fdfdfd';
+        ctx.fillRect(-item.w/2 - 10, -item.h/2 - 10, item.w + 20, item.h + 36);
+        ctx.shadowColor = 'transparent';
+
+        const vid = aiVideos[item.id];
+        const isPlayingVid = (activeAiVideoIdx === item.id && vid && vid.readyState >= 2 && !vid.error);
+
+        if (isPlayingVid) {
+            drawTransparentMedia(ctx, vid, -item.w/2, -item.h/2, item.w, item.h);
+            ctx.strokeStyle = '#6b8a31'; 
+            ctx.lineWidth = 2;
+            ctx.strokeRect(-item.w/2 - 10, -item.h/2 - 10, item.w + 20, item.h + 36);
+        } else {
+            let pImg = imgCache[item.url];
+            if(!pImg) {
+                pImg = new Image();
+                pImg.onload = () => { renderPage(pageIndex); };
+                pImg.onerror = () => { renderPage(pageIndex); };
+                pImg.src = item.url;
+                imgCache[item.url] = pImg;
+            }
+            if (pImg && pImg.complete && pImg.naturalWidth > 0) {
+                drawImageProp(ctx, pImg, -item.w/2, -item.h/2, item.w, item.h);
+            } else {
+                ctx.fillStyle = '#d4a373';
+                ctx.fillRect(-item.w/2, -item.h/2, item.w, item.h);
+                ctx.fillStyle = '#fff'; 
+                ctx.font = "bold 14px Arial"; 
+                ctx.textAlign = 'center'; 
+                ctx.textBaseline = 'middle';
+                ctx.fillText("Anı Foto", 0, 0);
+            }
+        }
+
+      } else if (item.type === 'interactive_avatar') {
+        const activeUrl = (isAvatarSpeaking && avatarMouthOpen) ? item.openUrl : item.closedUrl;
+        if(!imgCache[item.closedUrl]) {
+            const imgC = new Image(); 
+            imgC.src = item.closedUrl; 
+            imgCache[item.closedUrl] = imgC;
+            imgC.onload = () => { renderPage(pageIndex); };
+        }
+        if(!imgCache[item.openUrl]) {
+            const imgO = new Image(); 
+            imgO.src = item.openUrl; 
+            imgCache[item.openUrl] = imgO;
+            imgO.onload = () => { renderPage(pageIndex); };
+        }
+        if (imgCache[activeUrl] && imgCache[activeUrl].complete && imgCache[activeUrl].naturalWidth > 0) {
+            ctx.shadowColor = 'rgba(0,0,0,0.3)';
+            ctx.shadowBlur = 15; 
+            ctx.shadowOffsetX = 4; 
+            ctx.shadowOffsetY = 6;
+            drawImageContain(ctx, imgCache[activeUrl], -item.w/2, -item.h/2, item.w, item.h);
+            ctx.shadowColor = 'transparent';
+        }
+      }
+      ctx.restore();
+    });
+
+    // 0: Karton Ev
+    if (pageIndex === 0) {
+        let tExplode = houseCompleteTime ? Math.max(0, performance.now() - houseCompleteTime) : 0;
+        let progress = Math.min(1, tExplode / 1500); 
+        const isAllSnapped = draggableCardboards.every(c => c.snapped);
+        const isAnyDragging = draggableCardboards.some(c => c.dragging);
+
+        draggableCardboards.forEach(c => {
+            ctx.save();
+            let curX = c.x;
+            let curY = c.y;
+            let curRot = c.rot;
+            let curScale = 1;
+            
+            if (progress > 0) {
+                ctx.globalAlpha = 1 - Math.pow(progress, 3);
+                const dx = (c.snapX - 256) * 1.5; 
+                const dy = (c.snapY - 330) * 1.5;
+                curX += dx * progress;
+                curY += dy * progress;
+                curRot += progress * 180 * (c.snapX > 256 ? 1 : -1);
+                curScale = 1 - progress * 0.8;
+            }
+
+            ctx.translate(curX, curY);
+            ctx.rotate(curRot * Math.PI / 180);
+            ctx.scale(curScale, curScale);
+            
+            if(c.dragging) { 
+                ctx.shadowColor = 'rgba(0,0,0,0.5)'; 
+                ctx.shadowBlur = 18; 
+                ctx.shadowOffsetX = 6; 
+                ctx.shadowOffsetY = 10; 
+                ctx.scale(1.08, 1.08); 
+            } else if(c.snapped && progress === 0) { 
+                ctx.shadowColor = 'rgba(0,0,0,0.3)'; 
+                ctx.shadowBlur = 6; 
+                ctx.shadowOffsetX = 2; 
+                ctx.shadowOffsetY = 4; 
+            } else { 
+                ctx.shadowColor = 'rgba(0,0,0,0.4)'; 
+                ctx.shadowBlur = 10; 
+                ctx.shadowOffsetX = 4; 
+                ctx.shadowOffsetY = 6; 
+            }
+
+            if (c.type === 'rect') {
+                ctx.fillStyle = c.color; 
+                ctx.fillRect(-c.w/2, -c.h/2, c.w, c.h);
+                
+                ctx.strokeStyle = 'rgba(0,0,0,0.06)';
+                ctx.lineWidth = 3;
+                for(let y = -c.h/2 + 15; y < c.h/2; y += 15) {
+                    ctx.beginPath(); 
+                    ctx.moveTo(-c.w/2 + 2, y); 
+                    ctx.lineTo(c.w/2 - 2, y); 
+                    ctx.stroke();
+                }
+                
+                ctx.fillStyle = '#bc9363';
+                ctx.fillRect(-c.w/2, -c.h/2 - 25, c.w/2 - 2, 25);
+                ctx.fillRect(2, -c.h/2 - 25, c.w/2 - 2, 25);
+                
+                ctx.strokeStyle = '#6e4a27'; 
+                ctx.lineWidth = 4; 
+                ctx.strokeRect(-c.w/2, -c.h/2, c.w, c.h);
+                ctx.strokeRect(-c.w/2, -c.h/2 - 25, c.w/2 - 2, 25);
+                ctx.strokeRect(2, -c.h/2 - 25, c.w/2 - 2, 25);
+
+                ctx.strokeStyle = '#4a2f15';
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.moveTo(c.w/2 - 35, c.h/2 - 20); ctx.lineTo(c.w/2 - 35, c.h/2 - 60); 
+                ctx.moveTo(c.w/2 - 50, c.h/2 - 45); ctx.lineTo(c.w/2 - 35, c.h/2 - 60); ctx.lineTo(c.w/2 - 20, c.h/2 - 45); 
+                ctx.stroke();
+                
+            } else if (c.type === 'rect_door') {
+                ctx.fillStyle = c.color; 
+                ctx.fillRect(-c.w/2, -c.h/2, c.w, c.h);
+                ctx.strokeStyle = 'rgba(0,0,0,0.15)';
+                ctx.lineWidth = 2;
+                ctx.beginPath(); ctx.moveTo(-12, -c.h/2); ctx.lineTo(-12, c.h/2); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(12, -c.h/2); ctx.lineTo(12, c.h/2); ctx.stroke();
+                ctx.strokeStyle = '#4a3018'; 
+                ctx.lineWidth = 4; 
+                ctx.strokeRect(-c.w/2, -c.h/2, c.w, c.h);
+                ctx.fillStyle = '#221105'; 
+                ctx.beginPath(); 
+                ctx.arc(c.w/2 - 14, 0, 6, 0, Math.PI*2); 
+                ctx.fill();
+                ctx.fillStyle = '#7a1919';
+                ctx.font = "bold 16px 'Caveat'";
+                ctx.save(); 
+                ctx.rotate(-15*Math.PI/180);
+                ctx.fillText("GİRİLMEZ!", 0, -15);
+                ctx.restore();
+                
+            } else if (c.type === 'rect_window') {
+                ctx.fillStyle = '#b88b5a';
+                ctx.fillRect(-c.w/2, -c.h/2, c.w, c.h);
+                ctx.fillStyle = 'rgba(180, 220, 230, 0.85)';
+                ctx.fillRect(-c.w/2 + 6, -c.h/2 + 6, c.w - 12, c.h - 12);
+                ctx.strokeStyle = '#5e4024'; 
+                ctx.lineWidth = 5; 
+                ctx.strokeRect(-c.w/2, -c.h/2, c.w, c.h);
+                ctx.lineWidth = 4; 
+                ctx.beginPath(); 
+                ctx.moveTo(0, -c.h/2); ctx.lineTo(0, c.h/2); 
+                ctx.moveTo(-c.w/2, 0); ctx.lineTo(c.w/2, 0); 
+                ctx.stroke();
+                ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(-c.w/2 + 10, -c.h/2 + 20); 
+                ctx.lineTo(-c.w/2 + 20, -c.h/2 + 10);
+                ctx.stroke();
+                
+            } else if (c.type === 'rect_chimney') {
+                ctx.fillStyle = c.color; 
+                ctx.fillRect(-c.w/2, -c.h/2, c.w, c.h);
+                ctx.strokeStyle = '#4a251f'; 
+                ctx.lineWidth = 4; 
+                ctx.strokeRect(-c.w/2, -c.h/2, c.w, c.h);
+                ctx.beginPath(); 
+                ctx.moveTo(-c.w/2, -15); ctx.lineTo(c.w/2, -15); 
+                ctx.moveTo(-c.w/2, 10); ctx.lineTo(c.w/2, 10); 
+                ctx.moveTo(0, -15); ctx.lineTo(0, -c.h/2);
+                ctx.moveTo(0, 10); ctx.lineTo(0, c.h/2);
+                ctx.stroke();
+                ctx.fillStyle = 'rgba(0,0,0,0.4)';
+                ctx.fillRect(-c.w/2, -c.h/2, c.w, 10);
+                
+            } else if (c.type === 'triangle') {
+                ctx.fillStyle = c.color;
+                ctx.beginPath(); 
+                ctx.moveTo(-c.w/2, c.h/2); 
+                ctx.lineTo(0, -c.h/2); 
+                ctx.lineTo(c.w/2, c.h/2); 
+                ctx.closePath(); 
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(0,0,0,0.15)';
+                ctx.lineWidth = 4;
+                ctx.beginPath(); ctx.moveTo(-c.w/4, c.h/2); ctx.lineTo(-c.w/8, 0); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(c.w/4, c.h/2); ctx.lineTo(c.w/8, 0); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(-c.w/2 + 20, c.h/2); ctx.lineTo(c.w/2 - 20, c.h/2); ctx.stroke();
+                ctx.strokeStyle = '#4a3018'; 
+                ctx.lineWidth = 5; 
+                ctx.stroke();
+                
+            } else if (c.type === 'tape') {
+                ctx.fillStyle = c.color; 
+                ctx.fillRect(-c.w/2, -c.h/2, c.w, c.h);
+                ctx.strokeStyle = 'rgba(150, 140, 100, 0.4)';
+                ctx.lineWidth = 1;
+                ctx.beginPath(); ctx.moveTo(-c.w/2, 0); ctx.lineTo(c.w/2, 0); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(-c.w/2, -4); ctx.lineTo(c.w/2, -4); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(-c.w/2, 4); ctx.lineTo(c.w/2, 4); ctx.stroke();
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.beginPath();
+                for(let i=-c.h/2; i<=c.h/2; i+=2) { ctx.lineTo(-c.w/2 + Math.random()*4, i); }
+                for(let i=-c.h/2; i<=c.h/2; i+=2) { ctx.lineTo(c.w/2 - Math.random()*4, i); }
+                ctx.fill(); 
+                ctx.globalCompositeOperation = 'source-over';
+            }
+            ctx.restore();
+        });
+
+        if (isAnyDragging && progress === 0) {
+            ctx.save();
+            ctx.globalAlpha = 1;
+            ctx.strokeStyle = 'rgba(80, 45, 20, 0.95)';
+            ctx.fillStyle = 'rgba(0, 0, 0, 0)'; 
+            ctx.setLineDash([8, 6]);
+            ctx.lineWidth = 4;
+            
+            draggableCardboards.forEach(c => {
+                if(c.snapped) return;
+                ctx.save();
+                ctx.translate(c.snapX, c.snapY);
+                ctx.rotate(c.snapRot * Math.PI / 180);
+                ctx.beginPath();
+                if (c.type === 'rect') {
+                    ctx.rect(-c.w/2, -c.h/2, c.w, c.h);
+                } else if (c.type === 'rect_door') {
+                    ctx.rect(-c.w/2, -c.h/2, c.w, c.h);
+                    ctx.moveTo(c.w/2 - 10, 0);
+                    ctx.arc(c.w/2 - 14, 0, 4, 0, Math.PI*2);
+                } else if (c.type === 'rect_window') {
+                    ctx.rect(-c.w/2, -c.h/2, c.w, c.h);
+                    ctx.moveTo(0, -c.h/2); ctx.lineTo(0, c.h/2);
+                    ctx.moveTo(-c.w/2, 0); ctx.lineTo(c.w/2, 0);
+                } else if (c.type === 'rect_chimney') {
+                    ctx.rect(-c.w/2, -c.h/2, c.w, c.h);
+                    ctx.moveTo(-c.w/2, -10); ctx.lineTo(c.w/2, -10);
+                    ctx.moveTo(-c.w/2, 10); ctx.lineTo(c.w/2, 10);
+                } else if (c.type === 'triangle') {
+                    ctx.moveTo(-c.w/2, c.h/2); 
+                    ctx.lineTo(0, -c.h/2); 
+                    ctx.lineTo(c.w/2, c.h/2); 
+                    ctx.closePath();
+                } else if (c.type === 'tape') {
+                    ctx.rect(-c.w/2, -c.h/2, c.w, c.h);
+                }
+                ctx.stroke();
+                ctx.restore();
+            });
+            ctx.setLineDash([]);
+            ctx.restore();
+        }
+    }
+
+    // 1: Plakçalar
+    if (pageIndex === 1) {
+        const imgW = 280; 
+        const imgH = 280;
+        const vidW = 230; 
+        const vidH = 160;
+        
+        // VİDEONUN TAMAMEN HAZIR OLUP OLMADIĞINI KONTROL EDİYORUZ
+        const isRecordReady = isRecordPlaying && recordVideo && recordVideo.readyState >= 2 && !recordVideo.error;
+        
+        // GÖRÜNTÜNÜN GİDİP GELMEMESİ İÇİN: 
+        // Video henüz oynatılamayacak durumdaysa (!isRecordReady) arka plandaki fotoğrafı silme, ÇİZ!
+        if (!isRecordReady) {
+            let recordImg = imgCache['plakcalar.png'];
+            if(!recordImg) {
+                recordImg = new Image();
+                recordImg.onload = () => { renderPage(1); };
+                recordImg.onerror = () => { renderPage(1); };
+                recordImg.src = 'plakcalar.png';
+                imgCache['plakcalar.png'] = recordImg;
+            }
+            if (recordImg && recordImg.complete && recordImg.naturalWidth > 0) {
+                drawImageProp(ctx, recordImg, 256 - imgW/2, 330 - imgH/2, imgW, imgH);
+            } else {
+                ctx.beginPath(); 
+                ctx.arc(256, 330, 110, 0, Math.PI*2);
+                ctx.fillStyle = '#1e1f26'; 
+                ctx.fill();
+                ctx.strokeStyle = '#4a4e69'; 
+                ctx.lineWidth = 4; 
+                ctx.stroke();
+                ctx.fillStyle = '#ffffff'; 
+                ctx.font = "16px Arial"; 
+                ctx.textAlign = 'center';
+                ctx.fillText("Plakçalar", 256, 335);
+            }
+        }
+
+        // Video hazırsa fotoğrafın yerine videoyu çiz
+        if (isRecordReady) {
+            drawTransparentMedia(ctx, recordVideo, 256 - vidW/2, 330 - vidH/2, vidW, vidH);
+        }
+
+        const aW = 96; 
+        const aH = 96;
+        draggableAlbums.forEach(a => {
+            ctx.save();
+            ctx.translate(a.x, a.y);
+            ctx.rotate(a.rot * Math.PI / 180);
+            
+            if(a.dragging) {
+                ctx.shadowColor = 'rgba(0,0,0,0.6)'; 
+                ctx.shadowBlur = 22; 
+                ctx.shadowOffsetX = 6; 
+                ctx.shadowOffsetY = 10; 
+                ctx.scale(1.15, 1.15); 
+            } else {
+                if (a.url === 'album8.png') {
+                    ctx.shadowColor = 'rgba(0,0,0,0.42)'; 
+                    ctx.shadowBlur = 20; 
+                    ctx.shadowOffsetX = 5; 
+                    ctx.shadowOffsetY = 8;
+                } else {
+                    ctx.shadowColor = 'rgba(0,0,0,0.3)'; 
+                    ctx.shadowBlur = 15; 
+                    ctx.shadowOffsetX = 4; 
+                    ctx.shadowOffsetY = 6;
+                }
+            }
+
+            let img = imgCache[a.url];
+            if(!img) {
+                img = new Image(); 
+                img.onload = () => { renderPage(1); }; 
+                img.onerror = () => { renderPage(1); }; 
+                img.src = a.url; 
+                imgCache[a.url] = img;
+            }
+
+            if (img && img.complete && img.naturalWidth > 0) {
+                drawImageProp(ctx, img, -aW/2, -aH/2, aW, aH);
+            } else {
+                ctx.fillStyle = '#d4a373'; 
+                ctx.fillRect(-aW/2, -aH/2, aW, aH);
+                ctx.fillStyle = '#fff'; 
+                ctx.font = "bold 14px Arial"; 
+                ctx.textAlign = 'center'; 
+                ctx.textBaseline = 'middle';
+                ctx.fillText("Albüm", 0, 0);
+            }
+            
+            ctx.strokeStyle = '#e6dfd1'; 
+            ctx.lineWidth = 2; 
+            ctx.strokeRect(-aW/2, -aH/2, aW, aH);
+            ctx.restore();
+        });
+    }
+
+    // 2: Televizyon (Eski 4)
+    if (pageIndex === 2) {
+        const tvW = 320; 
+        const tvH = 250; 
+        const tvX = 256; 
+        const tvY = 200; 
+        
+        ctx.save();
+        ctx.shadowColor = 'rgba(0,0,0,0.5)';
+        ctx.shadowBlur = 15;
+        ctx.shadowOffsetX = 4;
+        ctx.shadowOffsetY = 6;
+        
+        // VİDEONUN EKRANA ÇİZİLEBİLMESİ İÇİN TAMAMEN HAZIR OLUP OLMADIĞINI KONTROL EDİYORUZ
+        const isVideoReady = isTvPlaying && tvVidEl && tvVidEl.readyState >= 2 && !tvVidEl.error;
+        
+        // GÖRÜNTÜNÜN GİDİP GELMEMESİ İÇİN: 
+        // Video henüz oynatılamayacak durumdaysa (!isVideoReady) VEYA poster videosu oynuyorsa arka plana kasayı ÇİZ!
+        if (!isVideoReady || isPlayingPoster) {
+            let tvImg = imgCache['televizyon.jpg'];
+            if (!tvImg) {
+                tvImg = new Image();
+                tvImg.onload = () => { renderPage(2); };
+                tvImg.onerror = () => { renderPage(2); };
+                tvImg.src = 'televizyon.jpg';
+                imgCache['televizyon.jpg'] = tvImg;
+            }
+            if (tvImg && tvImg.complete && tvImg.naturalWidth > 0) {
+                drawTransparentMedia(ctx, tvImg, tvX - tvW/2, tvY - tvH/2, tvW, tvH);
+            } else {
+                ctx.fillStyle = '#111';
+                ctx.fillRect(tvX - tvW/2, tvY - tvH/2, tvW, tvH);
+            }
+        }
+        
+        // Video hazırsa ve poster değilse (tam ekran kasasız video)
+        if (isVideoReady && !isPlayingPoster) {
+            ctx.shadowColor = 'transparent';
+            drawTransparentMedia(ctx, tvVidEl, tvX - tvW/2, tvY - tvH/2, tvW, tvH);
+        }
+
+        // Video hazırsa ve posterse (kasanın içine kırpılmış video)
+        if (isVideoReady && isPlayingPoster) {
+            ctx.shadowColor = 'transparent'; 
+            const screenW = 230;  
+            const screenH = 194; 
+            const screenX = tvX - 145; 
+            const screenY = tvY - 95;  
+            
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(screenX, screenY, screenW, screenH);
+            ctx.clip(); 
+            ctx.drawImage(tvVidEl, screenX, screenY, screenW, screenH);
+            ctx.restore();
+        }
+        
+        ctx.restore(); 
+
+        const pW = 80;
+        const pH = 113;
+        draggablePosters.forEach(p => {
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            
+            if (p.dragging) {
+                ctx.shadowColor = 'rgba(0,0,0,0.6)';
+                ctx.shadowBlur = 18;
+                ctx.shadowOffsetX = 6;
+                ctx.shadowOffsetY = 10;
+                ctx.scale(1.15, 1.15);
+            } else {
+                ctx.shadowColor = 'rgba(0,0,0,0.3)';
+                ctx.shadowBlur = 10;
+                ctx.shadowOffsetX = 3;
+                ctx.shadowOffsetY = 5;
+            }
+
+            let pImg = imgCache[p.url];
+            if (!pImg) {
+                pImg = new Image();
+                pImg.onload = () => { renderPage(2); };
+                pImg.onerror = () => { renderPage(2); };
+                pImg.src = p.url;
+                imgCache[p.url] = pImg;
+            }
+
+            if (pImg && pImg.complete && pImg.naturalWidth > 0) {
+                ctx.drawImage(pImg, -pW/2, -pH/2, pW, pH);
+            } else {
+                ctx.fillStyle = '#6b8a31';
+                ctx.fillRect(-pW/2, -pH/2, pW, pH);
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 14px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText("Poster", 0, 0);
+            }
+            ctx.strokeStyle = '#e6dfd1';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(-pW/2, -pH/2, pW, pH);
+            ctx.restore();
+        });
+    }
+    
+    // 3: Avatar (Eski 0)
+    if (pageIndex === 3) {
+        draggableQuotes.forEach(q => {
+            ctx.save();
+            ctx.translate(q.x, q.y);
+            ctx.rotate(q.rot * Math.PI / 180);
+            ctx.font = "bold 22px 'Caveat'";
+            const w = q.text.length * 11 + 30; 
+            const h = 34;
+            ctx.fillStyle = '#fbf5df';
+            
+            if(q.dragging) {
+                ctx.shadowColor = 'rgba(0,0,0,0.6)'; 
+                ctx.shadowBlur = 15; 
+                ctx.shadowOffsetX = 4; 
+                ctx.shadowOffsetY = 6; 
+                ctx.scale(1.15, 1.15); 
+            } else {
+                ctx.shadowColor = 'rgba(0,0,0,0.3)'; 
+                ctx.shadowBlur = 5; 
+                ctx.shadowOffsetX = 2; 
+                ctx.shadowOffsetY = 3;
+            }
+            
+            ctx.fillRect(-w/2, -h/2, w, h);
+            ctx.fillStyle = '#6b8a31'; 
+            ctx.fillRect(-w/2, -h/2, 5, h);
+            ctx.shadowColor = 'transparent'; 
+            ctx.fillStyle = '#3a2512';
+            ctx.textAlign = 'center'; 
+            ctx.textBaseline = 'middle';
+            ctx.fillText(q.text, 0, 0);
+            ctx.restore();
+        });
+    }
+
+    // 4: Pişti (Eski 2)
+    if (pageIndex === 4) {
+        deckCards.forEach(c => {
+            ctx.save();
+            ctx.translate(c.x, c.y);
+            ctx.rotate(c.rot * Math.PI / 180);
+
+            const cW = 120; 
+            const cH = 170; 
+            const radius = 12; 
+            const lift = Math.sin(c.flipProgress * Math.PI); 
+            const scaleFlip = 1 + (lift * 0.18); 
+            const shadowBlur = 5 + (lift * 10); 
+            const shadowOffset = 2 + (lift * 8);
+            const scaleX = Math.cos(c.flipProgress * Math.PI);
+
+            ctx.scale(scaleX * scaleFlip, scaleFlip);
+
+            ctx.beginPath();
+            ctx.moveTo(-cW/2 + radius, -cH/2);
+            ctx.lineTo(cW/2 - radius, -cH/2);
+            ctx.quadraticCurveTo(cW/2, -cH/2, cW/2, -cH/2 + radius);
+            ctx.lineTo(cW/2, cH/2 - radius);
+            ctx.quadraticCurveTo(cW/2, cH/2, cW/2 - radius, cH/2);
+            ctx.lineTo(-cW/2 + radius, cH/2);
+            ctx.quadraticCurveTo(-cW/2, cH/2, -cW/2, cH/2 - radius);
+            ctx.lineTo(-cW/2, -cH/2 + radius);
+            ctx.quadraticCurveTo(-cW/2, -cH/2, -cW/2 + radius, -cH/2);
+            ctx.closePath();
+            
+            ctx.shadowColor = `rgba(0,0,0,${0.55 - (lift * 0.25)})`;
+            ctx.shadowBlur = shadowBlur; 
+            ctx.shadowOffsetX = shadowOffset * (scaleX > 0 ? 1 : -1); 
+            ctx.shadowOffsetY = shadowOffset * 1.2;
+            
+            ctx.fillStyle = '#ffffff'; 
+            ctx.fill(); 
+            
+            ctx.shadowColor = 'transparent'; 
+            ctx.clip(); 
+
+            if (c.flipProgress <= 0.5) {
+                let cImg = imgCache['cardback.png'];
+                if(!cImg) {
+                    cImg = new Image();
+                    cImg.onload = () => { renderPage(4); };
+                    cImg.onerror = () => { renderPage(4); }; 
+                    cImg.src = 'cardback.png';
+                    imgCache['cardback.png'] = cImg;
+                }
+                if (cImg && cImg.complete && cImg.naturalWidth > 0) {
+                    ctx.drawImage(cImg, -cW/2, -cH/2, cW, cH);
+                } else {
+                    ctx.fillStyle = '#11347a'; 
+                    ctx.fillRect(-cW/2, -cH/2, cW, cH);
+                }
+                ctx.fillStyle = `rgba(0, 0, 0, ${lift * 0.45})`; 
+                ctx.fillRect(-cW/2, -cH/2, cW, cH);
+            } else {
+                ctx.scale(-1, 1); 
+                let fImgName = 'kart' + c.id + '.png';
+                let fImg = imgCache[fImgName];
+                if(!fImg) {
+                    fImg = new Image(); 
+                    fImg.onload = () => { renderPage(4); }; 
+                    fImg.onerror = () => { renderPage(4); }; 
+                    fImg.src = fImgName; 
+                    imgCache[fImgName] = fImg;
+                }
+                if (fImg && fImg.complete && fImg.naturalWidth > 0) { 
+                    drawImageProp(ctx, fImg, -cW/2, -cH/2, cW, cH); 
+                } else { 
+                    ctx.fillStyle = '#f8f8fa'; 
+                    ctx.fillRect(-cW/2, -cH/2, cW, cH);
+                    ctx.fillStyle = '#4f6680'; 
+                    ctx.font = "bold 20px 'Cormorant Garamond'"; 
+                    ctx.textAlign = 'center'; 
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText("Anı " + (c.id+1), 0, 0); 
+                }
+                ctx.fillStyle = `rgba(0, 0, 0, ${Math.max(0, (1 - c.flipProgress) * 0.45)})`;
+                ctx.fillRect(-cW/2, -cH/2, cW, cH);
+                ctx.scale(-1, 1); 
+            }
+            ctx.strokeStyle = 'rgba(0,0,0,0.15)'; 
+            ctx.lineWidth = 1; 
+            ctx.stroke();
+            ctx.restore();
+        });
+    }
+    
+    ctx.restore(); 
+    paperTextures[pageIndex].needsUpdate = true;
+  }
+
+  function initPages(){
+    generateBasePaper();
+    for(let i=0; i<12; i++){
+      const c = mkCanvas(512,660); 
+      const ctx = c.getContext('2d');
+      const tex = new THREE.CanvasTexture(c); 
+      tex.encoding = THREE.sRGBEncoding;
+      paperCanvases.push(c); 
+      paperCtxs.push(ctx); 
+      paperTextures.push(tex);
+      renderPage(i);
+    }
+  }
+
+  function leatherBase(ctx,w,h){
+    ctx.fillStyle='#5c3821'; 
+    ctx.fillRect(0,0,w,h);
+    for(let i=0;i<55;i++){
+      const x=Math.random()*w, y=Math.random()*h, r=40+Math.random()*w*0.3;
+      const g=ctx.createRadialGradient(x,y,0,x,y,r);
+      g.addColorStop(0, Math.random()>0.5?'rgba(110,65,35,0.3)':'rgba(50,30,15,0.4)');
+      g.addColorStop(1,'rgba(0,0,0,0)'); 
+      ctx.fillStyle=g; 
+      ctx.fillRect(0,0,w,h);
+    }
+    addNoise(ctx,w,h,12);
+  }
+  
+  function makeCoverFrontTexture(){
+    const c=mkCanvas(768,1024); 
+    const ctx=c.getContext('2d'); 
+    leatherBase(ctx,768,1024);
+    const vg=ctx.createRadialGradient(384,512,180,384,512,680); 
+    vg.addColorStop(0,'rgba(0,0,0,0)'); 
+    vg.addColorStop(1,'rgba(0,0,0,0.4)'); 
+    ctx.fillStyle=vg; 
+    ctx.fillRect(0,0,768,1024);
+    
+    function drawEmbossings() {
+        ctx.beginPath();
+        ctx.rect(30, 30, 708, 964); ctx.rect(45, 45, 678, 934);
+        ctx.moveTo(384, 180); ctx.lineTo(440, 410); ctx.lineTo(700, 512); ctx.lineTo(440, 614);
+        ctx.lineTo(384, 844); ctx.lineTo(328, 614); ctx.lineTo(68, 512);  ctx.lineTo(328, 410); ctx.closePath();
+        ctx.moveTo(384, 280); ctx.lineTo(420, 440); ctx.lineTo(600, 512); ctx.lineTo(420, 584);
+        ctx.lineTo(384, 744); ctx.lineTo(348, 584); ctx.lineTo(168, 512); ctx.lineTo(348, 440); ctx.closePath();
+        ctx.moveTo(250, 512); ctx.quadraticCurveTo(384, 380, 518, 512); ctx.quadraticCurveTo(384, 644, 250, 512);
+        ctx.moveTo(434, 512); ctx.arc(384, 512, 50, 0, Math.PI*2); ctx.moveTo(404, 512); ctx.arc(384, 512, 20, 0, Math.PI*2);
+        function corner(cx, cy, sx, sy) {
+            ctx.moveTo(cx + sx*180, cy + sy*20); ctx.lineTo(cx + sx*20, cy + sy*20); ctx.lineTo(cx + sx*20, cy + sy*180);
+            ctx.quadraticCurveTo(cx + sx*80, cy + sy*80, cx + sx*180, cy + sy*20);
+            ctx.moveTo(cx + sx*110, cy + sy*40); ctx.lineTo(cx + sx*40, cy + sy*40); ctx.lineTo(cx + sx*40, cy + sy*110);
+            ctx.quadraticCurveTo(cx + sx*60, cy + sy*60, cx + sx*110, cy + sy*40);
+        }
+        corner(45, 45, 1, 1); corner(723, 45, -1, 1); corner(45, 979, 1, -1); corner(723, 979, -1, -1);   
+    }
+
+    ctx.lineJoin = 'round'; 
+    ctx.lineCap = 'round';
+    ctx.lineWidth = 5; 
+    ctx.strokeStyle = 'rgba(0,0,0,0.85)';
+    ctx.shadowColor = 'rgba(255,255,255,0.12)'; 
+    ctx.shadowOffsetX = -1; 
+    ctx.shadowOffsetY = -1; 
+    ctx.shadowBlur = 1;
+    drawEmbossings(); 
+    ctx.stroke();
+    
+    ctx.lineWidth = 3; 
+    ctx.strokeStyle = 'rgba(90,55,30,0.9)'; 
+    ctx.shadowColor = 'rgba(255,255,255,0.2)'; 
+    ctx.shadowOffsetX = 1; 
+    ctx.shadowOffsetY = 1; 
+    ctx.shadowBlur = 1;
+    drawEmbossings(); 
+    ctx.stroke();
+    ctx.shadowColor = 'transparent';
+
+    ctx.fillStyle = '#4a2c18';
+    ctx.shadowColor = 'rgba(0,0,0,0.8)'; 
+    ctx.shadowBlur = 14; 
+    ctx.shadowOffsetX = -6; 
+    ctx.shadowOffsetY = 4;
+    ctx.beginPath(); 
+    ctx.moveTo(768, 430); 
+    ctx.lineTo(620, 430); 
+    ctx.arc(620, 512, 82, -Math.PI/2, Math.PI/2, true); 
+    ctx.lineTo(768, 594); 
+    ctx.fill();
+    
+    ctx.shadowColor = 'transparent';
+    ctx.strokeStyle = '#7a4d2d'; 
+    ctx.lineWidth = 2; 
+    ctx.setLineDash([8, 4]);
+    ctx.beginPath(); 
+    ctx.moveTo(768, 442); 
+    ctx.lineTo(620, 442); 
+    ctx.arc(620, 512, 70, -Math.PI/2, Math.PI/2, true); 
+    ctx.lineTo(768, 582); 
+    ctx.stroke(); 
+    ctx.setLineDash([]);
+
+    ctx.fillStyle = '#a6853f'; 
+    ctx.shadowColor = 'rgba(0,0,0,0.6)'; 
+    ctx.shadowBlur = 6; 
+    ctx.shadowOffsetY = 2;
+    ctx.beginPath(); 
+    ctx.arc(580, 512, 18, 0, Math.PI*2); 
+    ctx.fill();
+    ctx.fillStyle = '#7a5f22'; 
+    ctx.beginPath(); 
+    ctx.arc(580, 512, 10, 0, Math.PI*2); 
+    ctx.fill(); 
+    ctx.shadowColor = 'transparent';
+
+    function drawMetalCorner(x, y, scaleX, scaleY) {
+        ctx.save(); 
+        ctx.translate(x, y); 
+        ctx.scale(scaleX, scaleY); 
+        ctx.fillStyle = '#a6853f';
+        ctx.shadowColor = 'rgba(0,0,0,0.7)'; 
+        ctx.shadowBlur = 8; 
+        ctx.shadowOffsetX = -2; 
+        ctx.shadowOffsetY = 2;
+        ctx.beginPath(); 
+        ctx.moveTo(0, 0); 
+        ctx.lineTo(-110, 0); 
+        ctx.lineTo(-110, 15); 
+        ctx.lineTo(-15, 110); 
+        ctx.lineTo(0, 110); 
+        ctx.closePath(); 
+        ctx.fill();
+        ctx.shadowColor = 'transparent'; 
+        ctx.strokeStyle = '#6e5420'; 
+        ctx.lineWidth = 3;
+        ctx.beginPath(); 
+        ctx.moveTo(-85, 10); 
+        ctx.lineTo(-10, 85); 
+        ctx.stroke();
+        ctx.fillStyle = '#4a3815'; 
+        ctx.beginPath(); 
+        ctx.arc(-20, 20, 5, 0, Math.PI*2); 
+        ctx.fill();
+        ctx.beginPath(); 
+        ctx.arc(-70, 10, 5, 0, Math.PI*2); 
+        ctx.fill(); 
+        ctx.beginPath(); 
+        ctx.arc(-10, 70, 5, 0, Math.PI*2); 
+        ctx.fill(); 
+        ctx.restore();
+    }
+    
+    drawMetalCorner(768, 0, 1, 1); 
+    drawMetalCorner(768, 1024, 1, -1);   
+    const tex = new THREE.CanvasTexture(c); 
+    tex.encoding = THREE.sRGBEncoding; 
+    return tex;
+  }
+  
+  function makeEdgeTexture(){
+    const c = mkCanvas(48,512); 
+    const ctx = c.getContext('2d'); 
+    const tones = ['#e2c48f','#cfa96c','#e8d0a0','#b89260','#dcbb85','#c9a06a'];
+    let y = 0; 
+    while(y < 512){ 
+        const h = 2 + Math.random()*5; 
+        ctx.fillStyle = tones[Math.floor(Math.random()*tones.length)]; 
+        ctx.fillRect(0, y, 48, h); 
+        y += h; 
+    }
+    const tex = new THREE.CanvasTexture(c); 
+    tex.encoding = THREE.sRGBEncoding; 
+    return tex;
+  }
+
+  function makeLacingTexture(){
+    const c = mkCanvas(48,512); 
+    const ctx = c.getContext('2d'); 
+    ctx.fillStyle = '#402514'; 
+    ctx.fillRect(0, 0, 48, 512); 
+    ctx.strokeStyle = '#633c23'; 
+    ctx.lineWidth = 5; 
+    ctx.lineCap = 'round';
+    ctx.shadowColor = 'rgba(0,0,0,0.6)'; 
+    ctx.shadowBlur = 4; 
+    ctx.shadowOffsetY = 2;
+    for(let y = 6; y < 512; y += 58){ 
+        ctx.beginPath(); 
+        ctx.moveTo(6, y); 
+        ctx.lineTo(42, y+38); 
+        ctx.stroke(); 
+        ctx.beginPath(); 
+        ctx.moveTo(42, y); 
+        ctx.lineTo(6, y+38); 
+        ctx.stroke(); 
+    }
+    const tex = new THREE.CanvasTexture(c); 
+    tex.encoding = THREE.sRGBEncoding; 
+    return tex;
+  }
+
+  function makeGroundTexture(){
+    const c = mkCanvas(512, 512); 
+    const ctx = c.getContext('2d');
+    ctx.fillStyle = '#0a1006'; 
+    ctx.fillRect(0, 0, 512, 512); 
+    addNoise(ctx, 512, 512, 10);
+    const vg = ctx.createRadialGradient(256, 256, 100, 256, 256, 350); 
+    vg.addColorStop(0, 'rgba(0,0,0,0)'); 
+    vg.addColorStop(1, 'rgba(0,0,0,0.8)');
+    ctx.fillStyle = vg; 
+    ctx.fillRect(0, 0, 512, 512);
+    const tex = new THREE.CanvasTexture(c); 
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping; 
+    tex.repeat.set(10, 10); 
+    tex.encoding = THREE.sRGBEncoding; 
+    return tex;
+  }
+
+  function easeInOutQuint(t){ 
+      return t < 0.5 ? 16 * t * t * t * t * t : 1 - Math.pow(-2 * t + 2, 5) / 2; 
+  }
+  
+  // ---------------- SCENE SETUP ----------------
+  const mount = document.getElementById('mount');
+  const scene = new THREE.Scene();
+  const bgColor = 0x0c1308; 
+  scene.background = new THREE.Color(bgColor);
+  scene.fog = new THREE.Fog(bgColor, 12, 40); 
+
+  const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
+  const renderer = new THREE.WebGLRenderer({ antialias:true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.shadowMap.enabled = true; 
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.outputEncoding = THREE.sRGBEncoding; 
+  renderer.toneMapping = THREE.ACESFilmicToneMapping; 
+  renderer.toneMappingExposure = 1.15;
+  mount.appendChild(renderer.domElement);
+
+  function resize(){
+    const w = mount.clientWidth;
+    const h = mount.clientHeight;
+    camera.aspect = w/h;
+    if (w < h) { camera.fov = 42 * (h / w) * 0.8; } else { camera.fov = 42; }
+    camera.updateProjectionMatrix(); 
+    renderer.setSize(w, h);
+  }
+  resize(); 
+  window.addEventListener('resize', resize);
+
+  scene.add(new THREE.AmbientLight(0xcde6c1, 0.45));
+  const sun = new THREE.DirectionalLight(0xfff5d7, 1.8); 
+  sun.position.set(-4, 9, 6); 
+  sun.castShadow = true; 
+  sun.shadow.mapSize.width = 1024; 
+  sun.shadow.mapSize.height = 1024;
+  sun.shadow.camera.near = 0.5; 
+  sun.shadow.camera.far = 25;
+  sun.shadow.camera.left = -10; 
+  sun.shadow.camera.right = 10;
+  sun.shadow.camera.top = 10; 
+  sun.shadow.camera.bottom = -10;
+  sun.shadow.bias = -0.0005; 
+  scene.add(sun);
+  
+  const glow = new THREE.PointLight(0xffddaa, 0.6, 12, 2); 
+  glow.position.set(1.5, 2.2, 3.2); 
+  scene.add(glow);
+
+  const groundPlane = new THREE.Mesh(new THREE.PlaneGeometry(100, 100), new THREE.MeshStandardMaterial({ map: makeGroundTexture(), roughness: 1.0, metalness: 0.0 }));
+  groundPlane.rotation.x = -Math.PI/2; 
+  groundPlane.position.y = -0.4; 
+  groundPlane.receiveShadow = true; 
+  scene.add(groundPlane);
+
+  const GRASS_COUNT = 55000; 
+  const bladeGeo = new THREE.BufferGeometry();
+  const bladeVertices = new Float32Array([-0.035,0,0, 0.035,0,0, -0.025,0.15,0.03, 0.025,0.15,0.03, -0.010,0.35,0.06, 0.010,0.35,0.06, 0,0.55,0.1]);
+  const bladeIndices = [ 0,1,2, 2,1,3, 2,3,4, 4,3,5, 4,5,6 ];
+  bladeGeo.setAttribute('position', new THREE.BufferAttribute(bladeVertices, 3)); 
+  bladeGeo.setIndex(bladeIndices); 
+  bladeGeo.computeVertexNormals();
+
+  const bladeMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.6, metalness: 0.1, side: THREE.DoubleSide });
+  bladeMat.onBeforeCompile = (shader) => {
+    shader.uniforms.time = { value: 0 };
+    shader.vertexShader = `uniform float time;\nvarying float vHeight;\n` + shader.vertexShader;
+    shader.vertexShader = shader.vertexShader.replace(
+      `#include <begin_vertex>`,
+      `#include <begin_vertex>\nvHeight = position.y;\nfloat wind = sin(time * 2.0 + instanceMatrix[3][0] * 0.5 + instanceMatrix[3][2] * 0.5) * 0.15 * position.y;\ntransformed.x += wind;\ntransformed.z += wind * 0.4;\n`
+    );
+    shader.fragmentShader = `varying float vHeight;\n` + shader.fragmentShader;
+    shader.fragmentShader = shader.fragmentShader.replace(
+      `#include <color_fragment>`,
+      `#include <color_fragment>\nfloat fakeAO = smoothstep(0.0, 0.55, vHeight);\nfakeAO = 0.25 + 0.75 * fakeAO;\ndiffuseColor.rgb *= fakeAO;\n`
+    );
+    bladeMat.userData.shader = shader;
+  };
+
+  const grassMesh = new THREE.InstancedMesh(bladeGeo, bladeMat, GRASS_COUNT);
+  grassMesh.receiveShadow = true; 
+  grassMesh.castShadow = false; 
+  const dummy = new THREE.Object3D(); 
+  const colorObj = new THREE.Color();
+  const grassColors = ['#284718', '#345c1e', '#3e6e23', '#4b8529', '#5a9c31', '#6bb53c'];
+
+  for(let i = 0; i < GRASS_COUNT; i++) {
+    const x = (Math.random() - 0.5) * 45;
+    const z = (Math.random() - 0.5) * 45;
+    if(Math.abs(x) < 1.6 && Math.abs(z) < 2.2) continue;
+    dummy.position.set(x, -0.4, z); 
+    dummy.rotation.set((Math.random() - 0.5) * 0.4, Math.random() * Math.PI * 2, (Math.random() - 0.5) * 0.4);
+    dummy.scale.set(1, 0.5 + Math.random() * 0.9, 1); 
+    dummy.updateMatrix(); 
+    grassMesh.setMatrixAt(i, dummy.matrix);
+    colorObj.set(grassColors[Math.floor(Math.random() * grassColors.length)]); 
+    grassMesh.setColorAt(i, colorObj);
+  }
+  scene.add(grassMesh);
+
+  const particleCount = 100;
+  const pGeo = new THREE.BufferGeometry();
+  const pPos = new Float32Array(particleCount * 3); 
+  const pPhase = new Float32Array(particleCount); 
+  for(let i=0; i<particleCount; i++) {
+      pPos[i*3] = (Math.random() - 0.5) * 20; 
+      pPos[i*3+1] = Math.random() * 8; 
+      pPos[i*3+2] = (Math.random() - 0.5) * 20; 
+      pPhase[i] = Math.random() * Math.PI * 2;
+  }
+  pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3)); 
+  pGeo.setAttribute('phase', new THREE.BufferAttribute(pPhase, 1));
+  
+  const pCanvas = document.createElement('canvas'); 
+  pCanvas.width = 32; pCanvas.height = 32; 
+  const pCtx = pCanvas.getContext('2d');
+  const pGradient = pCtx.createRadialGradient(16,16,0, 16,16,16);
+  pGradient.addColorStop(0, 'rgba(255, 255, 200, 1)'); 
+  pGradient.addColorStop(0.2, 'rgba(200, 255, 150, 0.8)'); 
+  pGradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+  pCtx.fillStyle = pGradient; 
+  pCtx.fillRect(0,0,32,32);
+  
+  const pMat = new THREE.PointsMaterial({ size: 0.15, map: new THREE.CanvasTexture(pCanvas), transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending, depthWrite: false });
+  const fireflies = new THREE.Points(pGeo, pMat); 
+  scene.add(fireflies);
+
+  const darkLeatherMat = new THREE.MeshStandardMaterial({ color:0x5c3821, roughness:0.8, metalness:0.02 });
+  const edgeMat = new THREE.MeshStandardMaterial({ map:makeEdgeTexture(), roughness:0.9, metalness:0 });
+  const lacingMat = new THREE.MeshStandardMaterial({ map:makeLacingTexture(), roughness:0.85 });
+  initPages();
+
+  const book = new THREE.Group(); 
+  scene.add(book);
+  const backCover = new THREE.Mesh(new THREE.BoxGeometry(W, COVER_T, D), darkLeatherMat);
+  backCover.position.set(W/2, COVER_T/2, 0); 
+  backCover.castShadow = true; 
+  backCover.receiveShadow = true; 
+  book.add(backCover);
+
+  const leaves = [];
+  const leafGeoTemplate = new THREE.BoxGeometry(W, LEAF_T, D, 32, 1, 1);
+  for(let i=0;i<N_LEAVES;i++){
+    const g = new THREE.Group();
+    const rightY = COVER_T + (N_LEAVES - 1 - i)*(LEAF_T + GAP) + LEAF_T/2 + GAP;
+    const leftY = COVER_T + i*(LEAF_T + GAP) + LEAF_T/2 + GAP;
+    g.position.set(0, rightY, 0);
+    const geo = leafGeoTemplate.clone(); 
+    geo.userData.origPos = geo.attributes.position.clone();
+    
+    const specificLeafMaterials = [edgeMat, edgeMat, new THREE.MeshStandardMaterial({ map: paperTextures[i*2], roughness:0.95 }), new THREE.MeshStandardMaterial({ map: paperTextures[i*2+1], roughness:0.95 }), edgeMat, edgeMat];
+    const mesh = new THREE.Mesh(geo, specificLeafMaterials);
+    mesh.position.set(W/2,0,0); 
+    mesh.castShadow = true; 
+    mesh.receiveShadow = true; 
+    mesh.userData = { type:'leaf', index:i };
+    
+    g.add(mesh); 
+    g.userData = { rightY: rightY, leftY: leftY, index: i, flipped: false }; 
+    book.add(g); 
+    leaves.push(g);
+  }
+
+  const frontGroup = new THREE.Group();
+  const frontClosedY = COVER_T + N_LEAVES*(LEAF_T + GAP) + COVER_T/2 + GAP*2;
+  const frontOpenY = COVER_T/2;
+  frontGroup.position.set(0, frontClosedY, 0);
+  const frontMaterials = [darkLeatherMat, darkLeatherMat, new THREE.MeshStandardMaterial({ map:makeCoverFrontTexture(), roughness:0.55, metalness: 0.1 }), darkLeatherMat, darkLeatherMat, darkLeatherMat];
+  const frontMesh = new THREE.Mesh(new THREE.BoxGeometry(W, COVER_T, D, 32, 1, 1), frontMaterials);
+  frontMesh.position.set(W/2,0,0); 
+  frontMesh.castShadow = true; 
+  frontMesh.receiveShadow = true; 
+  frontMesh.userData = { type:'cover' };
+  frontGroup.add(frontMesh);
+  
+  if (frontMesh.geometry && frontMesh.geometry.attributes.position) { 
+      frontMesh.geometry.userData.origPos = frontMesh.geometry.attributes.position.clone(); 
+  }
+  book.add(frontGroup);
+
+  const closedFrame = { pos:new THREE.Vector3(1.55,6.4,5.0), look:new THREE.Vector3(1.5,0.15,0.1) };
+  const openFrame = { pos:new THREE.Vector3(0.05,7.6,6.1), look:new THREE.Vector3(0,0.05,0.35) };
+  const zoomedLeft = { pos:new THREE.Vector3(-1.4, 4.2, 3.5), look:new THREE.Vector3(-1.4, 0.05, 0.2) };
+  const zoomedRight = { pos:new THREE.Vector3(1.5, 4.2, 3.5), look:new THREE.Vector3(1.5, 0.05, 0.2) };
+  
+  let zoomState = 'none'; 
+  let currentLook = new THREE.Vector3().copy(closedFrame.look);
+  camera.position.copy(closedFrame.pos); 
+  camera.lookAt(closedFrame.look);
+  
+  const tweens = []; 
+  function addTween(fn, duration, onDone, tag='', delay=0){ 
+      tweens.push({ fn, duration, elapsed: -delay, onDone, tag }); 
+  }
+
+  function applyBend(geometry, originalPositions, theta) {
+    if (!originalPositions) return;
+    const pos = geometry.attributes.position; 
+    const count = pos.count;
+    
+    if (Math.abs(theta) < 0.001) {
+      for (let i = 0; i < count; i++) { pos.setXYZ(i, originalPositions.getX(i), originalPositions.getY(i), originalPositions.getZ(i)); }
+      pos.needsUpdate = true; geometry.computeVertexNormals(); 
+      return;
+    }
+    
+    const R = W / theta;
+    for (let i = 0; i < count; i++) {
+      const x0 = originalPositions.getX(i);
+      const y0 = originalPositions.getY(i);
+      const z0 = originalPositions.getZ(i);
+      const d = x0 + W/2; 
+      const alpha = d / R; 
+      const radiusAtY = R - y0;
+      pos.setXYZ(i, radiusAtY * Math.sin(alpha) - W/2, R - radiusAtY * Math.cos(alpha), z0);
+    }
+    pos.needsUpdate = true; geometry.computeVertexNormals(); 
+  }
+
+  function flipLeaf(index, forward, onDone){
+    const g = leaves[index]; 
+    const mesh = g.children[0]; 
+    const geo = mesh.geometry;
+    const startRot = forward ? 0 : Math.PI; 
+    const endRot = forward ? Math.PI : 0;
+    const startY = forward ? g.userData.rightY : g.userData.leftY; 
+    const endY = forward ? g.userData.leftY : g.userData.rightY;
+    
+    g.renderOrder = 999; 
+    const maxTheta = forward ? -Math.PI / 2.2 : Math.PI / 2.2; 
+    
+    addTween((t)=>{
+      const eased = easeInOutQuint(t); 
+      g.rotation.z = startRot + (endRot-startRot)*eased;
+      g.position.y = startY + (endY - startY)*eased + Math.sin(t*Math.PI)*0.95;
+      applyBend(geo, geo.userData.origPos, maxTheta * Math.sin(t * Math.PI));
+    }, 1100, ()=>{
+      g.rotation.z = endRot; g.position.y = endY; g.userData.flipped = forward;
+      applyBend(geo, geo.userData.origPos, 0); 
+      onDone && onDone();
+    }, 'leaf');
+  }
+
+  function animateCover(open, onDone){
+    const startRot = open ? 0 : Math.PI; const endRot = open ? Math.PI : 0;
+    const startY = open ? frontClosedY : frontOpenY; const endY = open ? frontOpenY : frontClosedY;
+    const maxTheta = open ? -Math.PI / 4 : Math.PI / 4;
+    
+    addTween((t)=>{
+      const eased = easeInOutQuint(t); 
+      frontGroup.rotation.z = startRot + (endRot-startRot)*eased;
+      frontGroup.position.y = startY + (endY - startY)*eased + Math.sin(t*Math.PI)*1.15;
+      if (frontMesh.geometry && frontMesh.geometry.userData.origPos) { 
+          applyBend(frontMesh.geometry, frontMesh.geometry.userData.origPos, maxTheta * Math.sin(t * Math.PI)); 
+      }
+      const camT = open ? eased : 1-eased; 
+      camera.position.copy(new THREE.Vector3().lerpVectors(closedFrame.pos, openFrame.pos, camT));
+      const newLook = new THREE.Vector3().lerpVectors(closedFrame.look, openFrame.look, camT); 
+      camera.lookAt(newLook); currentLook.copy(newLook);
+    }, 1350, ()=>{
+      frontGroup.rotation.z = endRot; frontGroup.position.y = endY;
+      if (frontMesh.geometry && frontMesh.geometry.userData.origPos) { applyBend(frontMesh.geometry, frontMesh.geometry.userData.origPos, 0); }
+      onDone && onDone();
+    }, 'cover');
+  }
+  
+  function setZoom(targetState){
+    if(!isOpen) return; 
+    if(zoomState === targetState) targetState = 'none'; 
+    const spidey = document.getElementById('spideyGif');
+    
+    if (targetState === 'none' || current !== 0) { 
+        spidey.style.opacity = '0';
+        if(window.spideyTimer) clearTimeout(window.spideyTimer);
+    }
+
+    for(let i=tweens.length-1; i>=0; i--){
+        if(tweens[i].tag === 'zoom') tweens.splice(i,1);
+    }
+    const startPos = camera.position.clone(); 
+    const startLook = currentLook.clone();
+    let targetFrame = (targetState === 'left') ? zoomedLeft : ((targetState === 'right') ? zoomedRight : openFrame);
+    zoomState = targetState; 
+    addTween((t)=>{
+      const eased = easeInOutQuint(t); 
+      camera.position.lerpVectors(startPos, targetFrame.pos, eased);
+      const tempLook = new THREE.Vector3().lerpVectors(startLook, targetFrame.look, eased); 
+      camera.lookAt(tempLook); currentLook.copy(tempLook);
+    }, 600, ()=>{}, 'zoom'); 
+  }
+
+  let isOpen = false;
+  let isTurning = false;
+  let current = 0;
+  
+  const hint = document.getElementById('hint');
+  const controls = document.getElementById('controls');
+  const closeBtn = document.getElementById('closeBtn');
+
+  let actionQueue = [];
+  function processQueue() {
+      if (isTurning || actionQueue.length === 0) return;
+      let action = actionQueue.shift();
+      action();
+  }
+
+  function updateUI(){
+    hint.classList.toggle('hidden', isOpen); 
+    controls.classList.toggle('show', isOpen); 
+    closeBtn.classList.toggle('show', isOpen);
+    progress.textContent = Math.min(current+1, N_LEAVES) + ' / ' + N_LEAVES;
+  }
+
+  function openBook(){ 
+    if(isTurning || isOpen) return; 
+    isTurning = true; actionQueue = [];
+    
+    const tvVidElement = document.getElementById('tvVid');
+    if (tvVidElement) {
+        tvVidElement.muted = false; 
+        let p = tvVidElement.play();
+        if (p !== undefined) {
+            p.then(() => { tvVidElement.pause(); tvVidElement.currentTime = 0; }).catch(e => console.log("Video kilidi hazırlandı."));
+        }
+    }
+
+    const recordVideoEl = document.getElementById('recordPlayerVid');
+    if (recordVideoEl) {
+        let p = recordVideoEl.play();
+        if (p !== undefined) {
+            p.then(() => { recordVideoEl.pause(); recordVideoEl.currentTime = 0; }).catch(e => {});
+        }
+    }
+
+    animateCover(true, ()=>{ isOpen = true; isTurning = false; updateUI(); processQueue(); }); 
+  }
+  
+  function closeBook(){ 
+    if(isTurning || !isOpen) return; 
+    isTurning = true; actionQueue = []; setZoom('none');
+    leaves.forEach((g)=>{ 
+        g.rotation.z=0; g.position.y=g.userData.rightY; g.userData.flipped=false; 
+        applyBend(g.children[0].geometry, g.children[0].geometry.userData.origPos, 0); 
+    });
+    animateCover(false, ()=>{ isOpen = false; current = 0; isTurning = false; updateUI(); processQueue(); }); 
+  }
+  
+  function nextPage(){ 
+    document.getElementById('spideyGif').style.opacity = '0';
+    actionQueue.push(()=>{
+        if(current>=N_LEAVES) { isTurning = false; processQueue(); return; }
+        isTurning = true; flipLeaf(current, true, ()=>{ current++; isTurning=false; updateUI(); processQueue(); }); 
+    });
+    processQueue();
+  }
+  
+  function prevPage(){ 
+    document.getElementById('spideyGif').style.opacity = '0';
+    actionQueue.push(()=>{
+        if(current<=0) { isTurning = false; processQueue(); return; }
+        isTurning = true; flipLeaf(current-1, false, ()=>{ current--; isTurning=false; updateUI(); processQueue(); }); 
+    });
+    processQueue();
+  }
+
+  closeBtn.addEventListener('click', closeBook);
+  document.addEventListener('keydown', (e)=>{ 
+      if(!isOpen) return; 
+      if(e.key==='ArrowRight') nextPage(); 
+      if(e.key==='ArrowLeft') prevPage(); 
+      if(e.key==='Escape') closeBook(); 
+  });
+
+  function isPointInCard(px, py, c) {
+      const dx = px - c.x; const dy = py - c.y; 
+      const rad = -c.rot * Math.PI / 180;
+      const lx = dx * Math.cos(rad) - dy * Math.sin(rad); 
+      const ly = dx * Math.sin(rad) + dy * Math.cos(rad);
+      return (lx >= -60 && lx <= 60 && ly >= -85 && ly <= 85);
+  }
+
+  const raycaster = new THREE.Raycaster(); 
+  const pointer = new THREE.Vector2();
+  
+  let pStartX = 0; let pStartY = 0;
+  let activeQuoteIdx = null; let activeAlbumIdx = null; let activeCardboardIdx = null; let activeTvClick = false; 
+  let preventPageTurn = false;
+
+  window.addEventListener('pointerdown', (e)=>{
+      pStartX = e.clientX; pStartY = e.clientY; preventPageTurn = false;
+      activeQuoteIdx = null; activeAlbumIdx = null; activeCardboardIdx = null; activePosterIdx = null; activeTvClick = false;
+      if (!isOpen || isTurning || zoomState === 'none') return;
+      const rect = mount.getBoundingClientRect();
+      pointer.x = ((e.clientX-rect.left)/rect.width)*2-1; pointer.y = -((e.clientY-rect.top)/rect.height)*2+1;
+      raycaster.setFromCamera(pointer, camera);
+
+      if (current === 0) {
+          const hits = raycaster.intersectObjects([leaves[0].children[0]], false);
+          if (hits.length > 0 && hits[0].face.materialIndex === 2) {
+              const hitX = hits[0].uv.x * 512;
+              const hitY = (1 - hits[0].uv.y) * 660;
+              
+              if (isHouseMapFullyVisible) {
+                  const kucuklukItems = anilarimiz[0].filter(item => item.type === 'kucukluk_foto');
+                  kucuklukItems.forEach(item => {
+                      if (Math.abs(hitX - item.x) < item.w/2 + 10 && Math.abs(hitY - item.y) < item.h/2 + 10) {
+                          preventPageTurn = true;
+                          pressTimer = setTimeout(() => {
+                              activeAiVideoIdx = item.id;
+                              if (aiVideos[item.id]) {
+                                  aiVideos[item.id].currentTime = 0;
+                                  aiVideos[item.id].play().catch(e => console.warn(e));
+                              }
+                              renderPage(0);
+                          }, 400);
+                      }
+                  });
+              }
+              if (!isHouseMapFullyVisible) {
+                  for(let i = draggableCardboards.length - 1; i >= 0; i--) {
+                      const c = draggableCardboards[i];
+                      if (c.snapped) continue; 
+                      let isHit = false;
+                      if (c.type.startsWith('rect') || c.type === 'tape') { isHit = (Math.abs(hitX - c.x) < c.w/2 && Math.abs(hitY - c.y) < c.h/2);
+                      } else if (c.type === 'triangle') { isHit = (Math.abs(hitX - c.x) < c.w/2 && Math.abs(hitY - c.y) < c.h/2); }
+                      if (isHit) {
+                          activeCardboardIdx = i; c.dragging = true; preventPageTurn = true; 
+                          renderer.domElement.style.cursor = 'grabbing'; renderPage(0); break;
+                      }
+                  }
+              }
+          }
+      }
+
+      if (current === 1) {
+          const hitsLeft = raycaster.intersectObjects([leaves[0].children[0]], false);
+          if (hitsLeft.length > 0 && hitsLeft[0].face.materialIndex === 3) {
+              const hitX = (1 - hitsLeft[0].uv.x) * 512; const hitY = hitsLeft[0].uv.y * 660;
+              for(let i = draggableAlbums.length - 1; i >= 0; i--) {
+                  const a = draggableAlbums[i];
+                  if (Math.abs(hitX - a.x) < 55 && Math.abs(hitY - a.y) < 55) {
+                      activeAlbumIdx = i; a.dragging = true; preventPageTurn = true; 
+                      renderer.domElement.style.cursor = 'grabbing'; renderPage(1); break;
+                  }
+              }
+          }
+          const hitsRight = raycaster.intersectObjects([leaves[1].children[0]], false);
+          if (hitsRight.length > 0 && hitsRight[0].face.materialIndex === 2) {
+              const hitX = hitsRight[0].uv.x * 512; const hitY = (1 - hitsRight[0].uv.y) * 660;
+              let posterHit = false;
+              for(let i = draggablePosters.length - 1; i >= 0; i--) {
+                  const p = draggablePosters[i];
+                  if (Math.abs(hitX - p.x) < 50 && Math.abs(hitY - p.y) < 70) {
+                      activePosterIdx = i; p.dragging = true; preventPageTurn = true;
+                      renderer.domElement.style.cursor = 'grabbing'; renderPage(2);
+                      posterHit = true; break;
+                  }
+              }
+              if (!posterHit && Math.abs(hitX - 256) < 140 && Math.abs(hitY - 200) < 105) {
+                  preventPageTurn = true; activeTvClick = true; 
+              }
+          }
+      }
+
+      if (current === 2) {
+          const hitsLeft = raycaster.intersectObjects([leaves[1].children[0]], false);
+          if (hitsLeft.length > 0 && hitsLeft[0].face.materialIndex === 3) {
+              const hitX = (1 - hitsLeft[0].uv.x) * 512;
+              const hitY = hitsLeft[0].uv.y * 660;
+              for(let i = draggableQuotes.length - 1; i >= 0; i--) {
+                  const q = draggableQuotes[i];
+                  const w = q.text.length * 11 + 30;
+                  if (Math.abs(hitX - q.x) < w/2 + 25 && Math.abs(hitY - q.y) < 30) {
+                      activeQuoteIdx = i; q.dragging = true; preventPageTurn = true; 
+                      renderer.domElement.style.cursor = 'grabbing'; renderPage(3); break;
+                  }
+              }
+          }
+      }
+  });
+
+  window.addEventListener('pointermove', (e)=>{
+      if (activeQuoteIdx !== null) {
+          e.preventDefault(); 
+          const rect = mount.getBoundingClientRect(); pointer.x = ((e.clientX-rect.left)/rect.width)*2-1; pointer.y = -((e.clientY-rect.top)/rect.height)*2+1;
+          raycaster.setFromCamera(pointer, camera);
+          const hits = raycaster.intersectObjects([leaves[1].children[0]], false);
+          if (hits.length > 0 && hits[0].face.materialIndex === 3) {
+              draggableQuotes[activeQuoteIdx].x = (1 - hits[0].uv.x) * 512; draggableQuotes[activeQuoteIdx].y = hits[0].uv.y * 660;
+              renderPage(3);
+          }
+          return;
+      }
+      if (activeAlbumIdx !== null) {
+          e.preventDefault(); 
+          const rect = mount.getBoundingClientRect(); pointer.x = ((e.clientX-rect.left)/rect.width)*2-1; pointer.y = -((e.clientY-rect.top)/rect.height)*2+1;
+          raycaster.setFromCamera(pointer, camera);
+          const hits = raycaster.intersectObjects([leaves[0].children[0]], false);
+          if (hits.length > 0 && hits[0].face.materialIndex === 3) {
+              draggableAlbums[activeAlbumIdx].x = (1 - hits[0].uv.x) * 512; draggableAlbums[activeAlbumIdx].y = hits[0].uv.y * 660;
+              renderPage(1);
+          }
+          return;
+      }
+      if (activeCardboardIdx !== null) {
+          e.preventDefault(); 
+          const rect = mount.getBoundingClientRect(); pointer.x = ((e.clientX-rect.left)/rect.width)*2-1; pointer.y = -((e.clientY-rect.top)/rect.height)*2+1;
+          raycaster.setFromCamera(pointer, camera);
+          const hits = raycaster.intersectObjects([leaves[0].children[0]], false);
+          if (hits.length > 0 && hits[0].face.materialIndex === 2) {
+              draggableCardboards[activeCardboardIdx].x = hits[0].uv.x * 512; draggableCardboards[activeCardboardIdx].y = (1 - hits[0].uv.y) * 660;
+              renderPage(0);
+          }
+          return;
+      }
+      if (activePosterIdx !== null) {
+          e.preventDefault();
+          const rect = mount.getBoundingClientRect(); pointer.x = ((e.clientX-rect.left)/rect.width)*2-1; pointer.y = -((e.clientY-rect.top)/rect.height)*2+1;
+          raycaster.setFromCamera(pointer, camera);
+          const hits = raycaster.intersectObjects([leaves[1].children[0]], false);
+          if (hits.length > 0 && hits[0].face.materialIndex === 2) {
+              draggablePosters[activePosterIdx].x = hits[0].uv.x * 512; draggablePosters[activePosterIdx].y = (1 - hits[0].uv.y) * 660;
+              renderPage(2);
+          }
+          return;
+      }
+  }, { passive: false });
+
+  window.addEventListener('pointerup', (e)=>{
+      if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; }
+      if (activeAiVideoIdx !== null) {
+          if (aiVideos[activeAiVideoIdx]) { aiVideos[activeAiVideoIdx].pause(); }
+          activeAiVideoIdx = null; renderPage(0);
+      }
+      if (activeQuoteIdx !== null) {
+          renderer.domElement.style.cursor = 'default';
+          const q = draggableQuotes[activeQuoteIdx]; q.dragging = false;
+          if (Math.abs(q.x - 256) < 140 && Math.abs(q.y - 330) < 170) { playAvatarSound(q.audio); }
+          q.x = q.origX; q.y = q.origY; renderPage(3); activeQuoteIdx = null; return;
+      }
+      if (activeAlbumIdx !== null) {
+          renderer.domElement.style.cursor = 'default';
+          const a = draggableAlbums[activeAlbumIdx]; a.dragging = false;
+          if (Math.abs(a.x - 256) < 120 && Math.abs(a.y - 330) < 140) { playAlbumSound(a.audio); }
+          a.x = a.origX; a.y = a.origY; renderPage(1); activeAlbumIdx = null; return;
+      }
+      if (activeCardboardIdx !== null) {
+          renderer.domElement.style.cursor = 'default';
+          const c = draggableCardboards[activeCardboardIdx]; c.dragging = false;
+          if (Math.abs(c.x - c.snapX) < 60 && Math.abs(c.y - c.snapY) < 60) {
+              c.x = c.snapX; c.y = c.snapY; c.rot = c.snapRot; c.snapped = true;
+              if (draggableCardboards.every(cb => cb.snapped) && houseCompleteTime === 0) { houseCompleteTime = performance.now(); renderPage(0); }
+          }
+          renderPage(0); activeCardboardIdx = null; return;
+      }
+      if (activePosterIdx !== null) {
+          renderer.domElement.style.cursor = 'default';
+          const p = draggablePosters[activePosterIdx]; p.dragging = false;
+          if (Math.abs(p.x - 256) < 140 && Math.abs(p.y - 200) < 105) { playTvSequence(p.vidUrl); }
+          p.x = p.origX; p.y = p.origY; renderPage(2); activePosterIdx = null; return;
+      }
+      if (activeTvClick) {
+          activeTvClick = false; renderer.domElement.style.cursor = 'default';
+          if (!isTvPlaying) { playTvDefault(); } else { isTvPlaying = false; pendingPosterUrl = null; tvVidEl.pause(); }
+          renderPage(2); return;
+      }
+
+      if (preventPageTurn) return;
+
+      const diffX = e.clientX - pStartX; const diffY = e.clientY - pStartY;
+      const rect = mount.getBoundingClientRect(); pointer.x = ((e.clientX-rect.left)/rect.width)*2-1; pointer.y = -((e.clientY-rect.top)/rect.height)*2+1;
+      raycaster.setFromCamera(pointer, camera); 
+      const hits = raycaster.intersectObjects([frontMesh, ...leaves.map((g)=>g.children[0])], false);
+      
+      if(Math.abs(diffX) > 35 && Math.abs(diffX) > Math.abs(diffY)) {
+        if(isOpen && !isTurning) { if(diffX > 0) prevPage(); else nextPage(); }
+      } else if (Math.abs(diffX) < 10 && Math.abs(diffY) < 10) {
+        if(!isOpen) { 
+            if(hits.length > 0 && hits[0].object.userData.type === 'cover') openBook(); 
+        } else {
+            if (current === 2 && hits.length > 0 && zoomState !== 'none') {
+                const hitLeaf = hits[0].object; const hitFace = hits[0].face.materialIndex;
+                if (hitLeaf.userData && hitLeaf.userData.index === 2 && hitFace === 2) {
+                    const hitX = hits[0].uv.x * 512; const hitY = (1 - hits[0].uv.y) * 660;
+                    let cardClicked = false;
+                    if (isDeckDealt && !isDeckAnimating) {
+                        for (let i = deckCards.length - 1; i >= 0; i--) {
+                            if (isPointInCard(hitX, hitY, deckCards[i])) {
+                                cardClicked = true; const c = deckCards[i];
+                                const startFlip = c.isFlipped ? 1 : 0; const endFlip = c.isFlipped ? 0 : 1;
+                                c.isFlipped = !c.isFlipped;
+                                addTween((t) => {
+                                    c.flipProgress = startFlip + (endFlip - startFlip) * easeInOutQuint(t); renderPage(4);
+                                }, 650, null, 'flip' + c.id);
+                                break;
+                            }
+                        }
+                    }
+                    if (!cardClicked && Math.abs(hitX - 256) < 160 && Math.abs(hitY - 330) < 180) {
+                        if (!isDeckAnimating) {
+                            isDeckAnimating = true;
+                            if (!isDeckDealt) {
+                                deckCards.forEach((c, i) => {
+                                    addTween((t) => {
+                                        const ease = easeInOutQuint(t);
+                                        const tX = 256 + Math.cos(c.angle) * c.dist; const tY = 330 + Math.sin(c.angle) * c.dist;
+                                        const tRot = c.angle * 180 / Math.PI + 90;
+                                        c.x = c.origX + (tX - c.origX) * ease; c.y = c.origY + (tY - c.origY) * ease; c.rot = c.origRot + (tRot - c.origRot + 360) * ease;
+                                        renderPage(4);
+                                    }, 800, () => { if (i === deckCards.length - 1) { isDeckDealt = true; isDeckAnimating = false; } }, 'deck', i * 110);
+                                });
+                            } else {
+                                let needsFlipping = false;
+                                deckCards.forEach(c => {
+                                    if (c.flipProgress > 0) {
+                                        needsFlipping = true; c.isFlipped = false; const startFlip = c.flipProgress;
+                                        addTween((t) => { c.flipProgress = startFlip * (1 - easeInOutQuint(t)); renderPage(4); }, 400, null, 'flipback' + c.id);
+                                    }
+                                });
+                                setTimeout(() => {
+                                    deckCards.forEach((c, i) => {
+                                        const delay = (deckCards.length - 1 - i) * 80;
+                                        addTween((t) => {
+                                            const ease = easeInOutQuint(t);
+                                            const sX = 256 + Math.cos(c.angle) * c.dist; const sY = 330 + Math.sin(c.angle) * c.dist;
+                                            const sRot = c.angle * 180 / Math.PI + 90 + 360;
+                                            c.x = sX + (c.origX - sX) * ease; c.y = sY + (c.origY - sY) * ease; c.rot = sRot + (c.origRot - sRot - 360) * ease;
+                                            renderPage(4);
+                                        }, 800, () => { if (i === 0) { isDeckDealt = false; isDeckAnimating = false; } }, 'deck', delay);
+                                    });
+                                }, needsFlipping ? 450 : 0);
+                            }
+                        }
+                        return; 
+                    }
+                    if(cardClicked) return; 
+                }
+            }
+            if(hits.length > 0) { 
+                const clickX = hits[0].point.x; 
+                if(clickX < 0) setZoom('left'); else setZoom('right'); 
+            } else { 
+                if(zoomState !== 'none') setZoom('none'); 
+            }
+        }
+      }
+  });
+
+  let time = 0;
+
+  function animate(){ 
+    requestAnimationFrame(animate); time += 0.016;
+    if (isAvatarSpeaking) {
+        if (time - lastMouthToggle > 0.15) { avatarMouthOpen = !avatarMouthOpen; lastMouthToggle = time; renderPage(3); }
+    }
+    if (isRecordPlaying && !recordVideo.paused && recordVideo.readyState >= 2) { renderPage(1); }
+    if (activeAiVideoIdx !== null && aiVideos[activeAiVideoIdx] && !aiVideos[activeAiVideoIdx].paused) { renderPage(0); }
+    if (isTvPlaying && tvVidEl && !tvVidEl.paused && tvVidEl.readyState >= 2) { renderPage(2); }
+    if (houseCompleteTime > 0 && !isHouseMapFullyVisible) {
+        const elapsed = performance.now() - houseCompleteTime;
+        if (elapsed < 2000) {
+            renderPage(0);
+        } else {
+            isHouseMapFullyVisible = true;
+            renderPage(0);
+            const spidey = document.getElementById('spideyGif');
+            spidey.src = 'giphy.gif?' + new Date().getTime();
+            spidey.style.opacity = '1';
+            if(window.spideyTimer) clearTimeout(window.spideyTimer);
+            window.spideyTimer = setTimeout(() => { spidey.style.opacity = '0'; }, 4500); 
+        }
+    }
+
+    for(let i=tweens.length-1; i>=0; i--){ 
+        const tw = tweens[i]; tw.elapsed += 16.6; 
+        if (tw.elapsed < 0) continue; 
+        const t = Math.min(1, tw.elapsed/tw.duration); 
+        tw.fn(t); 
+        if(t>=1){ tw.onDone && tw.onDone(); tweens.splice(i,1); } 
+    }
+    
+    camera.position.x += Math.sin(time*0.25)*0.0009; 
+    camera.position.y += Math.sin(time*0.19)*0.0005;
+    glow.intensity = 0.65 + Math.sin(time*6)*0.04 + Math.sin(time*13.3)*0.02;
+    sun.position.x = -4 + Math.sin(time * 0.5) * 1.5; sun.position.z = 6 + Math.cos(time * 0.3) * 1.5;
+    if (bladeMat.userData.shader) { bladeMat.userData.shader.uniforms.time.value = time; }
+    fireflies.rotation.y = time * 0.04; 
+    const positions = pGeo.attributes.position.array; const phases = pGeo.attributes.phase.array;
+    for(let i=0; i<particleCount; i++) { positions[i*3+1] += Math.sin(time * 1.5 + phases[i]) * 0.006; }
+    pGeo.attributes.position.needsUpdate = true;
+    renderer.render(scene, camera);
+  }
+  
+  animate();
+})();
+</script>
+</body>
+</html>
