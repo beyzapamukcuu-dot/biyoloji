@@ -681,8 +681,9 @@
 
       } else if (item.type === 'tape') {
         ctx.fillStyle = 'rgba(230, 225, 210, 0.65)';
-        ctx.shadowColor = 'rgba(0,0,0,0.08)'; // Gölgeler yumuşatıldı
-        ctx.shadowBlur = 3; 
+        // SICAK KAHVERENGİ VE KESKİN GÖLGE 
+        ctx.shadowColor = 'rgba(60, 40, 20, 0.1)';
+        ctx.shadowBlur = 2; 
         ctx.shadowOffsetY = 1;
         ctx.fillRect(-item.w/2, -12, item.w, 24);
         ctx.globalCompositeOperation = 'destination-out';
@@ -693,10 +694,11 @@
         ctx.globalCompositeOperation = 'source-over';
         
       } else if (item.type === 'image' && item.url) {
-        ctx.shadowColor = 'rgba(0,0,0,0.12)'; // Gölgeler yumuşatıldı
-        ctx.shadowBlur = 12; 
-        ctx.shadowOffsetX = 4; 
-        ctx.shadowOffsetY = 6;
+        // SICAK KAHVERENGİ VE DAHA KESKİN GÖLGE 
+        ctx.shadowColor = 'rgba(60, 40, 20, 0.15)'; 
+        ctx.shadowBlur = 6; 
+        ctx.shadowOffsetX = 2; 
+        ctx.shadowOffsetY = 3;
         ctx.fillStyle = '#fdfdfd';
         ctx.fillRect(-item.w/2 - 12, -item.h/2 - 12, item.w + 24, item.h + 40);
         ctx.shadowColor = 'transparent';
@@ -711,10 +713,11 @@
         }
 
       } else if (item.type === 'kucukluk_foto') {
-        ctx.shadowColor = 'rgba(0,0,0,0.12)'; // Gölgeler yumuşatıldı
-        ctx.shadowBlur = 12; 
-        ctx.shadowOffsetX = 4; 
-        ctx.shadowOffsetY = 6;
+        // SICAK KAHVERENGİ VE DAHA KESKİN GÖLGE
+        ctx.shadowColor = 'rgba(60, 40, 20, 0.15)'; 
+        ctx.shadowBlur = 6; 
+        ctx.shadowOffsetX = 2; 
+        ctx.shadowOffsetY = 3;
         ctx.fillStyle = '#fdfdfd';
         ctx.fillRect(-item.w/2 - 10, -item.h/2 - 10, item.w + 20, item.h + 36);
         ctx.shadowColor = 'transparent';
@@ -764,10 +767,11 @@
             imgO.onload = () => { renderPage(pageIndex); };
         }
         if (imgCache[activeUrl] && imgCache[activeUrl].complete && imgCache[activeUrl].naturalWidth > 0) {
-            ctx.shadowColor = 'rgba(0,0,0,0.15)'; // Gölgeler yumuşatıldı
-            ctx.shadowBlur = 15; 
-            ctx.shadowOffsetX = 4; 
-            ctx.shadowOffsetY = 6;
+            // SICAK KAHVERENGİ GÖLGE
+            ctx.shadowColor = 'rgba(60, 40, 20, 0.15)'; 
+            ctx.shadowBlur = 8; 
+            ctx.shadowOffsetX = 2; 
+            ctx.shadowOffsetY = 4;
             drawImageContain(ctx, imgCache[activeUrl], -item.w/2, -item.h/2, item.w, item.h);
             ctx.shadowColor = 'transparent';
         }
@@ -803,22 +807,23 @@
             ctx.rotate(curRot * Math.PI / 180);
             ctx.scale(curScale, curScale);
             
+            // KARTON GÖLGELERİ
             if(c.dragging) { 
-                ctx.shadowColor = 'rgba(0,0,0,0.25)'; // Yumuşatıldı
-                ctx.shadowBlur = 18; 
-                ctx.shadowOffsetX = 6; 
-                ctx.shadowOffsetY = 10; 
-                ctx.scale(1.08, 1.08); 
-            } else if(c.snapped && progress === 0) { 
-                ctx.shadowColor = 'rgba(0,0,0,0.15)'; // Yumuşatıldı
-                ctx.shadowBlur = 6; 
-                ctx.shadowOffsetX = 2; 
-                ctx.shadowOffsetY = 4; 
-            } else { 
-                ctx.shadowColor = 'rgba(0,0,0,0.2)'; // Yumuşatıldı
-                ctx.shadowBlur = 10; 
+                ctx.shadowColor = 'rgba(60, 40, 20, 0.25)'; 
+                ctx.shadowBlur = 12; 
                 ctx.shadowOffsetX = 4; 
                 ctx.shadowOffsetY = 6; 
+                ctx.scale(1.08, 1.08); 
+            } else if(c.snapped && progress === 0) { 
+                ctx.shadowColor = 'rgba(60, 40, 20, 0.1)'; 
+                ctx.shadowBlur = 3; 
+                ctx.shadowOffsetX = 1; 
+                ctx.shadowOffsetY = 2; 
+            } else { 
+                ctx.shadowColor = 'rgba(60, 40, 20, 0.15)'; 
+                ctx.shadowBlur = 5; 
+                ctx.shadowOffsetX = 2; 
+                ctx.shadowOffsetY = 3; 
             }
 
             if (c.type === 'rect') {
@@ -1036,24 +1041,18 @@
             ctx.translate(a.x, a.y);
             ctx.rotate(a.rot * Math.PI / 180);
             
+            // ALBÜM GÖLGELERİ (Keskin ve Sıcak)
             if(a.dragging) {
-                ctx.shadowColor = 'rgba(0,0,0,0.25)'; // Yumuşatıldı
-                ctx.shadowBlur = 22; 
-                ctx.shadowOffsetX = 6; 
-                ctx.shadowOffsetY = 10; 
+                ctx.shadowColor = 'rgba(60, 40, 20, 0.25)'; 
+                ctx.shadowBlur = 12; 
+                ctx.shadowOffsetX = 4; 
+                ctx.shadowOffsetY = 6; 
                 ctx.scale(1.15, 1.15); 
             } else {
-                if (a.url === 'album8.png') {
-                    ctx.shadowColor = 'rgba(0,0,0,0.18)'; // Yumuşatıldı
-                    ctx.shadowBlur = 20; 
-                    ctx.shadowOffsetX = 5; 
-                    ctx.shadowOffsetY = 8;
-                } else {
-                    ctx.shadowColor = 'rgba(0,0,0,0.15)'; // Yumuşatıldı
-                    ctx.shadowBlur = 15; 
-                    ctx.shadowOffsetX = 4; 
-                    ctx.shadowOffsetY = 6;
-                }
+                ctx.shadowColor = 'rgba(60, 40, 20, 0.12)'; 
+                ctx.shadowBlur = 5; 
+                ctx.shadowOffsetX = 2; 
+                ctx.shadowOffsetY = 3;
             }
 
             let img = imgCache[a.url];
@@ -1092,10 +1091,11 @@
         const tvY = 200; 
         
         ctx.save();
-        ctx.shadowColor = 'rgba(0,0,0,0.25)'; // Yumuşatıldı
-        ctx.shadowBlur = 15;
-        ctx.shadowOffsetX = 4;
-        ctx.shadowOffsetY = 6;
+        // TV GÖLGESİ
+        ctx.shadowColor = 'rgba(60, 40, 20, 0.2)'; 
+        ctx.shadowBlur = 8;
+        ctx.shadowOffsetX = 2;
+        ctx.shadowOffsetY = 4;
         
         // VİDEONUN EKRANA ÇİZİLEBİLMESİ İÇİN TAMAMEN HAZIR OLUP OLMADIĞINI KONTROL EDİYORUZ
         const isVideoReady = isTvPlaying && tvVidEl && tvVidEl.readyState >= 2 && !tvVidEl.error;
@@ -1149,17 +1149,18 @@
             ctx.save();
             ctx.translate(p.x, p.y);
             
+            // POSTER GÖLGELERİ
             if (p.dragging) {
-                ctx.shadowColor = 'rgba(0,0,0,0.25)'; // Yumuşatıldı
-                ctx.shadowBlur = 18;
-                ctx.shadowOffsetX = 6;
-                ctx.shadowOffsetY = 10;
+                ctx.shadowColor = 'rgba(60, 40, 20, 0.25)';
+                ctx.shadowBlur = 12;
+                ctx.shadowOffsetX = 4;
+                ctx.shadowOffsetY = 6;
                 ctx.scale(1.15, 1.15);
             } else {
-                ctx.shadowColor = 'rgba(0,0,0,0.15)'; // Yumuşatıldı
-                ctx.shadowBlur = 10;
-                ctx.shadowOffsetX = 3;
-                ctx.shadowOffsetY = 5;
+                ctx.shadowColor = 'rgba(60, 40, 20, 0.12)';
+                ctx.shadowBlur = 5;
+                ctx.shadowOffsetX = 2;
+                ctx.shadowOffsetY = 3;
             }
 
             let pImg = imgCache[p.url];
@@ -1200,17 +1201,18 @@
             const h = 34;
             ctx.fillStyle = '#fbf5df';
             
+            // SÖZ GÖLGELERİ
             if(q.dragging) {
-                ctx.shadowColor = 'rgba(0,0,0,0.25)'; // Yumuşatıldı
-                ctx.shadowBlur = 15; 
-                ctx.shadowOffsetX = 4; 
-                ctx.shadowOffsetY = 6; 
+                ctx.shadowColor = 'rgba(60, 40, 20, 0.2)'; 
+                ctx.shadowBlur = 8; 
+                ctx.shadowOffsetX = 2; 
+                ctx.shadowOffsetY = 4; 
                 ctx.scale(1.15, 1.15); 
             } else {
-                ctx.shadowColor = 'rgba(0,0,0,0.15)'; // Yumuşatıldı
-                ctx.shadowBlur = 5; 
-                ctx.shadowOffsetX = 2; 
-                ctx.shadowOffsetY = 3;
+                ctx.shadowColor = 'rgba(60, 40, 20, 0.1)'; 
+                ctx.shadowBlur = 3; 
+                ctx.shadowOffsetX = 1; 
+                ctx.shadowOffsetY = 2;
             }
             
             ctx.fillRect(-w/2, -h/2, w, h);
@@ -1237,8 +1239,8 @@
             const radius = 12; 
             const lift = Math.sin(c.flipProgress * Math.PI); 
             const scaleFlip = 1 + (lift * 0.18); 
-            const shadowBlur = 5 + (lift * 10); 
-            const shadowOffset = 2 + (lift * 8);
+            const shadowBlur = 4 + (lift * 6); 
+            const shadowOffset = 1.5 + (lift * 3);
             const scaleX = Math.cos(c.flipProgress * Math.PI);
 
             ctx.scale(scaleX * scaleFlip, scaleFlip);
@@ -1255,8 +1257,8 @@
             ctx.quadraticCurveTo(-cW/2, -cH/2, -cW/2 + radius, -cH/2);
             ctx.closePath();
             
-            // Gölgeler yumuşatıldı
-            ctx.shadowColor = `rgba(0,0,0,${0.25 - (lift * 0.1)})`;
+            // KART GÖLGELERİ
+            ctx.shadowColor = `rgba(60, 40, 20, ${0.15 - (lift * 0.05)})`;
             ctx.shadowBlur = shadowBlur; 
             ctx.shadowOffsetX = shadowOffset * (scaleX > 0 ? 1 : -1); 
             ctx.shadowOffsetY = shadowOffset * 1.2;
@@ -1282,7 +1284,6 @@
                     ctx.fillStyle = '#11347a'; 
                     ctx.fillRect(-cW/2, -cH/2, cW, cH);
                 }
-                // Yumuşatıldı
                 ctx.fillStyle = `rgba(0, 0, 0, ${lift * 0.2})`; 
                 ctx.fillRect(-cW/2, -cH/2, cW, cH);
             } else {
@@ -1307,7 +1308,6 @@
                     ctx.textBaseline = 'middle';
                     ctx.fillText("Anı " + (c.id+1), 0, 0); 
                 }
-                // Yumuşatıldı
                 ctx.fillStyle = `rgba(0, 0, 0, ${Math.max(0, (1 - c.flipProgress) * 0.2)})`;
                 ctx.fillRect(-cW/2, -cH/2, cW, cH);
                 ctx.scale(-1, 1); 
