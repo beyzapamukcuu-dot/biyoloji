@@ -137,56 +137,13 @@
           top: 22%;
       }
   }
-
-  /* ŞIK PLAY BUTONU STİLLERİ */
-  .intro-play-btn {
-      position: absolute;
-      width: 84px;
-      height: 84px;
-      background: rgba(10, 15, 10, 0.6);
-      border-radius: 50%;
-      display: none; /* JavaScript ile flex yapılacak */
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border: 2px solid rgba(232, 217, 173, 0.35);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), inset 0 0 15px rgba(255,255,255,0.1);
-      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-      z-index: 10000;
-  }
-  .intro-play-btn:hover {
-      transform: scale(1.12);
-      background: rgba(10, 15, 10, 0.8);
-      border-color: rgba(232, 217, 173, 0.8);
-      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.9), inset 0 0 20px rgba(232, 217, 173, 0.2);
-  }
-  .intro-play-icon {
-      width: 0;
-      height: 0;
-      border-top: 16px solid transparent;
-      border-bottom: 16px solid transparent;
-      border-left: 26px solid #e8d9ad;
-      margin-left: 8px; /* Üçgenin optik olarak ortalanması için */
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
-      transition: border-left-color 0.3s ease;
-  }
-  .intro-play-btn:hover .intro-play-icon {
-      border-left-color: #fff;
-  }
-
 </style>
 </head>
 <body>
 
 <!-- EN BAŞTA ÇIKACAK TAM EKRAN INTRO VİDEOSU -->
 <div id="introContainer" style="position: fixed; inset: 0; z-index: 9999; background: #000; display: flex; justify-content: center; align-items: center; touch-action: none;">
-    <video id="introVid" src="intro.mp4" playsinline style="width: 100%; height: 100%; object-fit: cover;"></video>
-    <!-- MODERN PLAY BUTONU -->
-    <div id="introOverlayText" class="intro-play-btn">
-        <div class="intro-play-icon"></div>
-    </div>
+    <video id="introVid" src="intro.mp4" playsinline autoplay style="width: 100%; height: 100%; object-fit: cover;"></video>
 </div>
 
 <!-- GİZLİ PLAKÇALAR VİDEOSU -->
@@ -231,40 +188,30 @@
   // =========================================================================
   const introContainer = document.getElementById('introContainer');
   const introVid = document.getElementById('introVid');
-  const introOverlayText = document.getElementById('introOverlayText');
 
   let playPromise = introVid.play();
   if (playPromise !== undefined) {
       playPromise.catch(error => {
-          // Tarayıcı sesli otomatik oynatmayı engellerse Play butonunu göster
-          introOverlayText.style.display = 'flex';
+          console.warn("Tarayıcı otomatik başlatmayı durdurdu:", error);
       });
   }
 
-  // Tıklama ile başlatma
-  introContainer.addEventListener('click', () => {
-      if (introVid.paused) {
-          introVid.play();
-          introOverlayText.style.display = 'none';
-      }
-  });
-
-  // Intro bittiğinde Sinematik Geçiş (Fade to Black -> Fade to Scene)
+  // Intro bittiğinde Sinematik Geçiş (Toplam yarım saniye - 500ms sürecek)
   introVid.addEventListener('ended', () => {
-      // 1. Adım: Videoyu yavaşça şeffaflaştır, altındaki siyah arka plan ortaya çıksın (Fade to Black)
-      introVid.style.transition = "opacity 0.6s ease";
+      // 1. Adım: Videoyu 200ms'de şeffaflaştır
+      introVid.style.transition = "opacity 0.2s ease";
       introVid.style.opacity = "0";
 
-      // 2. Adım: Siyah ekranda çok kısa bekle, ardından tüm siyahlık kalkarak 3D sahne gelsin (Fade from Black)
+      // 2. Adım: Siyah ekranda çok kısa bekle ve arkadaki 3D sahneyi 300ms'de getir
       setTimeout(() => {
-          introContainer.style.transition = "opacity 0.5s ease";
+          introContainer.style.transition = "opacity 0.3s ease";
           introContainer.style.opacity = "0";
           
           setTimeout(() => {
               introContainer.style.display = 'none';
               introContainer.remove(); 
-          }, 0.5); // Container'ın kaybolması için geçen süre
-      }, 300); // Videonun kararması + minik bir es verme süresi
+          }, 300); 
+      }, 200); 
   });
 
 
@@ -1982,6 +1929,9 @@
   let preventPageTurn = false;
 
   window.addEventListener('pointerdown', (e)=>{
+      // İntro ekranı varken arkadaki kitaba tıklanmasını tamamen engelliyoruz
+      if (document.getElementById('introContainer')) return;
+      
       pStartX = e.clientX; pStartY = e.clientY; preventPageTurn = false;
       activeQuoteIdx = null; activeAlbumIdx = null; activeCardboardIdx = null; activePosterIdx = null; activeTvClick = false;
       if (!isOpen || isTurning || zoomState === 'none') return;
@@ -2075,6 +2025,8 @@
   });
 
   window.addEventListener('pointermove', (e)=>{
+      if (document.getElementById('introContainer')) return;
+      
       if (activeQuoteIdx !== null) {
           e.preventDefault(); 
           const rect = mount.getBoundingClientRect(); pointer.x = ((e.clientX-rect.left)/rect.width)*2-1; pointer.y = -((e.clientY-rect.top)/rect.height)*2+1;
@@ -2122,6 +2074,8 @@
   }, { passive: false });
 
   window.addEventListener('pointerup', (e)=>{
+      if (document.getElementById('introContainer')) return;
+      
       if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; }
       if (activeAiVideoIdx !== null) {
           if (aiVideos[activeAiVideoIdx]) { aiVideos[activeAiVideoIdx].pause(); }
