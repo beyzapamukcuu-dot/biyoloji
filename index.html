@@ -167,7 +167,7 @@
 <div class="mb-hint" id="hint">✦ açmak için dokun ✦</div>
 
 <div class="mb-controls" id="controls">
-  <div class="mb-progress" id="progress">1 / 6</div>
+  <div class="mb-progress" id="progress">1 / 7</div>
 </div>
 <button class="mb-close" id="closeBtn">Kitabı kapat</button>
 
@@ -352,6 +352,27 @@
       renderPage(2);
   }
 
+  function playHamSound() {
+      try {
+          const snd = new Audio('ham.mp3');
+          snd.play().catch(e => {
+              try {
+                  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                  const osc = ctx.createOscillator();
+                  const gain = ctx.createGain();
+                  osc.connect(gain);
+                  gain.connect(ctx.destination);
+                  osc.frequency.setValueAtTime(320, ctx.currentTime);
+                  osc.frequency.exponentialRampToValueAtTime(140, ctx.currentTime + 0.18);
+                  gain.gain.setValueAtTime(0.3, ctx.currentTime);
+                  gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.18);
+                  osc.start();
+                  osc.stop(ctx.currentTime + 0.18);
+              } catch(err){}
+          });
+      } catch(e){}
+  }
+
   const draggablePosters = [
       { id: 0, url: 'poster1.png', origX: 140, origY: 460, x: 140, y: 460, vidUrl: 'poster_video1.mp4', dragging: false },
       { id: 1, url: 'poster2.png', origX: 256, origY: 460, x: 256, y: 460, vidUrl: 'poster_video2.mp4', dragging: false },
@@ -406,6 +427,24 @@
       { id: 'chimney', type: 'rect_chimney', color: '#a65446', w: 40, h: 80, origX: 90, origY: 250, x: 90, y: 250, rot: -20, dragging: false, snapped: false, snapX: 330, snapY: 280, snapRot: 5 },
       { id: 'tape1', type: 'tape', color: 'rgba(215, 160, 35, 0.95)', w: 100, h: 30, origX: 420, origY: 180, x: 420, y: 180, rot: -30, dragging: false, snapped: false, snapX: 256, snapY: 400, snapRot: -5 },
       { id: 'tape2', type: 'tape', color: 'rgba(215, 160, 35, 0.95)', w: 70, h: 25, origX: 390, origY: 520, x: 390, y: 520, rot: 45, dragging: false, snapped: false, snapX: 310, snapY: 320, snapRot: 15 }
+  ];
+
+  // 5: YENİ WAFFLE KÖŞESİ (Üstte 2, Altta 2 Malzeme) BOYUTLAR 220, POZİSYONLAR ORTALANDI
+  const draggableWaffleIngredients = [
+      { id: 0, name: 'Çilek', url: 'malzeme1.png', origX: 130, origY: 130, x: 130, y: 130, rot: -6, dragging: false, placed: false },
+      { id: 1, name: 'Muz', url: 'malzeme2.png', origX: 382, origY: 130, x: 382, y: 130, rot: 8, dragging: false, placed: false },
+      { id: 2, name: 'Çikolata', url: 'malzeme3.png', origX: 130, origY: 530, x: 130, y: 530, rot: 5, dragging: false, placed: false },
+      { id: 3, name: 'Fındık', url: 'malzeme4.png', origX: 382, origY: 530, x: 382, y: 530, rot: -7, dragging: false, placed: false }
+  ];
+  let activeWaffleIngIdx = null;
+  let isWaffleComplete = false;
+  let waffleCompleteTime = 0;
+
+  const waffleExplosionPhotos = [
+      { id: 0, url: 'waffle_foto1.png', targetX: 120, targetY: 160, targetRot: -10, w: 125, h: 155 },
+      { id: 1, url: 'waffle_foto2.png', targetX: 390, targetY: 160, targetRot: 8, w: 125, h: 155 },
+      { id: 2, url: 'waffle_foto3.png', targetX: 120, targetY: 490, targetRot: 6, w: 125, h: 155 },
+      { id: 3, url: 'waffle_foto4.png', targetX: 390, targetY: 490, targetRot: -8, w: 125, h: 155 }
   ];
 
   let isDeckDealt = false;
@@ -463,7 +502,24 @@
       { type: 'text', content: 'Yakından bakmak için dokun', x: 256, y: 100, size: 26, font: 'Caveat', rot: -2, color: '#3a2512' },
       { type: 'text', content: '♦ ♣ ♥ ♠', x: 256, y: 565, size: 24, font: 'Cormorant Garamond', rot: 0, color: '#5b3a22' }
     ],
-    // 5: YENİ MEKTUP VE FOTOĞRAFLAR KISMI (PİŞTİNİN ARKASI)
+    // 5: YENİ WAFFLE HAZIRLAMA SAYFASI (PİŞTİNİN ARKASI)
+    [
+      { type: 'text', content: 'Waffle Zamanı 🍓🍫', x: 256, y: 50, size: 32, font: 'Cormorant Garamond', rot: 0, color: '#3a2512' },
+      { type: 'text', content: '↓ Malzemeleri Kaseye Sürükle ↓', x: 256, y: 85, size: 20, font: 'Caveat', rot: -1, color: '#6b8a31' }
+    ],
+    // 6: YENİ EKLENEN "HAZIR MISIN?" SAYFASI
+    [
+      { type: 'image', url: 'hazir_foto1.png', x: 140, y: 170, w: 160, h: 200, rot: -4 },
+      { type: 'tape', x: 140, y: 65, w: 60, rot: -2 },
+      { type: 'image', url: 'hazir_foto2.png', x: 372, y: 170, w: 160, h: 200, rot: 5 },
+      { type: 'tape', x: 372, y: 65, w: 60, rot: 3 },
+      { type: 'text', content: 'Sonraki sayfaya geçmeye//hazır mısın🥀😭', x: 256, y: 340, size: 28, font: 'Caveat', rot: -2, color: '#3a2512' },
+      { type: 'image', url: 'hazir_foto3.png', x: 140, y: 510, w: 160, h: 200, rot: 3 },
+      { type: 'tape', x: 140, y: 405, w: 60, rot: 1 },
+      { type: 'image', url: 'hazir_foto4.png', x: 372, y: 510, w: 160, h: 200, rot: -6 },
+      { type: 'tape', x: 372, y: 405, w: 60, rot: -4 }
+    ],
+    // 7: MEKTUP VE FOTOĞRAFLAR KISMI
     [
       { type: 'dynamic_greeting', x: 30, y: 70, size: 30, font: 'Caveat', color: '#5b3a22', align: 'left' },
       { type: 'text', align: 'left', x: 30, y: 340, size: 25, font: 'Caveat', color: '#3a2512',
@@ -473,7 +529,7 @@
       { type: 'image', url: 'foto_sag2.png', x: 410, y: 460, w: 130, h: 160, rot: -3 },
       { type: 'tape', x: 410, y: 370, w: 60, rot: -5 }
     ],
-    // 6: SAYFA 5 GİBİ METİN VE FOTOĞRAFLAR ALANI
+    // 8: SAYFA 8 METİN VE FOTOĞRAFLAR ALANI
     [
       { type: 'text', align: 'left', x: 30, y: 330, size: 24, font: 'Caveat', color: '#3a2512',
         content: "Şimdi belki biraz saçma gelebilir ama//bence tüm bu yaşadıklarımız//tesadüf olamaz. Çoğu kişi köylerinin//yüzüne bile bakmazken biz aşukkamızı//sahiplendik evimiz yaptık. Sonsuza dek//sürecek dostluklar kurduk. Mesela geçen//sene ben bu kadar yakın olabileceğimizi//hayal dahi edemezdim. //Metin Emir Yılmaz senin balkonunda su aygırı gibi//yatıcak deseler inanmazdım.////Ne bileyim ya sen kusmuğunda//boğulsaydın ya da annem beni daha//doğmadan aldırsaydı. O boşluğu kim//dolduracaktı? İyi ki şuan buradayız🙏//ve bunları yaşıyoruz. İyi ki kuzenim//olmuşsun🥹" },
@@ -482,12 +538,12 @@
       { type: 'image', url: 'foto6_sag2.png', x: 410, y: 460, w: 130, h: 160, rot: 4 },
       { type: 'tape', x: 410, y: 370, w: 60, rot: 3 }
     ],
-    // 7: SADECE VEDA METNİ
+    // 9: SADECE VEDA METNİ
     [
       { type: 'text', align: 'center', x: 256, y: 330, size: 25, font: 'Caveat', color: '#3a2512',
         content: "Bir gün gelir, bir şey olur.//Sana veda edemezsem diye bunu yazıyorum.////Sen benim için her zaman farklı bir yerdeydin.//Bir dosttan, bir kuzenden fazlası.//Kardeşim gibiydin.////Sanki geçirdiğimiz vakitler, oynadığımız oyunlar,//izlediğimiz filmler, söylediğimiz şarkılar,//hissettiğimiz duygular, hatta bazen//yaşadıklarımız bile ortak oldu.////Umarım hayat seni hep iyi insanlarla karşılaştırır.//İstediğin her şeyle en iyi şekilde kavuşursun.//Çünkü bunu hak ediyorsun.////Şimdi en başta dedim ya,//eğer bir gün gelir de sana veda edemezsem,////hoşça kal Zep.❤️💙" }
     ],
-    // 8: 16 FOTOĞRAFLIK 4x4 BİTİŞİK KOLAJ (BOŞLUKSUZ)
+    // 10: 16 FOTOĞRAFLIK 4x4 BİTİŞİK KOLAJ
     [
       { type: 'image', seamless: true, url: 'gorsel1.png',  x: 64,  y: 82.5,  w: 128, h: 165, rot: 0 },
       { type: 'image', seamless: true, url: 'gorsel2.png',  x: 192, y: 82.5,  w: 128, h: 165, rot: 0 },
@@ -506,17 +562,16 @@
       { type: 'image', seamless: true, url: 'gorsel15.png', x: 320, y: 577.5, w: 128, h: 165, rot: 0 },
       { type: 'image', seamless: true, url: 'gorsel16.png', x: 448, y: 577.5, w: 128, h: 165, rot: 0 }
     ],
-    // 9: BOŞ KAPANIŞ SAYFASI
+    // 11, 12, 13: FİNAL BOŞ SAYFALARI
     []
   ];
 
-  const N_LEAVES = 5;
+  const N_LEAVES = 6;
   const W = 3.0;
   const D = 4.0;
   
-  // SAYFALARI DAHA KALIN VE BİRBİRİNDEN AYRIK GÖSTERMEK İÇİN DEĞERLER ARTIRILDI
-  const LEAF_T = 0.06;
-  const GAP = 0.035; 
+  const LEAF_T = 0.055;
+  const GAP = 0.032; 
   const COVER_T = 0.2;
 
   const basePaperCanvas = document.createElement('canvas');
@@ -630,6 +685,7 @@
 
   function renderPage(pageIndex) {
     const ctx = paperCtxs[pageIndex];
+    if (!ctx) return;
     ctx.save(); 
     
     if (pageIndex % 2 !== 0) { 
@@ -1340,7 +1396,7 @@
                     imgCache['cardback.png'] = cImg; 
                 }
                 if (cImg && cImg.complete && cImg.naturalWidth > 0) { 
-                    ctx.drawImage(cImg, -cW/2, -cH/2, cW, cH);
+                    drawImageProp(ctx, cImg, -cW/2, -cH/2, cW, cH);
                 } else { 
                     ctx.fillStyle = '#11347a'; 
                     ctx.fillRect(-cW/2, -cH/2, cW, cH); 
@@ -1380,14 +1436,183 @@
             ctx.restore();
         });
     }
+
+    // 5: YENİ WAFFLE SAYFASI ÇİZİMİ
+    if (pageIndex === 5) {
+        const bowlX = 256;
+        const bowlY = 330;
+        const bowlW = 210;
+        const bowlH = 170;
+
+        let waffleTimeElapsed = waffleCompleteTime ? (performance.now() - waffleCompleteTime) : 0;
+        let waffleExplodeProgress = Math.min(1, waffleTimeElapsed / 1000);
+
+        ctx.save();
+        ctx.shadowColor = 'rgba(60, 40, 20, 0.2)';
+        ctx.shadowBlur = 10;
+        ctx.shadowOffsetX = 2;
+        ctx.shadowOffsetY = 5;
+
+        if (!isWaffleComplete) {
+            let bowlImg = imgCache['kap.png'];
+            if (!bowlImg) {
+                bowlImg = new Image();
+                bowlImg.onload = () => renderPage(5);
+                bowlImg.onerror = () => renderPage(5);
+                bowlImg.src = 'kap.png';
+                imgCache['kap.png'] = bowlImg;
+            }
+            if (bowlImg && bowlImg.complete && bowlImg.naturalWidth > 0) {
+                drawImageContain(ctx, bowlImg, bowlX - bowlW/2, bowlY - bowlH/2, bowlW, bowlH);
+            } else {
+                ctx.fillStyle = '#eedcc5';
+                ctx.beginPath();
+                ctx.arc(bowlX, bowlY + 20, 85, 0, Math.PI);
+                ctx.closePath();
+                ctx.fill();
+                ctx.strokeStyle = '#c49a6c';
+                ctx.lineWidth = 4;
+                ctx.stroke();
+                ctx.fillStyle = '#6b8a31';
+                ctx.font = "bold 16px 'Caveat'";
+                ctx.textAlign = 'center';
+                ctx.fillText("Karıştırma Kabı", bowlX, bowlY + 40);
+            }
+        } else {
+            let waffleImg = imgCache['waffle.png'];
+            if (!waffleImg) {
+                waffleImg = new Image();
+                waffleImg.onload = () => renderPage(5);
+                waffleImg.onerror = () => renderPage(5);
+                waffleImg.src = 'waffle.png';
+                imgCache['waffle.png'] = waffleImg;
+            }
+            if (waffleImg && waffleImg.complete && waffleImg.naturalWidth > 0) {
+                drawImageContain(ctx, waffleImg, bowlX - bowlW/2 - 15, bowlY - bowlH/2 - 15, bowlW + 30, bowlH + 30);
+            } else {
+                ctx.fillStyle = '#d49b4b';
+                ctx.beginPath();
+                ctx.arc(bowlX, bowlY, 90, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = '#5a3818';
+                ctx.lineWidth = 4;
+                ctx.stroke();
+                ctx.fillStyle = '#fff';
+                ctx.font = "bold 20px 'Caveat'";
+                ctx.textAlign = 'center';
+                ctx.fillText("Dolu Waffle!", bowlX, bowlY);
+            }
+        }
+        ctx.restore();
+
+        if (!isWaffleComplete) {
+            draggableWaffleIngredients.forEach(ing => {
+                if (ing.placed) return;
+                ctx.save();
+                ctx.translate(ing.x, ing.y);
+                ctx.rotate(ing.rot * Math.PI / 180);
+
+                // MALZEME BOYUTLARI 220X220 OLARAK AYARLANDI
+                const ingW = 220;
+                const ingH = 220;
+
+                if (ing.dragging) {
+                    ctx.shadowColor = 'rgba(60, 40, 20, 0.3)';
+                    ctx.shadowBlur = 12;
+                    ctx.shadowOffsetX = 3;
+                    ctx.shadowOffsetY = 6;
+                    ctx.scale(1.15, 1.15);
+                } else {
+                    ctx.shadowColor = 'rgba(60, 40, 20, 0.15)';
+                    ctx.shadowBlur = 6;
+                    ctx.shadowOffsetX = 2;
+                    ctx.shadowOffsetY = 3;
+                }
+
+                let ingImg = imgCache[ing.url];
+                if (!ingImg) {
+                    ingImg = new Image();
+                    ingImg.onload = () => renderPage(5);
+                    ingImg.onerror = () => renderPage(5);
+                    ingImg.src = ing.url;
+                    imgCache[ing.url] = ingImg;
+                }
+
+                if (ingImg && ingImg.complete && ingImg.naturalWidth > 0) {
+                    drawImageContain(ctx, ingImg, -ingW/2, -ingH/2, ingW, ingH);
+                } else {
+                    ctx.fillStyle = '#fff';
+                    ctx.beginPath();
+                    ctx.arc(0, 0, ingW/2, 0, Math.PI*2);
+                    ctx.fill();
+                    ctx.strokeStyle = '#8a9c51';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    ctx.fillStyle = '#3a2512';
+                    ctx.font = "bold 15px 'Caveat'";
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(ing.name, 0, 0);
+                }
+                ctx.restore();
+            });
+        }
+
+        if (isWaffleComplete) {
+            waffleExplosionPhotos.forEach(p => {
+                ctx.save();
+                let curX = bowlX + (p.targetX - bowlX) * waffleExplodeProgress;
+                let curY = bowlY + (p.targetY - bowlY) * waffleExplodeProgress;
+                let curRot = p.targetRot * waffleExplodeProgress;
+                let curScale = 0.2 + 0.8 * waffleExplodeProgress;
+
+                ctx.translate(curX, curY);
+                ctx.rotate(curRot * Math.PI / 180);
+                ctx.scale(curScale, curScale);
+
+                ctx.shadowColor = 'rgba(60, 40, 20, 0.2)';
+                ctx.shadowBlur = 8;
+                ctx.shadowOffsetX = 2;
+                ctx.shadowOffsetY = 4;
+
+                ctx.fillStyle = '#fdfdfd';
+                ctx.fillRect(-p.w/2 - 6, -p.h/2 - 6, p.w + 12, p.h + 18);
+                ctx.shadowColor = 'transparent';
+
+                let pImg = imgCache[p.url];
+                if (!pImg) {
+                    pImg = new Image();
+                    pImg.onload = () => renderPage(5);
+                    pImg.onerror = () => renderPage(5);
+                    pImg.src = p.url;
+                    imgCache[p.url] = pImg;
+                }
+
+                if (pImg && pImg.complete && pImg.naturalWidth > 0) {
+                    drawImageProp(ctx, pImg, -p.w/2, -p.h/2, p.w, p.h);
+                } else {
+                    ctx.fillStyle = '#e8d5b5';
+                    ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+                    ctx.fillStyle = '#3a2512';
+                    ctx.font = "bold 14px 'Caveat'";
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText("Waffle Anısı", 0, 0);
+                }
+                ctx.restore();
+            });
+        }
+    }
     
     ctx.restore(); 
-    paperTextures[pageIndex].needsUpdate = true;
+    if (paperTextures[pageIndex]) {
+        paperTextures[pageIndex].needsUpdate = true;
+    }
   }
 
   function initPages(){
     generateBasePaper();
-    for(let i=0; i<10; i++){
+    for(let i=0; i<14; i++){
       const c = mkCanvas(512,660); 
       const ctx = c.getContext('2d');
       const tex = new THREE.CanvasTexture(c); 
@@ -2089,6 +2314,7 @@
       activeAlbumIdx = null; 
       activeCardboardIdx = null; 
       activePosterIdx = null; 
+      activeWaffleIngIdx = null;
       activeTvClick = false; 
       
       if (!isOpen || isTurning || zoomState === 'none') return;
@@ -2100,7 +2326,7 @@
       raycaster.setFromCamera(pointer, camera);
 
       if (current === 0) {
-          const hits = raycaster.intersectObjects([leaves[0].children[0]], false);
+          const hits = raycaster.intersectObjects([[0].children[0]], false);
           if (hits.length > 0 && hits[0].face.materialIndex === 2) {
               const hitX = hits[0].uv.x * 512; 
               const hitY = (1 - hits[0].uv.y) * 660;
@@ -2213,6 +2439,30 @@
               }
           }
       }
+
+      // WAFFLE SAYFASI ETKİLEŞİMİ (current === 3, Sol Sayfa / index 5)
+      if (current === 3) {
+          const hitsLeft = raycaster.intersectObjects([leaves[2].children[0]], false);
+          if (hitsLeft.length > 0 && hitsLeft[0].face.materialIndex === 3) {
+              const hitX = (1 - hitsLeft[0].uv.x) * 512; 
+              const hitY = hitsLeft[0].uv.y * 660;
+
+              if (!isWaffleComplete) {
+                  for (let i = draggableWaffleIngredients.length - 1; i >= 0; i--) {
+                      const ing = draggableWaffleIngredients[i];
+                      if (ing.placed) continue;
+                      if (Math.abs(hitX - ing.x) < 110 && Math.abs(hitY - ing.y) < 110) {
+                          activeWaffleIngIdx = i;
+                          ing.dragging = true;
+                          preventPageTurn = true;
+                          renderer.domElement.style.cursor = 'grabbing';
+                          renderPage(5);
+                          break;
+                      }
+                  }
+              }
+          }
+      }
   });
 
   window.addEventListener('pointermove', (e)=>{
@@ -2278,6 +2528,22 @@
               draggablePosters[activePosterIdx].x = hits[0].uv.x * 512; 
               draggablePosters[activePosterIdx].y = (1 - hits[0].uv.y) * 660; 
               renderPage(2); 
+          }
+          return;
+      }
+
+      if (activeWaffleIngIdx !== null) {
+          e.preventDefault();
+          const rect = mount.getBoundingClientRect();
+          pointer.x = ((e.clientX-rect.left)/rect.width)*2-1;
+          pointer.y = -((e.clientY-rect.top)/rect.height)*2+1;
+          raycaster.setFromCamera(pointer, camera);
+
+          const hits = raycaster.intersectObjects([leaves[2].children[0]], false);
+          if (hits.length > 0 && hits[0].face.materialIndex === 3) {
+              draggableWaffleIngredients[activeWaffleIngIdx].x = (1 - hits[0].uv.x) * 512;
+              draggableWaffleIngredients[activeWaffleIngIdx].y = hits[0].uv.y * 660;
+              renderPage(5);
           }
           return;
       }
@@ -2367,6 +2633,29 @@
           p.y = p.origY; 
           renderPage(2); 
           activePosterIdx = null; 
+          return;
+      }
+
+      if (activeWaffleIngIdx !== null) {
+          renderer.domElement.style.cursor = 'default';
+          const ing = draggableWaffleIngredients[activeWaffleIngIdx];
+          ing.dragging = false;
+
+          // Kasenin merkezi (256, 330) civarına bırakıldı mı kontrolü
+          if (Math.abs(ing.x - 256) < 150 && Math.abs(ing.y - 330) < 150) {
+              ing.placed = true;
+              playHamSound();
+
+              if (draggableWaffleIngredients.every(item => item.placed) && !isWaffleComplete) {
+                  isWaffleComplete = true;
+                  waffleCompleteTime = performance.now();
+              }
+          } else {
+              ing.x = ing.origX;
+              ing.y = ing.origY;
+          }
+          renderPage(5);
+          activeWaffleIngIdx = null;
           return;
       }
 
@@ -2553,11 +2842,18 @@
         }
     }
 
-    if (isOpen && current === 3) {
+    if (waffleCompleteTime > 0) {
+        const elapsedW = performance.now() - waffleCompleteTime;
+        if (elapsedW < 1200) {
+            renderPage(5);
+        }
+    }
+
+    if (isOpen && current === 4) {
         const newGreetingIdx = Math.floor(Date.now() / 1000) % 4;
         if (newGreetingIdx !== lastGreetingIdx) { 
             lastGreetingIdx = newGreetingIdx; 
-            renderPage(5); 
+            renderPage(7); 
         }
     }
 
@@ -2593,7 +2889,7 @@
   }
   
   document.fonts.ready.then(() => { 
-      for(let i=0; i<10; i++){ 
+      for(let i=0; i<14; i++){ 
           renderPage(i); 
       } 
   });
