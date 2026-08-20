@@ -436,8 +436,8 @@
       { id: 'door', type: 'rect_door', color: '#9e7146', w: 60, h: 100, origX: 90, origY: 480, x: 90, y: 480, rot: -15, dragging: false, snapped: false, snapX: 256, snapY: 540, snapRot: 1 },
       { id: 'window', type: 'rect_window', color: '#f0e6db', w: 55, h: 55, origX: 430, origY: 340, x: 430, y: 340, rot: 10, dragging: false, snapped: false, snapX: 180, snapY: 450, snapRot: -4 },
       { id: 'chimney', type: 'rect_chimney', color: '#a65446', w: 40, h: 80, origX: 90, origY: 250, x: 90, y: 250, rot: -20, dragging: false, snapped: false, snapX: 330, snapY: 280, snapRot: 5 },
-      { id: 'tape1', type: 'tape', color: 'rgba(235, 220, 160, 0.95)', w: 100, h: 30, origX: 420, origY: 180, x: 420, y: 180, rot: -30, dragging: false, snapped: false, snapX: 256, snapY: 400, snapRot: -5 },
-      { id: 'tape2', type: 'tape', color: 'rgba(235, 220, 160, 0.95)', w: 70, h: 25, origX: 390, origY: 520, x: 390, y: 520, rot: 45, dragging: false, snapped: false, snapX: 310, snapY: 320, snapRot: 15 }
+      { id: 'tape1', type: 'tape', color: 'rgba(215, 160, 35, 0.95)', w: 100, h: 30, origX: 420, origY: 180, x: 420, y: 180, rot: -30, dragging: false, snapped: false, snapX: 256, snapY: 400, snapRot: -5 },
+      { id: 'tape2', type: 'tape', color: 'rgba(215, 160, 35, 0.95)', w: 70, h: 25, origX: 390, origY: 520, x: 390, y: 520, rot: 45, dragging: false, snapped: false, snapX: 310, snapY: 320, snapRot: 15 }
   ];
 
   // =========================================================================
@@ -501,40 +501,61 @@
       { type: 'text', content: 'Yakından bakmak için dokun', x: 256, y: 100, size: 26, font: 'Caveat', rot: -2, color: '#3a2512' },
       { type: 'text', content: '♦ ♣ ♥ ♠', x: 256, y: 565, size: 24, font: 'Cormorant Garamond', rot: 0, color: '#5b3a22' }
     ],
-    // DİĞER SAYFALAR (Index 5 ve sonrası)
+    // 5: YENİ MEKTUP VE FOTOĞRAFLAR KISMI (PİŞTİNİN ARKASI)
     [
-      { type: 'image', url: 'https://picsum.photos/seed/night/500/350', x: 256, y: 280, w: 360, h: 260, rot: 2 },
-      { type: 'tape', x: 256, y: 140, w: 100, rot: 0 },
-      { type: 'text', content: 'Gecenin 3\'ünde yapılan//o derin sohbetler...', x: 256, y: 490, size: 32, font: 'Caveat', rot: -2, color: '#2a1c10' }
+      { type: 'dynamic_greeting', x: 30, y: 70, size: 30, font: 'Caveat', color: '#5b3a22', align: 'left' },
+      { type: 'text', align: 'left', x: 30, y: 340, size: 25, font: 'Caveat', color: '#3a2512',
+        content: "Neden bilmiyorum ama seninle//bu konuşmayı yapma ihtiyacı duydum.//Hiç ciddi konular konuşmadığımız//için biraz garip geliyor ama olsun.//Yaklaşık 15 yıldır benim kuzenimsin.//Tabii benim tabirimle 16.////Bu kadar zaman boyunca yeri geldi//şarkı söyleyip dost musixe attık.//Yeri geldi korku filmi izleyip//altımıza sıçtık. Yeri geldi Zoom'dan//karton ev için planlar yaptık//ve en sonunda beraber olgunlaştık.//Olgun çıtır olduk. Hatta ben biraz//fazla bile olgun çıtır olmuş//olabilirim. Artık senden uzunum 🥳" },
+      { type: 'image', url: 'foto_sag1.png', x: 420, y: 220, w: 130, h: 160, rot: 4 },
+      { type: 'tape', x: 420, y: 130, w: 60, rot: 2 },
+      { type: 'image', url: 'foto_sag2.png', x: 410, y: 460, w: 130, h: 160, rot: -3 },
+      { type: 'tape', x: 410, y: 370, w: 60, rot: -5 }
     ],
+    // 6: SAYFA 5 GİBİ METİN VE FOTOĞRAFLAR ALANI
     [
-      { type: 'text', content: 'Daha gidecek çok yolumuz...', x: 256, y: 250, size: 34, font: 'Caveat', rot: -5, color: '#3a2512' },
-      { type: 'text', content: '...yapacak çok dedikodumuz var!', x: 256, y: 330, size: 34, font: 'Caveat', rot: 2, color: '#5b3a22' }
+      { type: 'text', align: 'left', x: 30, y: 330, size: 24, font: 'Caveat', color: '#3a2512',
+        content: "Şimdi belki biraz saçma gelebilir ama//bence tüm bu yaşadıklarımız//tesadüf olamaz. Çoğu kişi köylerinin//yüzüne bile bakmazken biz aşukkamızı//sahiplendik evimiz yaptık. Sonsuza dek//sürecek dostluklar kurduk. Mesela geçen//sene ben bu kadar yakın olabileceğimizi//hayal dahi edemezdim. //Metin Emir Yılmaz senin balkonunda su aygırı gibi//yatıcak deseler inanmazdım.////Ne bileyim ya sen kusmuğunda//boğulsaydın ya da annem beni daha//doğmadan aldırsaydı. O boşluğu kim//dolduracaktı? İyi ki şuan buradayız🙏//ve bunları yaşıyoruz. İyi ki kuzenim//olmuşsun🥹" },
+      { type: 'image', url: 'foto6_sag1.png', x: 420, y: 220, w: 130, h: 160, rot: -3 },
+      { type: 'tape', x: 420, y: 130, w: 60, rot: -2 },
+      { type: 'image', url: 'foto6_sag2.png', x: 410, y: 460, w: 130, h: 160, rot: 4 },
+      { type: 'tape', x: 410, y: 370, w: 60, rot: 3 }
     ],
+    // 7: SADECE VEDA METNİ
     [
-      { type: 'image', url: 'https://picsum.photos/seed/sky/400/500', x: 256, y: 330, w: 280, h: 360, rot: -4 },
-      { type: 'text', content: 'Birlikteyken zamanın nasıl//geçtiğini hiç anlamıyoruz', x: 256, y: 100, size: 28, font: 'Caveat', rot: 0, color: '#2a1c10' }
+      { type: 'text', align: 'center', x: 256, y: 330, size: 25, font: 'Caveat', color: '#3a2512',
+        content: "Bir gün gelir, bir şey olur.//Sana veda edemezsem diye bunu yazıyorum.////Sen benim için her zaman farklı bir yerdeydin.//Bir dosttan, bir kuzenden fazlası.//Kardeşim gibiydin.////Sanki geçirdiğimiz vakitler, oynadığımız oyunlar,//izlediğimiz filmler, söylediğimiz şarkılar,//hissettiğimiz duygular, hatta bazen//yaşadıklarımız bile ortak oldu.////Umarım hayat seni hep iyi insanlarla karşılaştırır.//İstediğin her şeyle en iyi şekilde kavuşursun.//Çünkü bunu hak ediyorsun.////Şimdi en başta dedim ya,//eğer bir gün gelir de sana veda edemezsem,////hoşça kal Zep.🤍" }
     ],
+    // 8: 16 FOTOĞRAFLIK 4x4 KOLAJ
     [
-      { type: 'image', url: 'https://picsum.photos/seed/selfie/350/350', x: 256, y: 260, w: 280, h: 280, rot: 5 },
-      { type: 'tape', x: 256, y: 110, w: 80, rot: 3 },
-      { type: 'text', content: 'En favori fotoğrafımız!', x: 256, y: 460, size: 30, font: 'Caveat', rot: -3, color: '#3a2512' }
+      { type: 'image', url: 'gorsel1.png',  x: 68,  y: 75,  w: 92, h: 110, rot: -2 },
+      { type: 'image', url: 'gorsel2.png',  x: 193, y: 75,  w: 92, h: 110, rot: 1 },
+      { type: 'image', url: 'gorsel3.png',  x: 318, y: 75,  w: 92, h: 110, rot: -1 },
+      { type: 'image', url: 'gorsel4.png',  x: 443, y: 75,  w: 92, h: 110, rot: 2 },
+      { type: 'image', url: 'gorsel5.png',  x: 68,  y: 245, w: 92, h: 110, rot: 2 },
+      { type: 'image', url: 'gorsel6.png',  x: 193, y: 245, w: 92, h: 110, rot: -1 },
+      { type: 'image', url: 'gorsel7.png',  x: 318, y: 245, w: 92, h: 110, rot: 1 },
+      { type: 'image', url: 'gorsel8.png',  x: 443, y: 245, w: 92, h: 110, rot: -2 },
+      { type: 'image', url: 'gorsel9.png',  x: 68,  y: 415, w: 92, h: 110, rot: -1 },
+      { type: 'image', url: 'gorsel10.png', x: 193, y: 415, w: 92, h: 110, rot: 2 },
+      { type: 'image', url: 'gorsel11.png', x: 318, y: 415, w: 92, h: 110, rot: -2 },
+      { type: 'image', url: 'gorsel12.png', x: 443, y: 415, w: 92, h: 110, rot: 1 },
+      { type: 'image', url: 'gorsel13.png', x: 68,  y: 585, w: 92, h: 110, rot: 1 },
+      { type: 'image', url: 'gorsel14.png', x: 193, y: 585, w: 92, h: 110, rot: -2 },
+      { type: 'image', url: 'gorsel15.png', x: 318, y: 585, w: 92, h: 110, rot: 2 },
+      { type: 'image', url: 'gorsel16.png', x: 443, y: 585, w: 92, h: 110, rot: -1 }
     ],
-    [
-      { type: 'text', content: 'Bir sonraki sayfayı//birlikte doldurmak dileğiyle...', x: 256, y: 250, size: 32, font: 'Caveat', rot: -2, color: '#2a1c10' },
-      { type: 'text', content: '🤍', x: 256, y: 350, size: 40, font: 'Caveat', rot: 0, color: '#5b3a22' }
-    ],
-    [
-      { type: 'text', content: 'SON DEĞİL, BAŞLANGIÇ', x: 256, y: 330, size: 24, font: 'Cormorant Garamond', rot: 0, color: '#5b3a22' }
-    ]
+    // 9: BOŞ KAPANIŞ SAYFASI
+    []
   ];
 
-  const N_LEAVES = 6;
+  const N_LEAVES = 5;
   const W = 3.0;
   const D = 4.0;
   const LEAF_T = 0.05;
   const COVER_T = 0.2;
-  const GAP = 0.004;
+  
+  // SAYFALAR ARASI FİZİKSEL BOŞLUK
+  const GAP = 0.015;
 
   const basePaperCanvas = document.createElement('canvas');
   basePaperCanvas.width = 512;
@@ -667,40 +688,62 @@
       ctx.translate(item.x, item.y);
       ctx.rotate((item.rot || 0) * Math.PI / 180);
 
-      if (item.type === 'text') {
+      // DİNAMİK HİTAP KISMI
+      if (item.type === 'dynamic_greeting') {
+        const names = ['Zep', 'Zencizep', 'Jimcime', 'Cnm', 'Yarrren'];
+        const nameIdx = Math.floor(Date.now() / 1000) % names.length;
+        const text = "Sayın " + names[nameIdx] + ",";
+        
         const fw = item.font === 'Cormorant Garamond' ? '700' : '600';
         ctx.font = `${fw} ${item.size}px '${item.font}'`;
         ctx.fillStyle = item.color || '#3a2512';
-        ctx.textAlign = 'center';
+        ctx.textAlign = item.align || 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(text, 0, 0);
+
+      } else if (item.type === 'text') {
+        const fw = item.font === 'Cormorant Garamond' ? '700' : '600';
+        ctx.font = `${fw} ${item.size}px '${item.font}'`;
+        ctx.fillStyle = item.color || '#3a2512';
+        ctx.textAlign = item.align || 'center';
         ctx.textBaseline = 'middle';
         const lines = item.content.split('//');
         lines.forEach((line, idx) => {
-            const yOffset = (idx - (lines.length-1)/2) * (item.size * 1.2);
+            const yOffset = (idx - (lines.length-1)/2) * (item.size * 1.25);
             ctx.fillText(line.trim(), 0, yOffset);
         });
 
       } else if (item.type === 'tape') {
-        ctx.fillStyle = 'rgba(230, 225, 210, 0.65)';
-        // SICAK KAHVERENGİ VE KESKİN GÖLGE 
+        ctx.fillStyle = 'rgba(215, 160, 35, 0.85)';
         ctx.shadowColor = 'rgba(60, 40, 20, 0.1)';
         ctx.shadowBlur = 2; 
         ctx.shadowOffsetY = 1;
         ctx.fillRect(-item.w/2, -12, item.w, 24);
+        
+        ctx.shadowColor = 'transparent';
         ctx.globalCompositeOperation = 'destination-out';
+        
         ctx.beginPath();
-        for(let i=-item.w/2; i<=item.w/2; i+=4) { ctx.lineTo(i, -12 + Math.random()*4); }
-        for(let i=item.w/2; i>=-item.w/2; i-=4) { ctx.lineTo(i, 12 - Math.random()*4); }
+        ctx.moveTo(-item.w/2 - 10, -12);
+        for(let y = -12; y <= 12; y += 3) { ctx.lineTo(-item.w/2 + Math.random()*5, y); }
+        ctx.lineTo(-item.w/2 - 10, 12);
         ctx.fill();
+
+        ctx.beginPath();
+        ctx.moveTo(item.w/2 + 10, -12);
+        for(let y = -12; y <= 12; y += 3) { ctx.lineTo(item.w/2 - Math.random()*5, y); }
+        ctx.lineTo(item.w/2 + 10, 12);
+        ctx.fill();
+
         ctx.globalCompositeOperation = 'source-over';
         
       } else if (item.type === 'image' && item.url) {
-        // SICAK KAHVERENGİ VE DAHA KESKİN GÖLGE 
         ctx.shadowColor = 'rgba(60, 40, 20, 0.15)'; 
         ctx.shadowBlur = 6; 
         ctx.shadowOffsetX = 2; 
         ctx.shadowOffsetY = 3;
         ctx.fillStyle = '#fdfdfd';
-        ctx.fillRect(-item.w/2 - 12, -item.h/2 - 12, item.w + 24, item.h + 40);
+        ctx.fillRect(-item.w/2 - 10, -item.h/2 - 10, item.w + 20, item.h + 26);
         ctx.shadowColor = 'transparent';
         
         if(!imgCache[item.url]) {
@@ -713,7 +756,6 @@
         }
 
       } else if (item.type === 'kucukluk_foto') {
-        // SICAK KAHVERENGİ VE DAHA KESKİN GÖLGE
         ctx.shadowColor = 'rgba(60, 40, 20, 0.15)'; 
         ctx.shadowBlur = 6; 
         ctx.shadowOffsetX = 2; 
@@ -767,7 +809,6 @@
             imgO.onload = () => { renderPage(pageIndex); };
         }
         if (imgCache[activeUrl] && imgCache[activeUrl].complete && imgCache[activeUrl].naturalWidth > 0) {
-            // SICAK KAHVERENGİ GÖLGE
             ctx.shadowColor = 'rgba(60, 40, 20, 0.15)'; 
             ctx.shadowBlur = 8; 
             ctx.shadowOffsetX = 2; 
@@ -807,7 +848,6 @@
             ctx.rotate(curRot * Math.PI / 180);
             ctx.scale(curScale, curScale);
             
-            // KARTON GÖLGELERİ
             if(c.dragging) { 
                 ctx.shadowColor = 'rgba(60, 40, 20, 0.25)'; 
                 ctx.shadowBlur = 12; 
@@ -870,12 +910,6 @@
                 ctx.beginPath(); 
                 ctx.arc(c.w/2 - 14, 0, 6, 0, Math.PI*2); 
                 ctx.fill();
-                ctx.fillStyle = '#7a1919';
-                ctx.font = "bold 16px 'Caveat'";
-                ctx.save(); 
-                ctx.rotate(-15*Math.PI/180);
-                ctx.fillText("GİRİLMEZ!", 0, -15);
-                ctx.restore();
                 
             } else if (c.type === 'rect_window') {
                 ctx.fillStyle = '#b88b5a';
@@ -932,16 +966,28 @@
             } else if (c.type === 'tape') {
                 ctx.fillStyle = c.color; 
                 ctx.fillRect(-c.w/2, -c.h/2, c.w, c.h);
-                ctx.strokeStyle = 'rgba(150, 140, 100, 0.4)';
+                
+                ctx.strokeStyle = 'rgba(130, 90, 20, 0.4)'; 
                 ctx.lineWidth = 1;
-                ctx.beginPath(); ctx.moveTo(-c.w/2, 0); ctx.lineTo(c.w/2, 0); ctx.stroke();
-                ctx.beginPath(); ctx.moveTo(-c.w/2, -4); ctx.lineTo(c.w/2, -4); ctx.stroke();
-                ctx.beginPath(); ctx.moveTo(-c.w/2, 4); ctx.lineTo(c.w/2, 4); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(-c.w/2 + 4, 0); ctx.lineTo(c.w/2 - 4, 0); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(-c.w/2 + 4, -4); ctx.lineTo(c.w/2 - 4, -4); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(-c.w/2 + 4, 4); ctx.lineTo(c.w/2 - 4, 4); ctx.stroke();
+                
+                ctx.shadowColor = 'transparent';
                 ctx.globalCompositeOperation = 'destination-out';
+                
                 ctx.beginPath();
-                for(let i=-c.h/2; i<=c.h/2; i+=2) { ctx.lineTo(-c.w/2 + Math.random()*4, i); }
-                for(let i=-c.h/2; i<=c.h/2; i+=2) { ctx.lineTo(c.w/2 - Math.random()*4, i); }
+                ctx.moveTo(-c.w/2 - 10, -c.h/2);
+                for(let i=-c.h/2; i<=c.h/2; i+=3) { ctx.lineTo(-c.w/2 + Math.random()*6, i); }
+                ctx.lineTo(-c.w/2 - 10, c.h/2);
                 ctx.fill(); 
+                
+                ctx.beginPath();
+                ctx.moveTo(c.w/2 + 10, -c.h/2);
+                for(let i=-c.h/2; i<=c.h/2; i+=3) { ctx.lineTo(c.w/2 - Math.random()*6, i); }
+                ctx.lineTo(c.w/2 + 10, c.h/2);
+                ctx.fill(); 
+
                 ctx.globalCompositeOperation = 'source-over';
             }
             ctx.restore();
@@ -998,11 +1044,8 @@
         const vidW = 230; 
         const vidH = 160;
         
-        // VİDEONUN TAMAMEN HAZIR OLUP OLMADIĞINI KONTROL EDİYORUZ
         const isRecordReady = isRecordPlaying && recordVideo && recordVideo.readyState >= 2 && !recordVideo.error;
         
-        // GÖRÜNTÜNÜN GİDİP GELMEMESİ İÇİN: 
-        // Video henüz oynatılamayacak durumdaysa (!isRecordReady) arka plandaki fotoğrafı silme, ÇİZ!
         if (!isRecordReady) {
             let recordImg = imgCache['plakcalar.png'];
             if(!recordImg) {
@@ -1029,7 +1072,6 @@
             }
         }
 
-        // Video hazırsa fotoğrafın yerine videoyu çiz
         if (isRecordReady) {
             drawTransparentMedia(ctx, recordVideo, 256 - vidW/2, 330 - vidH/2, vidW, vidH);
         }
@@ -1041,7 +1083,6 @@
             ctx.translate(a.x, a.y);
             ctx.rotate(a.rot * Math.PI / 180);
             
-            // ALBÜM GÖLGELERİ (Keskin ve Sıcak)
             if(a.dragging) {
                 ctx.shadowColor = 'rgba(60, 40, 20, 0.25)'; 
                 ctx.shadowBlur = 12; 
@@ -1049,10 +1090,17 @@
                 ctx.shadowOffsetY = 6; 
                 ctx.scale(1.15, 1.15); 
             } else {
-                ctx.shadowColor = 'rgba(60, 40, 20, 0.12)'; 
-                ctx.shadowBlur = 5; 
-                ctx.shadowOffsetX = 2; 
-                ctx.shadowOffsetY = 3;
+                if (a.url === 'album8.png') {
+                    ctx.shadowColor = 'rgba(60, 40, 20, 0.18)'; 
+                    ctx.shadowBlur = 20; 
+                    ctx.shadowOffsetX = 5; 
+                    ctx.shadowOffsetY = 8;
+                } else {
+                    ctx.shadowColor = 'rgba(60, 40, 20, 0.12)'; 
+                    ctx.shadowBlur = 5; 
+                    ctx.shadowOffsetX = 2; 
+                    ctx.shadowOffsetY = 3;
+                }
             }
 
             let img = imgCache[a.url];
@@ -1083,7 +1131,7 @@
         });
     }
 
-    // 2: Televizyon (Eski 4)
+    // 2: Televizyon
     if (pageIndex === 2) {
         const tvW = 320; 
         const tvH = 250; 
@@ -1091,17 +1139,13 @@
         const tvY = 200; 
         
         ctx.save();
-        // TV GÖLGESİ
         ctx.shadowColor = 'rgba(60, 40, 20, 0.2)'; 
         ctx.shadowBlur = 8;
         ctx.shadowOffsetX = 2;
         ctx.shadowOffsetY = 4;
         
-        // VİDEONUN EKRANA ÇİZİLEBİLMESİ İÇİN TAMAMEN HAZIR OLUP OLMADIĞINI KONTROL EDİYORUZ
         const isVideoReady = isTvPlaying && tvVidEl && tvVidEl.readyState >= 2 && !tvVidEl.error;
         
-        // GÖRÜNTÜNÜN GİDİP GELMEMESİ İÇİN: 
-        // Video henüz oynatılamayacak durumdaysa (!isVideoReady) VEYA poster videosu oynuyorsa arka plana kasayı ÇİZ!
         if (!isVideoReady || isPlayingPoster) {
             let tvImg = imgCache['televizyon.jpg'];
             if (!tvImg) {
@@ -1119,13 +1163,11 @@
             }
         }
         
-        // Video hazırsa ve poster değilse (tam ekran kasasız video)
         if (isVideoReady && !isPlayingPoster) {
             ctx.shadowColor = 'transparent';
             drawTransparentMedia(ctx, tvVidEl, tvX - tvW/2, tvY - tvH/2, tvW, tvH);
         }
 
-        // Video hazırsa ve posterse (kasanın içine kırpılmış video)
         if (isVideoReady && isPlayingPoster) {
             ctx.shadowColor = 'transparent'; 
             const screenW = 230;  
@@ -1149,7 +1191,6 @@
             ctx.save();
             ctx.translate(p.x, p.y);
             
-            // POSTER GÖLGELERİ
             if (p.dragging) {
                 ctx.shadowColor = 'rgba(60, 40, 20, 0.25)';
                 ctx.shadowBlur = 12;
@@ -1190,7 +1231,7 @@
         });
     }
     
-    // 3: Avatar (Eski 0)
+    // 3: Avatar
     if (pageIndex === 3) {
         draggableQuotes.forEach(q => {
             ctx.save();
@@ -1201,7 +1242,6 @@
             const h = 34;
             ctx.fillStyle = '#fbf5df';
             
-            // SÖZ GÖLGELERİ
             if(q.dragging) {
                 ctx.shadowColor = 'rgba(60, 40, 20, 0.2)'; 
                 ctx.shadowBlur = 8; 
@@ -1227,7 +1267,7 @@
         });
     }
 
-    // 4: Pişti (Eski 2)
+    // 4: Pişti
     if (pageIndex === 4) {
         deckCards.forEach(c => {
             ctx.save();
@@ -1257,7 +1297,6 @@
             ctx.quadraticCurveTo(-cW/2, -cH/2, -cW/2 + radius, -cH/2);
             ctx.closePath();
             
-            // KART GÖLGELERİ
             ctx.shadowColor = `rgba(60, 40, 20, ${0.15 - (lift * 0.05)})`;
             ctx.shadowBlur = shadowBlur; 
             ctx.shadowOffsetX = shadowOffset * (scaleX > 0 ? 1 : -1); 
@@ -1357,7 +1396,7 @@
     leatherBase(ctx,768,1024);
     const vg=ctx.createRadialGradient(384,512,180,384,512,680); 
     vg.addColorStop(0,'rgba(0,0,0,0)'); 
-    vg.addColorStop(1,'rgba(0,0,0,0.25)'); // Daha aydınlık kapak
+    vg.addColorStop(1,'rgba(0,0,0,0.25)');
     ctx.fillStyle=vg; 
     ctx.fillRect(0,0,768,1024);
     
@@ -1401,7 +1440,7 @@
     ctx.shadowColor = 'transparent';
 
     ctx.fillStyle = '#4a2c18';
-    ctx.shadowColor = 'rgba(0,0,0,0.4)'; // Kapak kilit gölgesi yumuşatıldı
+    ctx.shadowColor = 'rgba(0,0,0,0.4)';
     ctx.shadowBlur = 14; 
     ctx.shadowOffsetX = -6; 
     ctx.shadowOffsetY = 4;
@@ -1425,7 +1464,7 @@
     ctx.setLineDash([]);
 
     ctx.fillStyle = '#a6853f'; 
-    ctx.shadowColor = 'rgba(0,0,0,0.3)'; // Pin gölgesi yumuşatıldı
+    ctx.shadowColor = 'rgba(0,0,0,0.3)';
     ctx.shadowBlur = 6; 
     ctx.shadowOffsetY = 2;
     ctx.beginPath(); 
@@ -1442,7 +1481,7 @@
         ctx.translate(x, y); 
         ctx.scale(scaleX, scaleY); 
         ctx.fillStyle = '#a6853f';
-        ctx.shadowColor = 'rgba(0,0,0,0.35)'; // Metal köşe gölgesi yumuşatıldı
+        ctx.shadowColor = 'rgba(0,0,0,0.35)';
         ctx.shadowBlur = 8; 
         ctx.shadowOffsetX = -2; 
         ctx.shadowOffsetY = 2;
@@ -1505,7 +1544,7 @@
     ctx.strokeStyle = '#633c23'; 
     ctx.lineWidth = 5; 
     ctx.lineCap = 'round';
-    ctx.shadowColor = 'rgba(0,0,0,0.3)'; // İp gölgeleri yumuşatıldı
+    ctx.shadowColor = 'rgba(0,0,0,0.3)';
     ctx.shadowBlur = 4; 
     ctx.shadowOffsetY = 2;
     for(let y = 6; y < 512; y += 58){ 
@@ -1531,7 +1570,7 @@
     addNoise(ctx, 512, 512, 10);
     const vg = ctx.createRadialGradient(256, 256, 100, 256, 256, 350); 
     vg.addColorStop(0, 'rgba(0,0,0,0)'); 
-    vg.addColorStop(1, 'rgba(0,0,0,0.5)'); // Zemin kararması yumuşatıldı
+    vg.addColorStop(1, 'rgba(0,0,0,0.5)');
     ctx.fillStyle = vg; 
     ctx.fillRect(0, 0, 512, 512);
     const tex = new THREE.CanvasTexture(c); 
@@ -1573,9 +1612,7 @@
   resize(); 
   window.addEventListener('resize', resize);
 
-  // Ortam ışığı 0.45'ten 0.75'e çıkarıldı (Genel gölgeleri çok aydınlatır ve yumuşatır)
   scene.add(new THREE.AmbientLight(0xcde6c1, 0.75));
-  // Güneş ışığı 1.8'den 1.5'e çekildi (Kontrastı biraz azaltır)
   const sun = new THREE.DirectionalLight(0xfff5d7, 1.5); 
   sun.position.set(-4, 9, 6); 
   sun.castShadow = true; 
@@ -1845,6 +1882,8 @@
   const closeBtn = document.getElementById('closeBtn');
 
   let actionQueue = [];
+  let lastGreetingIdx = -1;
+
   function processQueue() {
       if (isTurning || actionQueue.length === 0) return;
       let action = actionQueue.shift();
@@ -1934,7 +1973,6 @@
   let preventPageTurn = false;
 
   window.addEventListener('pointerdown', (e)=>{
-      // İntro ekranı varken arkadaki kitaba tıklanmasını tamamen engelliyoruz
       if (document.getElementById('introContainer')) return;
       
       pStartX = e.clientX; pStartY = e.clientY; preventPageTurn = false;
@@ -2225,6 +2263,14 @@
         }
     }
 
+    if (isOpen && current === 3) {
+        const newGreetingIdx = Math.floor(Date.now() / 1000) % 4;
+        if (newGreetingIdx !== lastGreetingIdx) {
+            lastGreetingIdx = newGreetingIdx;
+            renderPage(5);
+        }
+    }
+
     for(let i=tweens.length-1; i>=0; i--){ 
         const tw = tweens[i]; tw.elapsed += 16.6; 
         if (tw.elapsed < 0) continue; 
@@ -2233,8 +2279,6 @@
         if(t>=1){ tw.onDone && tw.onDone(); tweens.splice(i,1); } 
     }
     
-    camera.position.x += Math.sin(time*0.25)*0.0009; 
-    camera.position.y += Math.sin(time*0.19)*0.0005;
     glow.intensity = 0.65 + Math.sin(time*6)*0.04 + Math.sin(time*13.3)*0.02;
     sun.position.x = -4 + Math.sin(time * 0.5) * 1.5; sun.position.z = 6 + Math.cos(time * 0.3) * 1.5;
     if (bladeMat.userData.shader) { bladeMat.userData.shader.uniforms.time.value = time; }
@@ -2244,6 +2288,12 @@
     pGeo.attributes.position.needsUpdate = true;
     renderer.render(scene, camera);
   }
+  
+  document.fonts.ready.then(() => {
+      for(let i=0; i<12; i++){
+          renderPage(i);
+      }
+  });
   
   animate();
 })();
