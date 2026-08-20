@@ -1405,27 +1405,37 @@
                 ctx.fillRect(-cW/2, -cH/2, cW, cH);
             } else {
                 ctx.scale(-1, 1); 
-                let fImgName = 'kart' + c.id + '.png'; 
-                let fImg = imgCache[fImgName];
                 
-                if(!fImg) { 
-                    fImg = new Image(); 
-                    fImg.onload = () => { renderPage(4); }; 
-                    fImg.onerror = () => { renderPage(4); }; 
-                    fImg.src = fImgName; 
-                    imgCache[fImgName] = fImg; 
-                }
-                if (fImg && fImg.complete && fImg.naturalWidth > 0) { 
-                    drawImageProp(ctx, fImg, -cW/2, -cH/2, cW, cH); 
-                } else { 
-                    ctx.fillStyle = '#f8f8fa'; 
-                    ctx.fillRect(-cW/2, -cH/2, cW, cH); 
-                    ctx.fillStyle = '#4f6680'; 
-                    ctx.font = "bold 20px 'Cormorant Garamond'"; 
-                    ctx.textAlign = 'center'; 
-                    ctx.textBaseline = 'middle'; 
-                    ctx.fillText("Anı " + (c.id+1), 0, 0); 
-                }
+                ctx.fillStyle = '#f8f5ee'; 
+                ctx.fillRect(-cW/2, -cH/2, cW, cH); 
+                
+                ctx.strokeStyle = '#c83030'; 
+                ctx.lineWidth = 2;
+                ctx.strokeRect(-cW/2 + 8, -cH/2 + 8, cW - 16, cH - 16);
+                
+                const komikFallar = [
+                    "Seneye düğünün var//gibi hissediyorum//ama ortada//kimse yok 🥲",
+                    "3 vakte kadar//büyük bir servet...//şaka şaka,//borç çıkacak 💸",
+                    "Sana kabaran//bir şey var...//Büyük ihtimalle//doğalgaz faturası🥶",
+                    "Eski sevgilin//mesaj atacak.//SAKIN KANMA//GÖRÜLDÜ AT! 🐍",
+                    "Yakında spora//başlıyorsun!//(Ve 2 gün sonra//bırakıyorsun) 🏋️",
+                    "Aşk hayatın//pürüzsüz... Tıpkı//bir bowling//topu gibi 🎳",
+                    "Kariyerinde//zirveye çıkacaksın!//(Eğer asansör//bozulmazsa) 🏢",
+                    "Sana bir yolculuk//görünüyor...//Büyük ihtimalle//mutfağa. 🚶‍♂️",
+                    "Çok yakında//yurt dışına//gidiyorsun!//(Google Earth'ten)🌍"
+                ];
+
+                ctx.fillStyle = '#3a2512'; 
+                ctx.font = "bold 17px 'Caveat'"; 
+                ctx.textAlign = 'center'; 
+                ctx.textBaseline = 'middle'; 
+                
+                let falLines = komikFallar[c.id].split('//');
+                falLines.forEach((line, idx) => {
+                    let yOffset = (idx - (falLines.length - 1) / 2) * 22;
+                    ctx.fillText(line, 0, yOffset);
+                });
+
                 ctx.fillStyle = `rgba(0, 0, 0, ${Math.max(0, (1 - c.flipProgress) * 0.2)})`; 
                 ctx.fillRect(-cW/2, -cH/2, cW, cH); 
                 ctx.scale(-1, 1); 
@@ -2326,7 +2336,7 @@
       raycaster.setFromCamera(pointer, camera);
 
       if (current === 0) {
-          const hits = raycaster.intersectObjects([[0].children[0]], false);
+          const hits = raycaster.intersectObjects([leaves[0].children[0]], false);
           if (hits.length > 0 && hits[0].face.materialIndex === 2) {
               const hitX = hits[0].uv.x * 512; 
               const hitY = (1 - hits[0].uv.y) * 660;
